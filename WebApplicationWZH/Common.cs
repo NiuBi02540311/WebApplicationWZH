@@ -118,7 +118,7 @@ namespace WebApplicationWZH
     }
 
     /// <summary>
-    /// 验证码
+    /// 验证码 code
     /// </summary>
     public static class ValidCodeUtils
     {
