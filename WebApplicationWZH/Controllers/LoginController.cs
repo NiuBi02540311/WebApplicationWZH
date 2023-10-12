@@ -10,7 +10,7 @@ using WebApplicationWZH.Models;
 
 namespace WebApplicationWZH.Controllers
 {
-    //登录页加上此特性，不需要做登录验证，要不加会陷入死循环，导致浏览器崩溃
+    //登录页加上此特性，不需要做登录验证，要不加会陷入死循环，导致浏览器崩溃...
     [SkipCheckLoginAttribute]
     public class LoginController : Controller
     {
