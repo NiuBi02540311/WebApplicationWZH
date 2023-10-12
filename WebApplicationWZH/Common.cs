@@ -16,6 +16,10 @@ namespace WebApplicationWZH
 {
     public class Common
     {
+        //https://blog.csdn.net/dawnZeng/article/details/127630574
+        //4.提交信息
+
+         //git commit -m "first commit"  （git commit -m "提交信息"）
     }
     public static class Json
     {
