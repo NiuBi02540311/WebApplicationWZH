@@ -1,0 +1,108 @@
+﻿
+@{
+    Layout = null;
+}
+
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="~/jqueryEasyui/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="~/jqueryEasyui/themes/icon.css">
+    <script type="text/javascript" src="~/jqueryEasyui/jquery.min.js"></script>
+    <script type="text/javascript" src="~/jqueryEasyui/jquery.easyui.min.js"></script>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+            
+    </style>
+
+
+     
+
+</head>
+<body>
+    <div class="container" >
+        <div class="content">
+            <form action="/Login/Index" method="post" id="loginForm">
+                <div class="easyui-panel" title="Login" style="width:100%;max-width:400px;padding:30px 60px;">
+                    <div style="margin-bottom:10px">
+                        <input class="easyui-textbox" required name="loginName" label="工号：" labelPosition="left" prompt="请输入工号" style="width:250px;">
+                    </div>
+                    <div style="margin-bottom:10px">
+                        <input class="easyui-passwordbox" required name="loginPassword" label="密码：" labelPosition="left" prompt="请输入密码" iconWidth="28" style="width:250px;">
+                    </div>
+                    <div style="margin-bottom:10px">
+                        <input type="text" name="validCode" id="validCode" label="验证码：" labelPosition="left" class="easyui-textbox" prompt="验证码" />
+                        @*<img style="position:relative;top:10px;" src="/Login/CreateValidCodeImage" width="80" height="30" id="validCodeImg" />*@
+                        <img style="position:relative;top:-30px;left:175px;" src="/Login/CreateValidCodeImage" width="80" height="30" id="validCodeImg" />
+                    </div>
+                    @if (Session["username"] != null && Session["username"].ToString() != "")
+                    {
+                        <div style="margin-bottom:10px;">
+                            <button onclick="login()" disabled class="easyui-linkbutton" style="width:250px;">登录</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="margin-bottom:10px;">
+                            <button onclick="login()" class="easyui-linkbutton" style="width:250px;">登录</button>
+                        </div>
+                    }
+                    <div style="text-align:center">
+                        <a href="/Sys_user/Register">没有账号？去注册</a>
+                    </div>
+                </div>
+                <input type="hidden" value="@ViewData["info"]" id="hiddenInfo" />
+                @Html.AntiForgeryToken()
+            </form>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+        $(function () {
+            var info = $('#hiddenInfo').val();
+            if (info.length > 0) {
+                alert(info);
+            }
+
+            //验证码换图
+            $('#validCodeImg').click(function () {
+                //拼接一个参数t，后面加上时间（以毫秒计），每一毫秒更改一次验证码切换的路径。从而克服缓存机制的干扰
+                $(this).prop("src", "/Login/CreateValidCodeImage?t=" + new Date().getTime());
+            });
+        });
+
+        //登录
+        function login() {
+            var validCodeImg = $('#validCode').val();
+            //判断是否填写数据
+            if (validCodeImg != null && validCodeImg != "" && validCodeImg != undefined) {
+                $('#loginForm').submit();
+            }
+            else {
+                alert("请输入验证码！");
+            }
+        }
+    </script>
+
+</body>
+</html>
+

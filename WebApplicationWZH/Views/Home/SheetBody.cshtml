@@ -1,0 +1,296 @@
+﻿
+@{
+    ViewBag.Title = "SheetList";
+    Layout = null;
+    //@model IEnumerable<WebApplicationWZH.Models.ConfigMode1>
+}
+@model WebApplicationWZH.Models.ConfigModelViewModel
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>表单无纸化列表</title>
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+
+    <style>
+        .table {
+            font-family: 'Microsoft YaHei';
+            font-size: x-large
+        }
+
+        table tbody {
+            font-size: 36px;
+        }
+
+        .WipData {
+        }
+
+        .c {
+            text-align: center;
+        }
+        .MustInput{
+            color:red;font-weight:bold;
+        }
+    </style>
+
+
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align:center;color:green">
+            无纸化单据录入界面
+        </h1>
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th class="c">序号</th>
+                    <th>参数名称</th>
+                    <th>参数值</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var model = Model.WipModels;
+                    string SheetName = Model.SheetName;
+                }
+                @foreach (var item in model)
+                {
+                    List<string> arr = null;
+                    string _class = item.IsMustInput == 1 ? "MustInput" : "";
+                    if (item.defaultData.IndexOf(",") > -1)
+                    {
+                        arr = item.defaultData.Split(',').ToList();
+                    }
+                    <tr>
+                        <td class="c">@item.ID</td>
+                        <td class="@_class">@item.WipName</td>
+                        @if (arr == null || arr.Count == 0)
+                        {
+                    <td class="WipData">
+
+                        @if (item.Datatype == "date")
+                        {
+                            <input type="text" class="form-control form-group-lg" value="" id="@item.WipName" onclick="centerShow(this)"/>
+                        }
+                        else
+                        {
+                            <input type="@item.Datatype" class="form-control form-group-lg" value="@item.defaultData" />
+                        }
+                        <input type="hidden" value="@item.WipName|@item.IsMustInput" />
+                    </td>
+                        }
+                        else
+                        {
+
+                            <td class="WipData">
+                                <select class="form-control form-group-lg">
+                                    @foreach (string v in arr)
+                                    {
+                                        <option>@v</option>
+                                    }
+                                </select>
+                                <input type="hidden" value="@item.WipName|@item.IsMustInput" />
+                            </td>
+                        }
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3">
+                        <table style="width: 100%; ">
+                            <tr>
+                                <td style="text-align:right">
+                                    <button type="button" class="btn btn-primary btn-lg" id="BtnClick">提交数据</button>
+                                </td>
+                                <td style="text-align:right">
+                                    <button type="button" class="btn btn-primary btn-lg" id="GoBack">返回主页</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <input type="hidden" value="@SheetName" id="SheetName" />
+    
+    <!----------------------------------------------------------------------------------------------------->
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+    <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="~/Scripts/dateMultiFunc.js"></script>
+
+    <script>
+
+        var centerShow = null;
+
+        $(document).ready(function () {
+
+            $("#BtnClick").click(function () {
+                if (confirm("确定要提交数据") == false) {
+                    return;
+                }
+                let matches = document.querySelectorAll(".WipData");
+                let str = "";
+                let v = "";
+                let n = "";
+                let b = [];
+                let name = "";
+                let IsMustInput = "0";
+                let data = [];
+                let SheetName = $("#SheetName").val();
+                matches.forEach(function (userItem) {
+                    let ths = userItem;
+                    v = $(ths).children().eq(0).val();
+                    n = $(ths).children().eq(1).val();
+                    b = n.split('|');
+                    name = b[0];
+                    IsMustInput = b[1];
+                    //alert(name + "-" + v);
+                    if ($.trim(v) == "" && IsMustInput == "1") {
+                        str += name + ",";
+                    } else {
+                        //data.push(name + ":" + v);
+                        data.push(new SheetModel(name, v));
+                    }
+                })
+                if (str != "") {
+                    alert(str + "必采项，不能为空！")
+                } else {
+                    //let _data = data.join(",");
+                    //let _data = JSON.parse(data);
+                    let mm = new Model(SheetName, data)
+                    //let _data = JSON.stringify(data);
+                    let _data = JSON.stringify(mm);
+                    console.log(_data);
+                    alert(_data);
+                    _post(_data);
+                }
+            })
+            /*********************************************************************************************************************/
+            $("#GoBack").click(function () {
+                if (confirm("确定要返回主界面？") == false) {
+                    return;
+                }
+
+                location.href = "/Home/SheetList";
+            })
+            /*********************************************************************************************************************/
+            function _get() {
+                $.ajax({
+                    url: '/getName',
+                    type: 'get',
+                    dataType: 'json',
+                    data: {
+                        name: 'tom'
+                    },
+                    success: function (response) {
+                        console.log(response);
+                    }
+                })
+
+            }
+            /*********************************************************************************************************************/
+            function _post2() {
+                $.ajax({
+                    url: 'example.php', // 请求的URL
+                    type: 'post', //get post 请求类型,若为post,则表示发送post请求
+                    data: { query: 4, em: 0 },     // 请求携带数据
+                    dataType: 'json',  // 接收的数据类型
+                    isAsync: true     // 是否异步请求
+                })
+                    .then(data => {
+                        console.log(`请求成功，数据为${data}`)
+                    })
+                    .catch(err => {
+                        console.log(`请求失败，状态为${err}`)
+                    })
+
+            }
+            /*********************************************************************************************************************/
+            function _post(SheetData) {
+                $.post("/home/SheetDataSave", { "data": SheetData }, function (data, status) {
+                    //data参数就是Ajax请求之后响应的数据
+                    //var list = $.parseJSON(data);
+                    //遍历集合显示数据
+                    //for (var i = 0; i < list.length; i++) {
+                    //    var tr = "<tr class='new'><td> " + list[i].Id + "</td><td>" + list[i].Name + "</td><td>" + list[i].Sex + "</td><td>" + list[i].Age + "</td><td>" + list[i].Tel + "</td><td>" + list[i].Pwd + "</td></tr >";
+                    //    $("#tb").append(tr);
+                    //}
+                    console.log(data);
+                });
+
+            }
+            /*********************************************************************************************************************/
+            function SheetModel(WipName, WipValue) {
+
+                this.WipName = WipName;
+                this.WipValue = WipValue
+            }
+
+            function Model(SheetName, Models) {
+
+                this.SheetName = SheetName;
+                this.WipModels = Models
+            }
+            /*********************************************************************************************************************/
+            // 中部显示
+            centerShow = function (ths) {
+                //console.log(ths);
+                let th = $(ths);
+                //th.val("time");
+                var dateMulti = new dateMultiFunc({
+                    type: 2,
+                    //radius: [10, 10, 0, 0],
+                    //background: "#ef8e29",
+                    //color: "#fff",
+                    //tranColor: "#fff",
+                    //------------------
+                    //radius: [10, 10, 0, 0],
+                    //background: "#fe4052",
+                    //color: "#fff",
+                    //selectBg: "#67C23A",
+                    //tranColor: "#fff",
+                    //tranBg: "#666",
+                    //-------------------
+                    //radius: [10, 10, 0, 0],
+                    //background: "#40e4fe",
+                    //color: "#323f6c",
+                    //selectBg: "#ffab2c",
+                    //selectRadius: 8,
+                    //tranBg: "#efd577",
+                    //-----------
+                    position: "center",
+                    radius: 10,
+                    cancelFunc: function () {
+                        console.log("取消")
+                    },
+                    confirmFunc: function (res) {
+                        console.log("确认")
+                        console.log(res)
+                        //alert(res.statrTime.time);
+                        th.val(res.statrTime.time);
+                    }
+                });
+                dateMulti.show();
+            }
+            /*********************************************************************************************************************/
+            /*********************************************************************************************************************/
+        })
+
+       
+    </script>
+</body>
+
+
+</html>
+
+

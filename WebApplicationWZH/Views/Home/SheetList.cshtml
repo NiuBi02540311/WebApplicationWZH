@@ -1,0 +1,167 @@
+﻿
+@{
+    ViewBag.Title = "SheetList";
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>表单无纸化列表</title>
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+
+    <style>
+        .table{ font-family:'Microsoft YaHei';font-size:x-large}
+     </style> 
+           
+
+</head>
+<body>
+    <div class="container">
+        <table class="table table-bordered table-striped table-dark table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>SheetName</th>
+                    <th>0peration</th>
+                    <th>0peration2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>无纸化单据1</td>
+                    <td><button type="button" class="btn btn-primary btn-lg" onclick="BtnClick(1)">录入</button></td>
+                    <td><button type="button" class="btn btn-info btn-lg">打印</button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>无纸化单据1</td>
+                    <td><button type="button" class="btn btn-primary btn-lg" onclick="BtnClick(1)">录入</button></td>
+                    <td><button type="button" class="btn btn-info btn-lg">打印</button></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>无纸化单据1</td>
+                    <td><button type="button" class="btn btn-primary btn-lg" onclick="BtnClick(1)">录入</button></td>
+                    <td><button type="button" class="btn btn-info btn-lg">打印</button></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>无纸化单据1</td>
+                    <td><button type="button" class="btn btn-primary btn-lg" onclick="BtnClick(1)">录入</button></td>
+                    <td><button type="button" class="btn btn-info btn-lg">打印</button></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>无纸化单据1</td>
+                    <td><button type="button" class="btn btn-primary btn-lg" onclick="BtnClick(1)">录入</button></td>
+                    <td><button type="button" class="btn btn-info btn-lg">打印</button></td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <button type="button" class="btn btn-primary btn-lg" onclick="tijiao()">提交</button>
+    @Html.AntiForgeryToken();
+    <!----------------------------------------------------------------------------------------------------->
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+    <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+    <script>
+        var BtnClick = null;
+        var tijiao = null;
+        // 获取生成的token，直接这样写也是可以的
+        function gettoken() {
+          var token = '@Html.AntiForgeryToken()';
+          return $(token).val();
+        }
+
+        var token = $('[name=__RequestVerificationToken]')[0].value; //这样也可以拿到
+        var token2 = document.getElementsByName("__RequestVerificationToken")[0].value;
+
+        $(document).ready(function () {
+
+            $("p").click(function () {
+                $(this).hide();
+            })
+
+            BtnClick = function (ID) {
+
+                alert(ID);
+                location.href = "/Home/SheetBody";
+
+            }
+
+            function tijiao2() {
+                $.ajax({
+                    url: "/Default/Index2",
+                    type: 'post',
+                    data: { name: '你就', __RequestVerificationToken: gettoken() },
+                    success: function (res) {
+                        alert(res);
+                    }
+                });
+            }
+
+            tijiao =  function () {
+               
+                //var token = $(\'Html.AntiForgeryToken()\').val();
+                var headers = {};//防伪标记放入headers//也可以将防伪标记放入data
+                 headers["__RequestVerificationToken"] = token2;
+                $.ajax({
+                    url: "/home/test",
+                    type: 'post',
+                    //headers: headers,
+                    headers: { "__RequestVerificationToken": gettoken()},
+                    /*__RequestVerificationToken放在请求头中，是没有效果的，是必须作为参数传递的*/
+                    beforeSend: function (XMLHttpRequest) {
+                     //XMLHttpRequest.setRequestHeader("__RequestVerificationToken", gettoken());
+                    },
+                    //data: { "data": "hahaha", __RequestVerificationToken: token }// $("form").serializeArray(),
+                    data: { "data": "hahaha" }// $("form").serializeArray(),
+                    //dataType: 'json',
+                    ,success: function (res) {
+                        alert(res);
+                    },
+                    complete: function (xhr) {
+                        //请求完成后，获取fileName，处理数据
+                        //获取Response Headers 中的 Content-Disposition
+                        //console.log(xhr)
+                        //let ContentDisposition = xhr.getResponseHeader('Content-Disposition');
+                        let StatusCode = xhr.getResponseHeader('StatusCode');
+                        if (StatusCode != null && StatusCode != undefined) {
+                            alert("StatusCode = " + StatusCode);
+                            if (StatusCode == 401) {
+                                alert("当前未登录或登录过期，请重新登录!");
+                                location.href = "/Login/Index";
+                            }
+                            if (StatusCode == 302) {
+                                alert("没有访问权限");
+                            }
+                        }
+                       
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+
+
+</html>
+
+

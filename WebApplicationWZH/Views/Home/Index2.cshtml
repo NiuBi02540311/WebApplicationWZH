@@ -1,0 +1,889 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@*model IEnumerable<WebApplication1.Models.Movie>*@
+@model WebApplicationWZH.Models.Note
+<br />
+<link href="~/Content/webuploader.css" rel="stylesheet" />
+<style>
+    .lb {
+        color: red;
+    }
+    .item{
+        font-size:10px;
+    }
+    .item .state{
+        color:blue;
+      }
+        .item .cancel {
+            color: red;
+        }
+            .item .cancel:hover {
+                font-weight: bolder;
+                background-color: yellow;
+                transform: scale(1.2);
+                /*为了使变大时的效果更加平滑，可以添加过度效果*/
+                transition: all 0.3s linear;
+                cursor:pointer;
+            }
+    .table_file td {
+        padding: 0px 5px;
+    }
+    .table_file a {
+       text-decoration:none;color:blueviolet;
+    }
+    
+    .progress-bar {
+        width: 150px;
+    }
+</style>
+<table border="1" class="table" id="MyTable">
+    @{
+        var tt = Model.Title;
+    }
+    <tr>
+        <td colspan="4"><div id="tt" style="text-align: center; font-family: 'Microsoft YaHei'; font-size: 30px">@tt</div></td>
+    </tr>
+    @{
+        var md = Model.movies;
+        foreach (var v in md)
+        {
+            <tr>
+                <td>
+                    <label>@v.OrderID</label>
+                    <input type="hidden" value="@v.ID"><input type="hidden" value="@v.IsMust">
+                </td>
+                <td>@v.Title</td>
+                <td>@v.DataStyle</td>
+                <td>
+                    @{
+                        if (v.DataStyle == "text")
+                        {
+                            <input type="text" class="form-control" id="name" placeholder="请输入" value="">
+
+                        }
+                        if (v.DataStyle == "radio")
+                        {
+                            string[] Arr = v.DataValue.Split(',');
+                            <div id="dv">
+                                @foreach (string vv in Arr)
+                                {
+                                    <input type="radio" value="@vv" name="rdo" style="margin:10px;padding:10px" /> <label>@vv</label>
+                                }
+                            </div>
+
+                        }
+                        if (v.DataStyle == "checkbox")
+                        {
+                            string[] Arr = v.DataValue.Split(',');
+                            foreach (string vv in Arr)
+                            {
+                                <input type="checkbox" value="@vv" name="chk" style="margin:10px;padding:10px" /> <label>@vv</label>
+                            }
+                        }
+                        if (v.DataStyle == "select")
+                        {
+                            string[] Arr = v.DataValue.Split(',');
+                            <select name="cars" style="width:200px;">
+                                <option value=""></option>
+                                @foreach (string vv in Arr)
+                                {
+                                    <option value="@vv">@vv</option>
+                                }
+                            </select>
+                        }
+                        if (v.DataStyle == "textarea")
+                        {
+                            <textarea name="remark" rows="2" cols="600"></textarea>
+                        }
+                        if (v.DataStyle == "date")
+                        {
+                            <input type="date" id="nowDate" value="@v.DataValue" />
+                            @*<input type="date" value="@v.DataValue" min="2015-09-16" max="2015-09-26" />*@
+                        }
+                        if (v.DataStyle == "number")
+                        {
+                            <input type="number" value="" min="0" max="10" />
+
+                        }
+                        if (v.DataStyle == "table")
+                        {
+
+                            string[] arr = v.DataValue.Split(',');
+                            //int cols = arr.Length;
+                            <table border="1" id="table_@v.ID" class="table-responsive">
+                                @if (arr.Length > 0)
+                                {
+                                    <thead>
+                                        <tr>
+                                            @foreach (string c in arr)
+                                            {
+                                                <td>@c</td>
+                                            }
+                                            <td><button class="btn-default" onclick="table_add_row('table_@v.ID','@arr.Length','@v.ID')">新增行</button></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @*<tr>
+                                foreach (string c in arr)
+                                {
+                                    <td><input type="text" /></td>
+                                }
+                                <td><button class="btn-danger btn-sm" >删除</button></td>
+                            </tr>*@
+                                    </tbody>
+                                }
+                            </table>
+
+
+                        }
+
+                        if (v.DataStyle == "file")
+                        {
+                            @*<input type="file" id="file_uploader" multiple />*@
+                            <div id="uploader" class="wu-example">
+                                <!--用来存放文件信息-->
+                                <div id="thelist" class="uploader-list"></div>
+                                <div class="btns">
+                                    <div id="picker">选择文件</div>
+                                    <button id="ctlBtn" class="btn btn-default">开始上传</button>
+                                </div>
+                            </div>
+                            <div id="fileList" class="clearfix"></div>
+                        }
+                    }
+                </td>
+            </tr>
+
+        }
+    }
+    <tr>
+        <td colspan="4">
+            <div style="text-align:right">
+                <button class="btn-danger" id="bt1">提交数据</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4"><div id="info"></div></td>
+    </tr>
+    <tr>
+        <td colspan="4"><div id="empty"></div></td>
+    </tr>
+</table>
+<input id="tid" value="@Guid.NewGuid().ToString("N")" hidden ="hidden" />
+<input id="SheetID" value="@Model.SheetID" hidden="hidden" />
+<hr />
+<button id="shezhi">设置</button>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/webuploader.min.js"></script>
+<script type="text/javascript">
+
+    let table_add_row = null;
+    let table_add_delete = null;
+    var uploader = null;
+    $(document).ready(function () {
+
+
+        //定义点击函数
+        var delFun = function () {
+            var na = $(this).parent().children().eq(0).text();
+            if (confirm("是否删除[" + na + ']')) {
+                $(this).parent().remove();
+            }
+        }
+
+
+        //////////////////////////////////////////////
+        table_add_delete = function (ths) {
+            //alert('table_add_delete' + btnId );
+            //$("tb_btn_" + btnId).click(delFun);
+            let ts = $(ths);
+            let na = ts.parent().children().eq(0).text();
+            if (confirm("是否删除[" + na + "]?")) {
+
+                //let ths = $("#tb_btn_" + btnId);
+                console.log(ts);
+                //$("#tb_btn_" + btnId).parent().remove();
+                ts.parent().parent().remove();
+                //ts.parents("tr").remove();
+            }
+        }
+        //////////////////////////////////////////////
+        table_add_row = function (tableID, cols, id) {
+            //alert(tableID);
+            //let ts = $("#table_" + tableID)
+            //let rows = ts.children('tbody tr');
+
+            let rows = $('#' + tableID + ' tbody tr');
+            let no = rows.length + 1;
+            //var name = $('#name').val();
+            //var age = $('#age').val();
+            //var sex = $('#sex').val();
+            let tr = $('<tr></tr>');
+            //tr.append('<td>' + name + '</td>');
+            //tr.append('<td>' + age + '</td>');
+            //tr.append('<td>' + sex + '</td>');
+            //tb_btn_88_1
+            for (let i = 0; i < cols; i++) {
+                tr.append('<td>' + '<input type="text" />' + '</td>');
+            }
+            let btnId = `tb_btn_${id}_${no}`;
+            tr.append('<td>' + '<button class="btn-danger btn-sm" id = "' + btnId + '" ' + ' " onclick = "table_add_delete(this)">删除</button>' + '</td>');
+            $('#' + tableID + ' tbody').append(tr);
+        }
+
+        ////////////////////////////////////////////////////////////////
+        function Person(id, val, title, must) {   //创建一个person的函数
+            this.id = id;          //此处的this对应的是对象obj
+            this.val = val;
+            this.title = title;
+            this.must = must;
+        }
+        var ps = { id: "", val: "" };
+
+        var stu = {
+            name: 'jibu',
+            age: 100,
+            '特殊变量': 1111,
+            study: function () {
+                console.log('正在学习')
+            },
+            show: function () {
+                console.log('我叫' + this.name, '年龄:' + this.age)
+            }
+        }
+        console.log(stu.name)
+        //console.log(stu['特殊变量'])
+
+        $("#bt13").click(function () {
+
+            $("#MyTable tr").each(function (rowIndex) {
+                var arr = $(this).find("td");
+                //alert(rowIndex + " - " + $(this).find("td").first().html());
+                alert(rowIndex + " - " + arr[0].text());
+            });
+
+        });
+
+        $("#bt1").click(function () {
+
+            //let x = $("#dv input[type='radio']:checked").val();
+            //alert(x);
+            let list = [];
+            let dataStyle = "";
+            let data = "";
+            let title = "";
+            let i = 1;
+            let id = "";
+            let OrderID = "";
+            let must = "";
+            let empty = [];
+            $("#MyTable").find("tr").each(function () {
+                i = 1;
+                $(this).find("td").each(function () {
+                    let ts = $(this);
+                    //data = $(this).text();
+                    data = ts.text();
+                    if (i == 1) {
+                        //  $("p").eq(1);
+                        //id = ts.children(":hidden").val();
+                        OrderID = ts.children("label").text();
+                        id = ts.children(":hidden").eq(0).val();
+                        must = ts.children(":hidden").eq(1).val();
+                        //alert(must);
+                    }
+                    if (i == 2) {
+                        title = ts.text();;
+
+                    }
+                    if (i == 3) {
+                        dataStyle = data;
+
+                    }
+                    if (i == 4) {
+                        if (dataStyle == "text") {
+                            data = ts.children(":text").val();
+                            //alert(id + " -> " + data);
+                        }
+
+
+
+                        if (dataStyle == "radio") {
+                            data = ts.find("input[type='radio']:checked").val();
+                            if (data == undefined) {
+                                data = "";
+                            }
+                            // alert(id + " -> " + data);
+
+                        }
+                        if (dataStyle == "checkbox") {
+                            //data = ts.children("input[type='checkbox']:checked").val();
+                            //alert(id + " -> " + data);
+                            let vals = [];
+                            ts.children('input:checkbox:checked').each(function (index, item) {
+                                vals.push($(this).val());
+                            });
+                            data = vals.join(',');
+                            //console.log(vals);
+                            //alert(id + " -> " + data);
+                        }
+                        if (dataStyle == "select") {
+                            data = ts.find("option:selected").val();
+                            if (data == undefined) {
+                                data = "";
+                            }
+                            //alert(id + " -> " + data);
+
+                        }
+                        if (dataStyle == "textarea") {
+                            data = ts.children("textarea[name = remark]").val();
+                            //alert(id + " -> " + data);
+                        }
+                        if (dataStyle == "date") {
+                            data = ts.children("input[type='date']").val();
+                            //alert(id + " -> " + data);
+                            //<script type="text/javascript">$(function () {$("#btn").click(function () {var nDate = $("#nowDate").val();var nTime = $("#nowTime").val();alert(nDate + " " + nTime);}); });
+                        }
+                        if (dataStyle == "number") {
+                            data = ts.children("input[type='number']").val();
+                        }
+                        if (dataStyle == "table") {
+                            data = GetTable(id);
+                        }
+                        if (data == null || data == undefined || data == "") {
+                            data = "";
+                        }
+                        if (id != null && id != undefined && dataStyle != "file") {
+                            let obj = new Person(id, data, title, must);
+                            list.push(obj);
+                        }
+
+                        if (must == "1" && data == "") {
+                            empty.push(OrderID + ":" + title);
+                            ts.css("background-color", "pink");
+                        } else {
+                            ts.css("background-color", "white");
+                        }
+                    }
+                    i++;
+                });
+                //console.log(list);
+
+            });// end
+            let jasonData = JSON.stringify(list);
+
+            var s = {
+                TID: document.getElementById("tid").value,
+                DATA: jasonData,
+                SheetID: document.getElementById("SheetID").value
+            }
+            console.log(jasonData);
+            console.log(s);
+            let ss = JSON.stringify(s);
+            //$("#info").text(jasonData);
+            $("#info").text(ss);
+            $("#empty").html("");
+
+            //let arr = ['a', 'b', 'c', 'd', 'e'];
+            if (empty.length > 0) {
+                empty.forEach((item, index, arr) => {
+                    $("#empty").append(`<label class = "lb">${item}-->不能为空</label><br\>`);
+                    //console.log(item);  // a b c d e
+                    //console.log(index); // 0 1 2 3 4
+                    //console.log(arr);  // ['a','b','c','d','e']
+
+                })
+            }
+
+        });
+
+        $("#bt14").click(function () {
+            var tab = document.getElementById("MyTable");  //找到这个表格
+            var rows = tab.rows;               //取得这个table下的所有行
+            for (var i = 0; i < rows.length; i++) {
+                for (var j = 0; j < rows[i].cells.length; j++) {
+                    var cell = rows[i].cells[j];
+                    alert("第" + (i + 1) + "行第" + (j + 1) + "格的数字是" + cell.innerHTML);
+                }
+            }
+
+        });
+
+        //------------------------------------------------------------------
+        function GetTable(TableID) {
+            //$("#empty").html("");
+            let ts = $("#table_" + TableID);
+            //console.log(ts);
+            //alert('TableID');
+
+            ts.find("thead tr").each(function () {
+                //let tr = $(this);
+                // $("#empty").append(`11111111<br\>`);
+                //let a = [];
+                $(this).find("td").each(function () {
+                    let txt = $(this).text()
+                    if (txt != null && txt != undefined) {
+                        //alert(txt);
+                        //a.push(txt);
+                        //$("#empty").append(`</label>${txt}</label><br\>`);
+                    }
+
+
+                })
+
+
+            })
+            let b = [];
+            ts.find("tbody tr").each(function () {
+
+                let a = [];
+                $(this).find("td").each(function () {
+                    let txt = $(this).children(":text").val()
+                    if (txt != null && txt != undefined) {
+                        a.push(txt);
+                        //alert(txt);
+                        //$("#empty").append(`</label>${txt}</label><br\>`);
+                        //$("#empty").append(txt);
+
+                    }
+
+
+                })
+                b.push(a.join(','));
+
+                //$("#empty").append(`</label>${a.join(',')}</label><br\>`);
+
+            })
+
+            let str = b.join(';');
+            $("#empty").append(`</label>${str}</label><br\>`);
+            return str;
+        }
+        //------------------------------------------------------------------
+        function GetTable2(TableID) {
+            //table_
+
+            //let ts = $("#table_" + TableID)
+            alert(TableID);
+            let tab = document.getElementById("table_" + TableID);  //找到这个表格
+            let rows = tab.rows;               //取得这个table下的所有行
+            for (let i = 0; i < rows.length; i++) {
+                for (let j = 0; j < rows[i].cells.length; j++) {
+                    let cell = rows[i].cells[j];
+                    let row = i + 1;
+                    let col = j + 1
+                    //alert("第" + (i + 1) + "行第" + (j + 1) + "格的数字是" + cell.innerHTML);
+                    $("#empty").append(`"第" + (${row}) + "行第" + (${col}) + "格的数字是" + ${cell.innerHTML}<br\>`);
+                }
+            }
+        }
+        //---------------------------------------------------------------------------------------------------------------------
+        $("#shezhi").click(function () {
+
+            //let js = '[{"id":"11","val":"12","title":"文本框","must":"1"},{"id":"22","val":"3","title":"单选按钮","must":"1"},{"id":"33","val":"2,3","title":"复选框","must":"1"},{"id":"44","val":"3","title":"下拉框","must":"1"},{"id":"55","val":"12312","title":"文本域","must":"1"},{"id":"66","val":"2023-06-15","title":"日期录入","must":"0"},{"id":"77","val":"1","title":"数字录入","must":"1"},{"id":"77","val":"1,2,3;4,5,6","title":"表格","must":"1"},{"val":"新增行","title":"A2"},{"val":"删除","title":""},{"val":"删除","title":""}]';
+            let list = [];
+            let dataStyle = "";
+            let data = "";
+            let title = "";
+            let i = 1;
+            let id = "";
+            let OrderID = "";
+            let must = "";
+            let empty = [];
+
+            $("#MyTable").find("tr").each(function () {
+                i = 1;
+                $(this).find("td").each(function () {
+                    let ts = $(this);
+                    //data = $(this).text();
+                    data = ts.text();
+                    if (i == 1) {
+                        //  $("p").eq(1);
+                        //id = ts.children(":hidden").val();
+                        OrderID = ts.children("label").text();
+                        id = ts.children(":hidden").eq(0).val();
+                        must = ts.children(":hidden").eq(1).val();
+                        //alert(must);
+                    }
+                    if (i == 2) {
+                        title = ts.text();;
+
+                    }
+                    if (i == 3) {
+                        dataStyle = data;
+
+                    }
+                    if (i == 4) {
+                        data = GetItemValue(id);
+                        if (data == null || data == undefined || data == "") {
+                            data = "";
+                        }
+                        if (dataStyle == "text") {
+
+                            ts.children(":text").val(data);
+
+                        }
+                        if (dataStyle == "radio") {
+                            //data = ts.find("input[type='radio']:checked").val();
+                            //if (data == undefined) {
+                            //    data = "";
+                            //}
+                            //data = GetItemValue(id);
+                            ts.find('input:radio').each(function (index, domEle) {
+                                //写入代码
+                                //console.log($(this).val());
+                                if ($(this).val() == data) {
+                                    //$('input:radio:first').attr('checked', 'checked');
+                                    //$('input:radio:first').attr('checked', 'true');
+                                    $(this).attr('checked', 'true');
+                                }
+                            });
+
+                        }
+                        if (dataStyle == "checkbox") {
+                            //data = ts.children("input[type='checkbox']:checked").val();
+                            //alert(id + " -> " + data);
+                            //data = GetItemValue(id);
+                            let vals = data.split(',');
+                            ts.children('input:checkbox').each(function (index, item) {
+                                //vals.push($(this).val());
+                                if (vals.indexOf($(this).val()) > -1) {
+                                    $(this).attr('checked', 'true');
+                                }
+                            });
+
+
+                        }
+                        if (dataStyle == "select") {
+                            //data = ts.find("option:selected").val();
+                            ts.find("select option[value='" + data + "']").attr("selected", "selected");
+                        }
+                        if (dataStyle == "textarea") {
+                            //data = ts.children("textarea[name = remark]").val();
+                            //alert(id + " -> " + data);
+                            ts.children("textarea[name = remark]").val(data);
+                        }
+                        if (dataStyle == "date") {
+                            //data = ts.children("input[type='date']").val();
+                            ts.children("input[type='date']").val(data);
+                            //alert(id + " -> " + data);
+                            //<script type="text/javascript">$(function () {$("#btn").click(function () {var nDate = $("#nowDate").val();var nTime = $("#nowTime").val();alert(nDate + " " + nTime);}); });
+                        }
+                        if (dataStyle == "number") {
+                            //data = ts.children("input[type='number']").val();
+                            //alert(data);
+                            ts.children("input[type='number']").val(data);
+                        }
+                        if (dataStyle == "table") {
+                            //data = GetTable(id);
+                            if (data != "") {
+                                table_add_row2(id, data);
+                            }
+
+                        }
+
+                        //let obj = new Person(id, data, title, must);
+                        //list.push(obj);
+                        if (data == "") {
+                            empty.push(OrderID + ":" + title);
+                            ts.css("background-color", "pink");
+                        } else {
+                            ts.css("background-color", "white");
+                        }
+                    }
+                    i++;
+                });
+                //console.log(list);
+
+            });// end
+
+
+        });
+        //--------------------------------------------------------------------------------------------------------------------
+        function GetItemValue(id) {
+            let js = '[{"id":"11","val":"123","title":"文本框","must":"1"},{"id":"22","val":"3","title":"单选按钮","must":"1"},{"id":"33","val":"2,3","title":"复选框","must":"1"},{"id":"44","val":"3","title":"下拉框","must":"1"},{"id":"55","val":"12312","title":"文本域","must":"1"},{"id":"66","val":"2023-06-15","title":"日期录入","must":"0"},{"id":"77","val":"1","title":"数字录入","must":"1"},{"id":"77","val":"1,2,3;4,5,6","title":"表格","must":"1"},{"val":"新增行","title":"A2"},{"val":"删除","title":""},{"val":"删除","title":""}]';
+            js = '[{"id":"11","val":"1","title":"文本框","must":"1"},{"id":"22","val":"3","title":"单选按钮","must":"1"},{"id":"33","val":"2,3","title":"复选框","must":"1"},{"id":"44","val":"2","title":"下拉框","must":"1"},{"id":"55","val":"2122","title":"文本域","must":"1"},{"id":"66","val":"2023-06-18","title":"日期录入","must":"0"},{"id":"77","val":"123","title":"数字录入","must":"1"},{"id":"88","val":"1,2,3;4,5,6;7,8,9","title":"表格","must":"1"},{"id":"99","val":"1,27,3;4,5,6;77,8,9","title":"表格2","must":"1"}]'
+            let arrayofObjects = JSON.parse(js);
+            let v = "";
+            //console.log(arrayofObjects);
+            arrayofObjects.forEach(object => {
+                //console.log(object);
+                if (object.id === id) {
+                    //console.log("Amazon Employee:", object.name);
+                    v = object.val;
+                    //console.log(object);
+                }
+            });
+            //console.log(v);
+            return v;
+        }
+        //------------------------------------------------------------------
+        $("#shezhi3").click(function () {
+
+            GetItemValue("11");
+        })
+        //------------------------------------------------------------------------------------------------------------------------------
+        function table_add_row2(tableID, data) {
+            //alert(tableID);
+            let ts = $("#table_" + tableID);
+            console.log(ts);
+            //var name = $('#name').val(); id="table_88"
+            //var age = $('#age').val();
+            //var sex = $('#sex').val();
+            //1,2,3;4,5,6
+            let rows = data.split(';');
+            console.log(rows);
+            //tr.append('<td>' + name + '</td>');
+            //tr.append('<td>' + age + '</td>');
+            //tr.append('<td>' + sex + '</td>');
+            //tb_btn_88_1
+            let j = 0;
+            for (let i = 0; i < rows.length; i++) {
+                let cols = rows[i].split(',');
+                j = i + 1;
+                console.log(cols);
+                let tr = $('<tr></tr>');
+                for (let j = 0; j < cols.length; j++) {
+                    tr.append('<td>' + '<input type="text" value = "' + cols[j] + '" />' + '</td>');
+                }
+                tr.append('<td>' + '<button class="btn-danger btn-sm" id = "tb_btn_' + tableID + '_' + j + ' " onclick = "table_add_delete(this)">删除</button></td>');
+                //$('#' + tableID + ' tbody').append(tr);
+                ts.find('tbody').append(tr);
+            }
+
+        }
+        //------------------------------------------------------------------------------------------------------------------------------
+
+        function fileLoad() {
+            const fileUploader = document.getElementById('file_uploader');
+            if (fileUploader == null || fileUploader == undefined) {
+                return;
+            }
+
+            let qty = 0;
+            // 听更 change 件并读取元数据
+            fileUploader.addEventListener('change', (event) => {
+                // 获取文件列表数组
+                const files = event.target.files;
+                qty = files.length;
+                // 遍历并获取元数据
+                for (const file of files) {
+                    const name = file.name;
+                    const type = file.type ? file.type : 'NA';
+                    const size = file.size;
+                    const lastModified = file.lastModified;
+                    console.log({ file, name, type, size, lastModified });
+                }
+                alert(qty);
+                //const td = $('#file_uploader').parent().append("<button>上传文件</button>");
+                let td = $('#file_uploader').parent();
+                let btn = $('#file_uploader').next();
+                console.log(btn);
+                if (qty > 0 && btn.length == 0) {
+                    td.append("<button class='btn-danger btn-sm' >上传文件</button>");
+                } else {
+                    td.remove("button");
+                }
+            });
+
+        }
+        //------------------------------------------------------------------------------------------------------------------------------
+        //var uploader = WebUploader.create({
+        //    auto: false,// 选完文件后，是否自动上传。
+        //    //swf: './js/webuploader-0.1.5/Uploader.swf',// swf文件路径
+        //    server: 'http://receive.com/v1/book/upload',// 文件接收服务端。
+        //    dnd: '.upload-container',
+        //    pick: '#picker',// 内部根据当前运行是创建，可能是input元素，也可能是flash. 这里是div的id
+        //    multiple: true, // 选择多个
+        //    chunked: true,// 开起分片上传。
+        //    threads: 5, // 上传并发数。允许同时最大上传进程数。
+        //    method: 'POST', // 文件上传方式，POST或者GET。
+        //    fileSizeLimit: 1024 * 1024 * 100 * 10, //验证文件总大小是否超出限制, 超出则不允许加入队列。
+        //    fileSingleSizeLimit: 1024 * 1024 * 100, //验证单个文件大小是否超出限制, 超出则不允许加入队列。
+        //    fileVal: 'epub', // [默认值：'file'] 设置文件上传域的name。
+        //});
+        //var uploader = WebUploader.create({
+         uploader = WebUploader.create({
+
+            // swf文件路径
+            swf: '/Scripts/Uploader.swf',
+            auto: false,// 选完文件后，是否自动上传。
+            // 文件接收服务端。
+            server: '/api/upload',
+            headers: { 'userName': 'emi', 'token': '123456' },
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#picker',
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false,
+            multiple: true, // 选择多个
+            chunked: true,// 开起分片上传。
+            threads: 5, // 上传并发数。允许同时最大上传进程数。
+            method: 'POST', // 文件上传方式，POST或者GET。
+            fileSizeLimit: 1024 * 1024 * 100 * 10, //验证文件总大小是否超出限制, 超出则不允许加入队列。
+            fileSingleSizeLimit: 1024 * 1024 * 100, //验证单个文件大小是否超出限制, 超出则不允许加入队列。
+            fileVal: 'epub' // [默认值：'file'] 设置文件上传域的name。
+            //formData: { id: 911}
+        });
+        //uploader.on('fileQueued', function (file) {
+        //    // 选中文件时要做的事情，比如在页面中显示选中的文件并添加到文件列表，获取文件的大小，文件类型等
+        //    console.log(file.ext) // 获取文件的后缀
+        //    console.log(file.size) // 获取文件的大小
+        //    console.log(file);
+        //});
+        
+        uploader.on('uploadBeforeSend', function (obj, data, headers) {
+            //data.description = file.description;
+            data.description = "xx00";
+            //headers.tid = "@Guid.NewGuid().ToString("N")";
+            headers.tid = document.querySelector("#tid").value; 
+        });
+       // uploader.on('uploadBeforeSend', function (block, data, headers) {
+
+            //data.id = 911;    // 将存在file对象中的md5数据携带发送过去
+            //var tokenHeaders = {
+            //    "Authorization": "Bearer " + "access_token",
+            //    "X-File-Size": "block.total",
+            //    "Admin":"200275"
+            //}
+            //console.log("请求头");
+            //console.log(tokenHeaders);
+            //jQuery.extend(headers, tokenHeaders);
+      //  });
+
+        // 当有文件被添加进队列的时候
+        uploader.on('fileQueued', function (file) {
+
+            let mb = file.size / 1048576;
+            let m = mb.toFixed(3);
+            //let str = '<div id="' + file.id + '" class="item">' + '<h6 class="info">' + file.name + ' / ' + m + 'Mb</h4>' + '<p class="state">等待上传...</p>' + '</div>';
+            let str = '<div id="div' + file.id + '" class="item">' + '<h6 class="info">' + file.name + ' / ' + m + 'Mb</h4>'
+                + '<table class="table_file" border="1"><tr>'
+                + '<td><p class="state">等待上传...</p></td> '
+                + '<td><p name = "' + file.name + '" class = "cancel" id= "' + file.id + '">取消上传</p></td>'
+                + '<td><p class = "progress-bar" id = "progress_bar_' + file.id + '">0%</p></td>'
+                + '<td><p name = "' + file.name + '" class = "down"  id = "download_' + file.id + '"></p></td>'
+                +'</tr></table>'
+                + '</div>';
+
+            $('#fileList').append(str);
+        });
+        uploader.on('uploadSuccess', function (file) {
+            //alert("恭喜上传成功！");
+            //$('#' + file.id).find('p.state').text('已上传');
+            //$("#progress_bar_" + file.id).parent().prev().remove();
+            //$("#div" + file.id).find(".state").text("上传已完成");
+
+            //$("p#download_" + file.id).text("下载");
+
+        });
+        uploader.on('uploadError', function (file) {
+            $('#' + file.id).find('p.state').text('上传出错');
+        });
+        //uploader.on('uploadProgress', function (file, percentage) {
+        //    $("#" + file.id).find(".progress-bar").css('width', percentage * 100 + '%');
+        //    $("#" + file.id).find(".progress-bar").text(Math.floor(percentage * 100) + '%');
+        //});
+
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on('uploadProgress', function (file, percentage) {
+            var $li = $('#div' + file.id),
+                $percent = $li.find('.progress .progress-bar');
+
+            // 避免重复创建
+            if (!$percent.length) {
+                //$percent = $('<div class="progress progress-striped active">' +
+                //    '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                //    '</div>' +
+                //    '</div>').appendTo($li).find('.progress-bar');
+            }
+
+            $li.find('p.state').text('上传中');
+
+            $percent.css('width', percentage * 100 + '%');
+
+            $("#progress_bar_" + file.id).css('width', (percentage * 100) + '%');
+            $("#progress_bar_" + file.id).text(Math.floor(percentage * 100) + '%');
+        });
+
+        uploader.on('uploadComplete', function (file) {
+            //$('#fileList').fadeOut(5000);
+            //$('#' + file.id).find('.progress').fadeOut();
+
+            //$("div#fileList").find(".progress-bar").css('width',   100 + '%');
+            //$("div#fileList").find(".progress-bar").text(Math.floor(100) + '%');
+            //console.log(file);
+            //$("#progress_bar_" + file.id).css('width', 100 + '%');
+            //$("#progress_bar_" + file.id).text(Math.floor(100) + '%');
+            //不管成功或者失败，文件上传完成时触发
+            if (1 == 1) {
+                $("#progress_bar_" + file.id).parent().prev().remove();
+                $("#div" + file.id).find(".state").text("上传已完成");
+            }
+
+        });
+        uploader.on('uploadFinished', function () {
+
+            //alert("当所有文件上传结束时触发");
+
+            let o = uploader.getStats()
+            console.log(o);
+            $("#info").html(JSON.stringify(o));
+            //successNum 上传成功的文件数
+            //progressNum 上传中的文件数
+            //cancelNum 被删除的文件数
+            //invalidNum 无效的文件数
+            //uploadFailNum 上传失败的文件数
+            //queueNum 还在队列中的文件数
+            //interruptNum 被暂停的文件数
+        });
+        uploader.on('uploadAccept', function (object, ret ) {
+
+            //object {Object}
+            //ret { Object } 服务端的返回数据，json格式，如果服务端不是json格式，从ret._raw中取数据，自行解析。
+            //当某个文件上传到服务端响应后，会派送此事件来询问服务端响应是否有效。如果此事件handler返回值为false, 则此文件将派送server类型的uploadError事件。
+            console.log(ret.FileOldName);//FileOldName  FilePath
+             
+            let username = document.querySelector("p.down[name='" + ret.FileOldName + "']");
+            //////alert(ret.FileOldName); FileNewName FilePath
+            //var a = document.createElement("a");
+            //a.href = "www.baidu.com"
+            //a.text = "下载222";
+            //username.appendChild(a);
+            username.innerHTML = "<a target= 'blank'  href  = '/Content/img/" + ret.FileNewName + "'>下载</a> -> <a target= 'blank'>删除</a>"
+            //<a href=""></a>
+            //var x = document.querySelectorAll("p.down");
+            //alert(x.length);
+            //var i;
+            //for (i = 0; i < x.length; i++) {
+
+            //    x[i].style.border = "10px solid red";
+
+            //}
+        });
+        $("#ctlBtn").click(function () {
+            uploader.upload();
+            //$("div#fileList").find(".progress-bar").css('width',   100 + '%');
+            //$("div#fileList").find(".progress-bar").text(Math.floor(100) + '%');
+        });
+        $('#fileList').on('click', '.cancel', function () {
+            // 从文件队列中删除某个文件id
+            let file_id = $(this).attr('id');
+            let file_name = $(this).attr('name');
+            if (confirm("确定要删除 (" + file_name + ")?")) {
+                uploader.removeFile(file_id, true); // 从队列中删除
+                console.log(uploader.getFiles()) // 队列显示还在  其实已经删除
+                $("#fileList div#" + file_id).remove();
+            }
+        });
+        //https://www.jianshu.com/p/005341448bd0
+        //https://blog.csdn.net/weixin_44889526/article/details/120206607
+        //http://fex.baidu.com/webuploader/getting-started.html
+        //------------------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------------
+    });
+
+</script>
