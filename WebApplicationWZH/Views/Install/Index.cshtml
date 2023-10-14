@@ -1,0 +1,44 @@
+﻿
+@{
+    
+}
+
+@model  IEnumerable<WebApplicationWZH.Models.ControllerArry>
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    @foreach (var m in Model)
+    {
+        var list = m.controllerItem;
+        int i = 1;
+        <table class="table table-bordered table-striped">
+            <caption style="color:red">ControlleName :@m.controlleName</caption>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Action</th>
+                    <th>type</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var v in list)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@v.ActionName</td>
+                        <td>@v.ActionType</td>
+                    </tr>
+                    i++;
+                }
+            </tbody>
+        </table>
+    }
+
+</body>
+</html>

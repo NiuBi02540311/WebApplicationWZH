@@ -11,12 +11,13 @@ namespace WebApplicationWZH.Controllers
     //[FormAuthorize(Roles = "1,2")]
     public class HomeController : Controller
     {
+        [Description( ActionOrderNumber = 1, ActionTitle = "主页")]
         public ActionResult Index()
         {
 
             return View();
         }
-
+        [Description(ActionOrderNumber = 2, ActionTitle = "欢迎界面")]
         public ActionResult Welcome()
         {
 
@@ -133,7 +134,7 @@ namespace WebApplicationWZH.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Your application description page....";
 
             return View();
         }
@@ -186,6 +187,7 @@ namespace WebApplicationWZH.Controllers
         }
 
         [HttpPost]
+        [SkipVerification]
         [MyValidateAntiForgeryToken]
         public ActionResult test(string data)
         {

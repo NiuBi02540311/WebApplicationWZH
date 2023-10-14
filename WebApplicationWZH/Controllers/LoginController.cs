@@ -10,7 +10,7 @@ using WebApplicationWZH.Models;
 
 namespace WebApplicationWZH.Controllers
 {
-    //登录页加上此特性，不需要做登录验证，要不加会陷入死循环，导致浏览器崩溃
+    //登录页加上此特性，不需要做登录验证，要不加会陷入死循环，导致浏览器崩溃...
     [SkipCheckLoginAttribute]
     public class LoginController : Controller
     {
@@ -70,8 +70,10 @@ namespace WebApplicationWZH.Controllers
             ViewBag.Message = "";
             if (logInView.loginName == "admin" && logInView.loginPassword == "123")
             {
+
+                
                 //设置cookie
-               
+
                 FormsAuthentication.SetAuthCookie(logInView.loginName, false);
 
                 logInView.Id = Guid.NewGuid().ToString("D");//为了测试手动设置一个用户id
@@ -241,7 +243,8 @@ namespace WebApplicationWZH.Controllers
             context.Response.Cookies.Add(cookie);
 
             HttpContext.Current.Session["User"] = data;
-            HttpContext.Current.Session["UserRole"] = "admin,aa,bb";
+            HttpContext.Current.Session["UserRole"] = "1,2";//"admin,aa,bb";
+            HttpContext.Current.Session["UserID"] = 1;
         }
         /// <summary>
         /// 删除用户ticket票据
