@@ -65,6 +65,19 @@ namespace WebApplicationWZH.Models
         public string loginPassword { get; set; }
     }
 
+    public class ControllerArry
+    {
+        //ControllerList
+         public string controlleName { get; set; }
+         public List<ControllerItem> controllerItem { get; set; }
+}
+    public class ControllerItem
+    {
+        //ControllerList
+        public string ActionName { get; set; }
+
+        public string ActionType { get; set; }
+    }
     /*
      {
 	"SheetName": "SheetName123",

@@ -4,14 +4,15 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
+using WebApplicationWZH.Models;
 
 namespace WebApplicationWZH.Controllers
 {
+    [SkipCheckLogin]
     public class InstallController : Controller
     {
-        [SkipCheckLogin]
         [SkipVerification]
-        public ActionResult Index()
+        public ActionResult ControllerList()
         {
             var roleService = new RoleService();
             #region init permission
@@ -44,6 +45,77 @@ namespace WebApplicationWZH.Controllers
             //});
             #endregion
             return RedirectToAction("Success");
+        }
+
+        [SkipVerification]
+        public ActionResult Index()
+        {
+
+             
+            string nspace = "WebApplicationWZH.Controllers"; // WebApplicationWZH.Controllers...
+            var q = from t in Assembly.GetExecutingAssembly().GetTypes() where t.IsClass && t.Namespace == nspace && t.FullName.EndsWith("Controller") select t;
+            var controllers = q.ToList();
+            //q.ToList().ForEach(
+            //    t => Console.WriteLine(t.Name)
+            //    );
+            List<ControllerArry> controllerArry = new List<ControllerArry>();
+            foreach (var c in controllers)
+            {
+
+                
+               
+                List<ControllerItem> controllerItem = new List<ControllerItem>();
+                foreach (var m in c.GetMethods())
+                {
+                    Type actionType = m.ReturnType;//https://www.cnblogs.com/dreamman/p/4932551.html
+                    string ReturnParameter = actionType.FullName;
+                    if (actionType.IsSubclassOf(typeof(JsonResult)))
+                    {
+                        ReturnParameter = "JsonResult";
+                    }
+                    if (actionType.IsSubclassOf(typeof(System.Net.Http.HttpResponseMessage)))
+                    {
+                        ReturnParameter = "HttpResponseMessage";
+                    }
+                    if (actionType.IsSubclassOf(typeof(ActionResult)))
+                    {
+                        ReturnParameter = "ActionResult";
+                    }
+                    //if (actionType.IsDefined(typeof(ActionResult),false))
+                    //{
+                    //    ReturnParameter = "ActionResult";
+                    //}
+                    //if (actionType.IsDefined(typeof(System.Net.Http.HttpResponseMessage), false))
+                    //{
+                    //    ReturnParameter = "HttpResponseMessage";
+                    //}
+
+                    if (ReturnParameter.Contains("ActionResult") || ReturnParameter.Contains("HttpResponseMessage"))
+                    {
+                        //ReturnParameter = "ActionResult";
+                        //continue;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                     
+
+                    if (!m.IsPublic) continue;
+                    bool IsPost = m.IsDefined(typeof(HttpPostAttribute), false);
+                    string HttpAttribute = IsPost ? "Post" : "Get";
+                    string action = m.Name;//Index
+                    //if( m.ReturnParameter is HttpResponseMessage
+                    //string ReturnParameter = m.ReturnParameter.Name;
+                   
+                    controllerItem.Add(new ControllerItem { ActionName = action, ActionType = HttpAttribute });
+                }
+                string controller = c.Name.Replace("Controller", "");//remobe controller posfix
+                controllerArry.Add(new ControllerArry { controlleName = controller, controllerItem = controllerItem });
+            }
+           
+            
+            return View(controllerArry);
         }
         private void createPermission(Controller customController)
         {
