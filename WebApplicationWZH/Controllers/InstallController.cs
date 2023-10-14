@@ -15,7 +15,7 @@ namespace WebApplicationWZH.Controllers
         {
             var roleService = new RoleService();
             #region init permission
-            string nspace = "WebApplicationWZH.Controllers"; //WebApplicationWZH.Controllers.
+            string nspace = "WebApplicationWZH.Controllers"; // WebApplicationWZH.Controllers...
             var q = from t in Assembly.GetExecutingAssembly().GetTypes() where t.IsClass && t.Namespace == nspace && t.FullName.EndsWith("Controller") select t;
             var controllers = q.ToList();
             //q.ToList().ForEach(
