@@ -472,5 +472,19 @@ namespace WebApplicationWZH
                 new PermissionList{ ID = 2 , PermissionID = 3, UserID = 1},
             };
         }
- 
+
+        public class DescriptionAttribute : Attribute
+        {
+            public string ActionTitle
+        {
+                set;
+                get;
+            }
+            public int ActionOrderNumber
+            {
+
+                set;
+                get;
+            }
+        }
 }

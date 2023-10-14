@@ -142,10 +142,15 @@ namespace WebApplicationWZH
             {
                 if(filterContext.HttpContext.Request.IsAjaxRequest()){
 
+                    //Ajax 输出错误信息给脚本
+                   filterContext.Result = AjaxError(filterContext);
+
                    filterContext.HttpContext.Response.AddHeader("StatusCode", "401");
                    filterContext.HttpContext.Response.StatusCode = 401;//应将状态代码设置为401(未授权)
                    filterContext.HttpContext.Response.End();
 
+                   
+                    return;
                 }
 
                 //跳转方法1：
@@ -156,6 +161,22 @@ namespace WebApplicationWZH
                 //view.ViewName = "~/View/Login/Login.cshtml";
                 return;
             }
+
+            //判断Action方法的Control是否跳过权限验证
+            
+           if (filterContext.ActionDescriptor.IsDefined(typeof(SkipVerification), false))
+           { 
+              return;
+            }
+
+            //例外情况(不验证权限)
+            var skipVerifications = filterContext.ActionDescriptor.GetCustomAttributes(typeof(SkipVerification), true);
+            if (skipVerifications != null && skipVerifications.Length > 0)
+            {
+                return;
+            }
+              
+
 
             //admin,aa,bb
             string UserRole = filterContext.HttpContext.Session["UserRole"] as string;
@@ -171,9 +192,9 @@ namespace WebApplicationWZH
                 //var request = filterContext.HttpContext.Request;
                 if (ControllerNameActionName == "/home/test")
                 {
-                    //filterContext.HttpContext.Response.AddHeader("StatusCode", "302");
-                    //filterContext.HttpContext.Response.End();
-                    //return;
+                    filterContext.HttpContext.Response.AddHeader("StatusCode", "302");
+                    filterContext.HttpContext.Response.End();
+                    return;
                 }
             }
 
@@ -203,6 +224,35 @@ namespace WebApplicationWZH
             //TODO
             base.OnActionExecuted(OnActionExecuted);
         }
+        /// <summary>
+        /// Ajaxes the error.
+        /// </summary>
+        /// <param name="filterContext">过滤器上下文</param>
+        /// <returns>返回json串</returns>
+        protected JsonResult AjaxError(ActionExecutingContext filterContext)
+        {
+            //将响应状态代码设置为500
+            filterContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
+
+            return new JsonResult
+            {
+                Data = new { Code = 10001, Msg = "" },
+                ContentEncoding = System.Text.Encoding.UTF8,
+                JsonRequestBehavior = JsonRequestBehavior.DenyGet
+            };
+        }
+        private string GetIP()
+        {
+            string ip = string.Empty;
+            if (!string.IsNullOrEmpty(HttpContext.Current.Request.ServerVariables["HTTP_VIA"]))
+                ip = Convert.ToString(HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]);
+            if (string.IsNullOrEmpty(ip))
+                ip = Convert.ToString(HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]);
+            return ip;
+        }
+
+ 
     }
 
     public class MyValidateAntiForgeryToken : AuthorizeAttribute

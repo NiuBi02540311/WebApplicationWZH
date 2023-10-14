@@ -243,7 +243,7 @@ namespace WebApplicationWZH.Controllers
             context.Response.Cookies.Add(cookie);
 
             HttpContext.Current.Session["User"] = data;
-            HttpContext.Current.Session["UserRole"] = "admin,aa,bb";
+            HttpContext.Current.Session["UserRole"] = "1,2";//"admin,aa,bb";
             HttpContext.Current.Session["UserID"] = 1;
         }
         /// <summary>
