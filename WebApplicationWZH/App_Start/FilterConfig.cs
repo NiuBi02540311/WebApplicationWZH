@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Web.Routing;
+using System.Web.Security;
 using WebApplicationWZH.Controllers;
 
 namespace WebApplicationWZH
@@ -18,37 +22,13 @@ namespace WebApplicationWZH
             // filters.Add(new System.Web.Mvc.AuthorizeAttribute());
             //全局注册filter
             //filters.Add(new FormAuthorizeAttribute());
-            filters.Add(new CheckLoginAttribute());
+
+            filters.Add(new CheckLoginAttribute());// 例子1
 
             //filters.Add(new Verify());
 
-            //if (filterContext.HttpContext.Session["User"] == null || filterContext.HttpContext.Request.IsAuthenticated == false){
-            //if(filterContext.HttpContext.Request.IsAjaxRequest()){
-
-            //    filterContext.HttpContext.Response.AddHeader("StatusCode", "401");
-            //    filterContext.HttpContext.Response.StatusCode = 401;//应将状态代码设置为401(未授权)
-            //    filterContext.HttpContext.Response.End();
-
-            //}
-            //else
-            //{
-            //    //判断访问权限
-
-            //    if (ControllerNameActionName == "/home/test")
-            //    {
-            //        filterContext.HttpContext.Response.AddHeader("StatusCode", "302");
-            //        filterContext.HttpContext.Response.End();
-            //    }
-            //    else
-            //    {
-            //        base.OnActionExecuted(filterContext);
-            //    }
-
-
-            //}
-            //filterContext.HttpContext.Response.Redirect("/Login/Index");
-            //return;
-            //}
+            //filters.Add(new UrlAuthorizeAttribute());// 例子2 2023.10.13
+            
         }
     }
 
@@ -86,7 +66,13 @@ namespace WebApplicationWZH
     //public class LoginController : Controller { }
     }
 
-
+    /// <summary>
+    /// 在Filters文件夹，添加一个类SkipVerification，继承Attribute，主要用来跳过Action访问权限验证
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public class SkipVerification : Attribute
+    {
+    }
     /// <summary>
     /// 统一登陆验证
     /// </summary>
@@ -354,4 +340,159 @@ namespace WebApplicationWZH
     }
 
 
+    public class RoleAuthorizeAttribute : AuthorizeAttribute
+    {
+        //我们都知道ASP.net mvc权限控制都是实现AuthorizeAttribute类的OnAuthorization方法
+        //https://blog.csdn.net/VisageNocturne/article/details/112265239
+        public override void OnAuthorization(AuthorizationContext filterContext)
+        {
+            var isAuth = false;
+            if (!filterContext.RequestContext.HttpContext.Request.IsAuthenticated)
+            {
+                isAuth = false;
+            }
+            else
+            {
+                if (filterContext.RequestContext.HttpContext.User.Identity != null)
+                {
+                    var roleService = new RoleService();
+                    var actionDescriptor = filterContext.ActionDescriptor;
+                    var controllerDescriptor = actionDescriptor.ControllerDescriptor;
+                    var controller = controllerDescriptor.ControllerName;
+                    var action = actionDescriptor.ActionName;
+                    var ticket = (filterContext.RequestContext.HttpContext.User.Identity as FormsIdentity).Ticket;
+                    var role = roleService.GetById(ticket.Version);
+                    if (role != null)
+                    {
+                        //isAuth = role.Permissions.Any(x => x.Permission.Controller.ToLower() == controller.ToLower() && x.Permission.Action.ToLower() == action.ToLower());
+                    }
+                }
+            }
+            if (!isAuth)
+            {
+                filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "account", action = "login", returnUrl = filterContext.HttpContext.Request.Url, returnMessage = "您无权查看." }));
+                return;
+            }
+            else
+            {
+                base.OnAuthorization(filterContext);
+            }
+        }
+    }
+
+    public class PermissionDefinition
+    {
+        public virtual int Id
+        {
+            set;
+            get;
+        }
+        public virtual int ActionNo
+        {
+            set;
+            get;
+        }
+
+        public virtual int ControllerNo
+        {
+            set;
+            get;
+        }
+        public virtual string Name
+        {
+            set;
+            get;
+        }
+
+        public virtual string ControllerName
+        {
+            set;
+            get;
+        }
+        public virtual string Controller
+        {
+            set;
+            get;
+        }
+        public virtual string Action
+        {
+            set;
+            get;
+        }
+        public virtual DateTime AddDate
+        {
+            set;
+            get;
+        }
+    }
+
+    public class RoleService
+    {
+        public int GetById(int v)
+        {
+            return 1;
+        }
+    }
+
+    
+    /// <summary>
+    /// URL permission
+    /// </summary>
+    public class UrlAuthorizeAttribute : AuthorizeAttribute
+    {
+        /// <summary>
+        /// Rewrite OnAuthorization
+        /// </summary>
+        /// <param name="filterContext"></param>
+        public override void OnAuthorization(AuthorizationContext filterContext)
+        {
+            if (filterContext.ActionDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true))
+            //判断是否Action判断是否跳过授权过滤器
+            {
+                return;
+            }
+            if (filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true))
+            //判断是否Controller判断是否跳过授权过滤器
+            {
+                return;
+            }
+
+            //判断Action方法的Control是否跳过登录验证
+            if (filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(SkipCheckLoginAttribute), false))
+            {
+                return;
+            }
+            //判断Action方法是否跳过登录验证
+            if (filterContext.ActionDescriptor.IsDefined(typeof(SkipCheckLoginAttribute), false))
+            {
+                return;
+            }
+
+            //Get permission list
+            List<PermissionItem> pItems = AccountHelper.GetPermissionItems();
+
+            //Get current page permission ID,if items is null,the page you what to access has not been configed.
+            //filterContext.HttpContext.Request.Path = Login/Index
+            var item = pItems.FirstOrDefault(c => c.Route == filterContext.HttpContext.Request.Path);
+
+            if (item != null)
+            {
+                int[] permissions = AccountHelper.GetUserPermission(int.Parse(filterContext.HttpContext.Session["UserID"].ToString()));
+                if (Array.IndexOf<Int32>(permissions, item.PermissionID) == -1)
+                {
+                    //have not permission
+                    filterContext.HttpContext.Response.Write("You have no permission to access this page.");
+                    filterContext.HttpContext.Response.End();
+                }
+            }
+            else
+            {
+                //the page you what to access has not been configed.
+                filterContext.HttpContext.Response.Write("The page you want to access has not been configed permission.");
+                filterContext.HttpContext.Response.End();
+            }
+            base.OnAuthorization(filterContext);
+        }
+    }
+    
 }

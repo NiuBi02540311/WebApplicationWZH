@@ -70,8 +70,10 @@ namespace WebApplicationWZH.Controllers
             ViewBag.Message = "";
             if (logInView.loginName == "admin" && logInView.loginPassword == "123")
             {
+
+                
                 //设置cookie
-               
+
                 FormsAuthentication.SetAuthCookie(logInView.loginName, false);
 
                 logInView.Id = Guid.NewGuid().ToString("D");//为了测试手动设置一个用户id
@@ -242,6 +244,7 @@ namespace WebApplicationWZH.Controllers
 
             HttpContext.Current.Session["User"] = data;
             HttpContext.Current.Session["UserRole"] = "admin,aa,bb";
+            HttpContext.Current.Session["UserID"] = 1;
         }
         /// <summary>
         /// 删除用户ticket票据
