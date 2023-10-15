@@ -73,23 +73,24 @@ namespace WebApplicationWZH.Controllers
                           ,[PassWord]
                           ,[ChineseName]
                           ,[Status]
-                          ,[IsDelete]
-                          ,[CreateTime]
                       FROM [WEBAPI].[dbo].[Users] where IsDelete = 0 and UserName = '{logInView.loginName}' and PassWord = '{logInView.loginPassword}'";
-           var find =  SQLHelper.ExecuteScalar(sql);
-            if (logInView.loginName == "admin" && logInView.loginPassword == "123")
+            //var find =  SQLHelper.ExecuteScalar(sql);
+           if (logInView.loginName == "admin" && logInView.loginPassword == "123")// admin 12345678910
+           // if(find != null  )
             {
                 //设置cookie
                 FormsAuthentication.SetAuthCookie(logInView.loginName, false);
 
-                logInView.Id = Guid.NewGuid().ToString("D");//为了测试手动设置一个用户id
+                //logInView.Id = Guid.NewGuid().ToString("D");//为了测试手动设置一个用户id
+                //logInView.Id = find.ToString();//为了测试手动设置一个用户id
+                logInView.Id = "1001";//为了测试手动设置一个用户id
                 UserData userData = new UserData { 
                  UserId = logInView.Id, 
                  UserName = logInView.loginName,
                  Roles = new List<int> { 1,2,3,4 }
                 };
                 //FormsAuthHelp.AddFormsAuthCookie(logInView.Id, logInView, 60);//设置ticket票据的名称为用户的id，设置有效时间为60分钟
-                FormsAuthHelp.AddFormsAuthCookie(logInView.Id, userData, 60);//设置ticket票据的名称为用户的id，设置有效时间为60分钟
+                FormsAuthHelp.AddFormsAuthCookie(logInView.loginName, userData, 60, logInView.Id);//设置ticket票据的名称为用户的id，设置有效时间为60分钟
 
                 //return RedirectToAction("About");
                 return RedirectToAction("SheetList", "Home");
@@ -215,7 +216,7 @@ namespace WebApplicationWZH.Controllers
         /// <param name="loginName">Forms身份验证票相关联的用户名(一般是当前用户的id，作为ticket的名称使用)</param>
         /// <param name="userData">用户信息</param>
         /// <param name="expireMin">有效期</param>
-        public static void AddFormsAuthCookie(string loginName, object userData, int expireMin)
+        public static void AddFormsAuthCookie(string loginName, object userData, int expireMin, string Id)
         {
             //将当前登入的用户信息序列化
             var data = JsonConvert.SerializeObject(userData);
@@ -250,7 +251,7 @@ namespace WebApplicationWZH.Controllers
 
             HttpContext.Current.Session["User"] = data;
             HttpContext.Current.Session["UserRole"] = "1,2";//"admin,aa,bb";
-            HttpContext.Current.Session["UserID"] = 1;
+            HttpContext.Current.Session["UserID"] = Id;
         }
         /// <summary>
         /// 删除用户ticket票据
