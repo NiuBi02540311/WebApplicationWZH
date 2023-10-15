@@ -13,7 +13,7 @@
 </head>
 <body>
 
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped" id="tb1">
         <thead>
             <tr>
                 <th>No</th>
@@ -31,19 +31,33 @@
                     <td>@nn</td>
                     <td>@v.controlleName</td>
                     <td>
-                        @foreach (var t in list)
-                        {
-                            string txt = t.ActionName + "【" + t.ActionType + "】  ";
-                            <input type="checkbox">@txt  
-                        }
-                        <button class="btn-sm btn-primary">全选</button>
+                        <div id="@v.controlleName">
+                            @foreach (var t in list)
+                            {
+                                string txt = t.ActionName + "【" + t.ActionType + "】  ";
+                                <input type="checkbox" value="@t.ActionName">@txt
+                            }
+                        </div>
+                        <hr />
+                        <button class="btn-sm btn-primary" onclick="GetCheck(true,'@v.controlleName')">全选</button>
+                        <button class="btn-sm btn-primary" onclick="GetCheck(false,'@v.controlleName')">全不选</button>
                     </td>
                 </tr>
                 nn++;
             }
         </tbody>
     </table>
-    <hr />
+
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td><button id="searchBtn">获取选中的值</button></td>
+                <td><div id="data"></div></td>
+            </tr>
+        </tbody>
+    </table>
+    <input type="hidden"  value=""/>
+    <hr style="color:red;" />
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -57,6 +71,7 @@
             @{ int n = 1; }
             @foreach (var v in Model)
             {
+                break;
                 var list = v.controllerItem;
                 <tr>
                     <td>@n</td>
@@ -76,6 +91,7 @@
     <hr />
     @foreach (var m in Model)
     {
+        break;
         var list = m.controllerItem;
         int i = 1;
         <table class="table table-bordered table-striped">
@@ -101,6 +117,44 @@
             </tbody>
         </table>
     }
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script>
+        var GetCheck = null;
+        $(document).ready(function () {
+            $("#searchBtn").click(function () {
+               
+            });
 
+            GetCheck = function (type, controlleName) {
+
+                $("#" + controlleName).find('input:checkbox').each(function () {
+                    $(this).prop('checked', type);
+                });
+
+            }
+
+            $("#searchBtn").click(function () {
+
+                //let chk_value = [];
+                $("#tb1 div").find('input:checkbox:checked').each(function () { //遍历，将所有选中的值放到数组中
+                    //chk_value.push($(this).val());
+                });
+                let str = "";
+                $("#tb1 div").each(function () { //遍历，将所有选中的值放到数组中
+                    let id = $(this).attr("id");
+                    let chk_value = [];
+                    
+                    $(this).find('input:checkbox:checked').each(function () { //遍历，将所有选中的值放到数组中
+                        chk_value.push($(this).val());
+                    });
+                    str += id + " : " + chk_value.join(",") + "</br>";
+                });
+                $("#data").html(str);
+                //console.log(chk_value);
+            });
+
+        });
+    </script>
 </body>
+
 </html>
