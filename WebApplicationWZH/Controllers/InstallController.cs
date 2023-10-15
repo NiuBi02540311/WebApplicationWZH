@@ -69,18 +69,18 @@ namespace WebApplicationWZH.Controllers
                 {
                     Type actionType = m.ReturnType;//https://www.cnblogs.com/dreamman/p/4932551.html
                     string ReturnParameter = actionType.FullName;
-                    if (actionType.IsSubclassOf(typeof(JsonResult)))
-                    {
-                        ReturnParameter = "JsonResult";
-                    }
-                    if (actionType.IsSubclassOf(typeof(System.Net.Http.HttpResponseMessage)))
-                    {
-                        ReturnParameter = "HttpResponseMessage";
-                    }
-                    if (actionType.IsSubclassOf(typeof(ActionResult)))
-                    {
-                        ReturnParameter = "ActionResult";
-                    }
+                    //if (actionType.IsSubclassOf(typeof(JsonResult)))
+                    //{
+                    //    ReturnParameter = "JsonResult";
+                    //}
+                    //if (actionType.IsSubclassOf(typeof(System.Net.Http.HttpResponseMessage)))
+                    //{
+                    //    ReturnParameter = "HttpResponseMessage";
+                    //}
+                    //if (actionType.IsSubclassOf(typeof(ActionResult)))
+                    //{
+                    //    ReturnParameter = "ActionResult";
+                    //}
                     //if (actionType.IsDefined(typeof(ActionResult),false))
                     //{
                     //    ReturnParameter = "ActionResult";
@@ -89,7 +89,7 @@ namespace WebApplicationWZH.Controllers
                     //{
                     //    ReturnParameter = "HttpResponseMessage";
                     //}
-
+                    if (m.IsVirtual) continue;
                     if (ReturnParameter.Contains("ActionResult") || ReturnParameter.Contains("HttpResponseMessage"))
                     {
                         //ReturnParameter = "ActionResult";
