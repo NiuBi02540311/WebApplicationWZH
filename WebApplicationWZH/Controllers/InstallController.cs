@@ -61,9 +61,6 @@ namespace WebApplicationWZH.Controllers
             List<ControllerArry> controllerArry = new List<ControllerArry>();
             foreach (var c in controllers)
             {
-
-                
-               
                 List<ControllerItem> controllerItem = new List<ControllerItem>();
                 foreach (var m in c.GetMethods())
                 {
