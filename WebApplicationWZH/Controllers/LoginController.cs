@@ -68,12 +68,18 @@ namespace WebApplicationWZH.Controllers
             }
 
             ViewBag.Message = "";
+            string sql = $@"SELECT   [UserID]
+                          ,[UserName]
+                          ,[PassWord]
+                          ,[ChineseName]
+                          ,[Status]
+                          ,[IsDelete]
+                          ,[CreateTime]
+                      FROM [WEBAPI].[dbo].[Users] where IsDelete = 0 and UserName = '{logInView.loginName}' and PassWord = '{logInView.loginPassword}'";
+           var find =  SQLHelper.ExecuteScalar(sql);
             if (logInView.loginName == "admin" && logInView.loginPassword == "123")
             {
-
-                
                 //设置cookie
-
                 FormsAuthentication.SetAuthCookie(logInView.loginName, false);
 
                 logInView.Id = Guid.NewGuid().ToString("D");//为了测试手动设置一个用户id

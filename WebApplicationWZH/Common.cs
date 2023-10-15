@@ -329,6 +329,17 @@ namespace WebApplicationWZH
                 }
             }
         }
+        public static object ExecuteScalar(string sql)
+        {
+            using (SqlConnection con = new SqlConnection(connString))
+            {
+                using (SqlCommand cmd = new SqlCommand(sql, con))
+                {
+                    con.Open();
+                    return cmd.ExecuteScalar();
+                }
+            }
+        }
         //执行返回datatable
         public static DataTable ExecuteDataTable(string sql, params SqlParameter[] pms)
         {
