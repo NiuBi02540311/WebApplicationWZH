@@ -141,7 +141,7 @@ namespace WebApplicationWZH.Controllers
         /// Headers操作示例
         /// </summary>
         [HttpGet]
-        public HttpResponseMessage OperHeaders()
+        public HttpResponseMessage OperHeaders(string x,int y)
         {
             //获取请求头信息
             string info = HttpContext.Current.Request.Headers["My-Headers-Info"];

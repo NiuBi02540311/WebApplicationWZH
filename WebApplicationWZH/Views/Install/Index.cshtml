@@ -1,6 +1,6 @@
 ﻿
 @{
-    
+
 }
 
 @model  IEnumerable<WebApplicationWZH.Models.ControllerArry>
@@ -12,6 +12,68 @@
     <title>Index</title>
 </head>
 <body>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>ControllerName</th>
+                <th>ActionItem</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @{ int nn = 1; }
+            @foreach (var v in Model)
+            {
+                var list = v.controllerItem;
+                <tr>
+                    <td>@nn</td>
+                    <td>@v.controlleName</td>
+                    <td>
+                        @foreach (var t in list)
+                        {
+                            string txt = t.ActionName + "【" + t.ActionType + "】  ";
+                            <input type="checkbox">@txt  
+                        }
+                        <button class="btn-sm btn-primary">全选</button>
+                    </td>
+                </tr>
+                nn++;
+            }
+        </tbody>
+    </table>
+    <hr />
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>ControllerName</th>
+                <th>ActionItem</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @{ int n = 1; }
+            @foreach (var v in Model)
+            {
+                var list = v.controllerItem;
+                <tr>
+                    <td>@n</td>
+                    <td>@v.controlleName</td>
+                    <td>
+                        @foreach (var t in list)
+                        {
+                            string txt = t.ActionName + "(" + t.ActionType + ")";
+                            <input type="checkbox">@txt <br />
+                        }
+                    </td>
+                </tr>
+                n++;
+            }
+        </tbody>
+    </table>
+    <hr />
     @foreach (var m in Model)
     {
         var list = m.controllerItem;
