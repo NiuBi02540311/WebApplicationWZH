@@ -22,9 +22,13 @@ namespace WebApplicationWZH.Controllers
             //q.ToList().ForEach(
             //    t => Console.WriteLine(t.Name)
             //    );
+
+            List<ControllerMenu> list = new List<ControllerMenu>();
             foreach (var c in controllers)
             {
-                createPermission(c);
+               var find =  createPermission(c);
+                if (find == null || find.Count == 0) continue;
+                list.AddRange(find);
             }
             //createPermission(new UserController());
             #endregion
