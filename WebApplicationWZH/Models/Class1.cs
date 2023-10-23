@@ -78,6 +78,22 @@ namespace WebApplicationWZH.Models
 
         public string ActionType { get; set; }
     }
+
+
+    public class ControllerMenu
+    {
+
+        public string MenuName { get; set; } = "";
+
+        public string MenuDesc { get; set; } = "";
+
+        public string PID { get; set; } = "0";
+
+        public string ActionType { get; set; } = "";
+
+        public int OrderNumber { get; set; } // ActionOrderNumber
+
+    }
     /*
      {
 	"SheetName": "SheetName123",

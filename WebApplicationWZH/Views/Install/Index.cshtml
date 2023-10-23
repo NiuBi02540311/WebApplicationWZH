@@ -1,6 +1,6 @@
 ﻿
 @{
-     
+    Layout = null;
 }
 
 @model  IEnumerable<WebApplicationWZH.Models.ControllerArry>
@@ -9,162 +9,169 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
+    <title>菜单初始化</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        
+    </style>
 </head>
 <body>
-
-    <table class="table table-bordered table-striped" id="tb1">
-        <caption>
-            <button class="btn-sm btn-primary" onclick="GetCheck(true,'all')">全选</button>
-            <button class="btn-sm btn-primary" onclick="GetCheck(false, 'all')">全不选</button>
-        </caption>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>ControllerName</th>
-                <th>ActionItem</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            @{ int nn = 1; }
-            @foreach (var v in Model)
-            {
-                var list = v.controllerItem;
-                <tr>
-                    <td>@nn</td>
-                    <td>@v.controlleName</td>
-                    <td>
-                        <div id="@v.controlleName">
-                            @foreach (var t in list)
-                            {
-                                string txt = t.ActionName + "【" + t.ActionType + "】  ";
-                                <input type="checkbox" value="@t.ActionName">@txt
-                            }
-                        </div>
-                        
-                        <button class="btn-sm btn-primary" onclick="GetCheck(true,'@v.controlleName')">全选</button>
-                        <button class="btn-sm btn-primary" onclick="GetCheck(false,'@v.controlleName')">全不选</button>
-                    </td>
-                </tr>
-                nn++;
-            }
-        </tbody>
-    </table>
-
-    <table class="table table-bordered table-striped">
-        <tbody>
-            <tr>
-                <td><button id="searchBtn">获取选中的值</button></td>
-                <td><div id="data"></div></td>
-            </tr>
-        </tbody>
-    </table>
-    <img src="~/Content/image/1.png" />
-    <hr style="color:red;" />
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>ControllerName</th>
-                <th>ActionItem</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            @{ int n = 1; }
-            @foreach (var v in Model)
-            {
-                break;
-                var list = v.controllerItem;
-                <tr>
-                    <td>@n</td>
-                    <td>@v.controlleName</td>
-                    <td>
-                        @foreach (var t in list)
-                        {
-                            string txt = t.ActionName + "(" + t.ActionType + ")";
-                            <input type="checkbox">@txt <br />
-                        }
-                    </td>
-                </tr>
-                n++;
-            }
-        </tbody>
-    </table>
-    <hr />
-    @foreach (var m in Model)
-    {
-        break;
-        var list = m.controllerItem;
-        int i = 1;
-        <table class="table table-bordered table-striped">
-            <caption style="color:red">ControlleName :@m.controlleName</caption>
+    <div class="container">
+        <table class="table table-bordered table-striped" id="tb1">
+            <caption>
+                <button class="btn-sm btn-primary" onclick="GetCheck(true,'all')">全选</button>
+                <button class="btn-sm btn-primary" onclick="GetCheck(false, 'all')">全不选</button>
+            </caption>
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Action</th>
-                    <th>type</th>
+                    <th>ControllerName</th>
+                    <th>ActionItem</th>
 
                 </tr>
             </thead>
             <tbody>
-                @foreach (var v in list)
+                @{ int nn = 1; }
+                @foreach (var v in Model)
                 {
+                    var list = v.controllerItem;
                     <tr>
-                        <td>@i</td>
-                        <td>@v.ActionName</td>
-                        <td>@v.ActionType</td>
+                        <td>@nn</td>
+                        <td>@v.controlleName</td>
+                        <td>
+                            <div id="@v.controlleName">
+                                @foreach (var t in list)
+                                {
+                                    string txt = t.ActionName + "【" + t.ActionType + "】  ";
+                                    <input type="checkbox" value="@t.ActionName">@txt
+                                }
+                            </div>
+
+                            <button class="btn-sm btn-primary" onclick="GetCheck(true,'@v.controlleName')">全选</button>
+                            <button class="btn-sm btn-primary" onclick="GetCheck(false,'@v.controlleName')">全不选</button>
+                        </td>
                     </tr>
-                    i++;
+                    nn++;
                 }
             </tbody>
         </table>
-    }
-    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-    <script>
-        var GetCheck = null;
-        $(document).ready(function () {
-            $("#searchBtn").click(function () {
-               
-            });
 
-            GetCheck = function (type, controlleName) {
-                if (controlleName == "all") {
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td><button id="searchBtn">获取选中的值</button></td>
+                    <td><div id="data"></div></td>
+                </tr>
+            </tbody>
+        </table>
+        <img src="~/Content/image/1.png" />
+        <hr style="color:red;" />
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>ControllerName</th>
+                    <th>ActionItem</th>
 
-                    $("#tb1").find('input:checkbox').each(function () {
+                </tr>
+            </thead>
+            <tbody>
+                @{ int n = 1; }
+                @foreach (var v in Model)
+                {
+                    break;
+                    var list = v.controllerItem;
+                    <tr>
+                        <td>@n</td>
+                        <td>@v.controlleName</td>
+                        <td>
+                            @foreach (var t in list)
+                            {
+                                string txt = t.ActionName + "(" + t.ActionType + ")";
+                                <input type="checkbox">@txt <br />
+                            }
+                        </td>
+                    </tr>
+                    n++;
+                }
+            </tbody>
+        </table>
+        <hr />
+        @foreach (var m in Model)
+        {
+            break;
+            var list = m.controllerItem;
+            int i = 1;
+            <table class="table table-bordered table-striped">
+                <caption style="color:red">ControlleName :@m.controlleName</caption>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Action</th>
+                        <th>type</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in list)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@v.ActionName</td>
+                            <td>@v.ActionType</td>
+                        </tr>
+                        i++;
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <script>
+            var GetCheck = null;
+            $(document).ready(function () {
+                $("#searchBtn").click(function () {
+
+                });
+
+                GetCheck = function (type, controlleName) {
+                    if (controlleName == "all") {
+
+                        $("#tb1").find('input:checkbox').each(function () {
+                            $(this).prop('checked', type);
+                        });
+                        return;
+                    }
+                    $("#" + controlleName).find('input:checkbox').each(function () {
                         $(this).prop('checked', type);
                     });
-                    return;
+
                 }
-                $("#" + controlleName).find('input:checkbox').each(function () {
-                    $(this).prop('checked', type);
-                });
 
-            }
+                $("#searchBtn").click(function () {
 
-            $("#searchBtn").click(function () {
-
-                //let chk_value = [];
-                $("#tb1 div").find('input:checkbox:checked').each(function () { //遍历，将所有选中的值放到数组中
-                    //chk_value.push($(this).val());
-                });
-                let str = "";
-                $("#tb1 div").each(function () { //遍历，将所有选中的值放到数组中
-                    let id = $(this).attr("id");
-                    let chk_value = [];
-                    
-                    $(this).find('input:checkbox:checked').each(function () { //遍历，将所有选中的值放到数组中
-                        chk_value.push($(this).val());
+                    //let chk_value = [];
+                    $("#tb1 div").find('input:checkbox:checked').each(function () { //遍历，将所有选中的值放到数组中
+                        //chk_value.push($(this).val());
                     });
-                    str += id + " : " + chk_value.join(",") + "</br>";
-                });
-                $("#data").html(str);
-                //console.log(chk_value);
-            });
+                    let str = "";
+                    $("#tb1 div").each(function () { //遍历，将所有选中的值放到数组中
+                        let id = $(this).attr("id");
+                        let chk_value = [];
 
-        });
-    </script>
+                        $(this).find('input:checkbox:checked').each(function () { //遍历，将所有选中的值放到数组中
+                            chk_value.push($(this).val());
+                        });
+                        str += id + " : " + chk_value.join(",") + "</br>";
+                    });
+                    $("#data").html(str);
+                    //console.log(chk_value);
+                });
+
+            });
+        </script>
 </body>
 
 </html>

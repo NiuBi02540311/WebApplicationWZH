@@ -26,7 +26,7 @@ namespace WebApplicationWZH.Controllers
             {
                 createPermission(c);
             }
-            createPermission(new UserController());
+            //createPermission(new UserController());
             #endregion
 
             //var allDefinedPermissions = roleService.GetDefinedPermissions();
@@ -142,8 +142,9 @@ namespace WebApplicationWZH.Controllers
                 }
             }
         }
-        private void createPermission(Type t)
+        private List<ControllerMenu> createPermission(Type t)
         {
+            List<ControllerMenu> controllerMenus = new List<ControllerMenu>();
             var roleService = new RoleService();
 
             var controllerName = "";
@@ -155,8 +156,17 @@ namespace WebApplicationWZH.Controllers
             string HttpAttribute = "";// post or get
             controller = controllerType.Name.Replace("Controller", "");//remobe controller posfix
             controllerDesc = getdesc(controllerType);
+           
             if (!string.IsNullOrEmpty(controllerDesc.Key))
             {
+
+                controllerMenus.Add(new ControllerMenu
+                {
+                    MenuName = controller,
+                    MenuDesc = controllerDesc.Key,
+
+                });
+
                 controllerName = controllerDesc.Key;
                 controllerNo = controllerDesc.Value;
                 foreach (var m in controllerType.GetMethods())
@@ -169,10 +179,19 @@ namespace WebApplicationWZH.Controllers
                     actionName = mDesc.Key;//用户首页
                     actionNo = mDesc.Value;//1
                     //roleService.CreatePermissions(actionNo, controllerNo, actionName, controllerName, controller, action);
-                    CreatePermissions(actionNo, controllerNo, actionName, controllerName, controller, action);
+                    //CreatePermissions(actionNo, controllerNo, actionName, controllerName, controller, action);
+                    controllerMenus.Add(new ControllerMenu
+                    {
+                        MenuName = $"/{controller}/{action}",
+                        MenuDesc = actionName,
+                        PID = controller,
+                        ActionType = HttpAttribute
+                    });
+
                 }
             }
 
+            return controllerMenus;
             //下面面只是httpPost的例子，其他都一样，主要是获取控制器中的所有定义了HttpPost等特性的方法
             //var controllerType = typeof(HomeController);
             //var httpPostMethods = from method in controllerType.GetMethods()
