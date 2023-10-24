@@ -1,38 +1,47 @@
 ﻿@{
     ViewBag.Title = "Home Page";
+    //Layout = null;
 }
 @*model IEnumerable<WebApplication1.Models.Movie>*@
 @model WebApplicationWZH.Models.Note
 <br />
+
 <link href="~/Content/webuploader.css" rel="stylesheet" />
 <style>
     .lb {
         color: red;
     }
-    .item{
-        font-size:10px;
+
+    .item {
+        font-size: 10px;
     }
-    .item .state{
-        color:blue;
-      }
+
+        .item .state {
+            color: blue;
+        }
+
         .item .cancel {
             color: red;
         }
+
             .item .cancel:hover {
                 font-weight: bolder;
                 background-color: yellow;
                 transform: scale(1.2);
                 /*为了使变大时的效果更加平滑，可以添加过度效果*/
                 transition: all 0.3s linear;
-                cursor:pointer;
+                cursor: pointer;
             }
+
     .table_file td {
         padding: 0px 5px;
     }
+
     .table_file a {
-       text-decoration:none;color:blueviolet;
+        text-decoration: none;
+        color: blueviolet;
     }
-    
+
     .progress-bar {
         width: 150px;
     }
@@ -125,12 +134,12 @@
                                     </thead>
                                     <tbody>
                                         @*<tr>
-                                foreach (string c in arr)
-                                {
-                                    <td><input type="text" /></td>
-                                }
-                                <td><button class="btn-danger btn-sm" >删除</button></td>
-                            </tr>*@
+                                                foreach (string c in arr)
+                                                {
+                                                    <td><input type="text" /></td>
+                                                }
+                                                <td><button class="btn-danger btn-sm" >删除</button></td>
+                                            </tr>*@
                                     </tbody>
                                 }
                             </table>
@@ -171,13 +180,14 @@
         <td colspan="4"><div id="empty"></div></td>
     </tr>
 </table>
-<input id="tid" value="@Guid.NewGuid().ToString("N")" hidden ="hidden" />
+<input id="tid" value="@Guid.NewGuid().ToString("N")" hidden="hidden" />
 <input id="SheetID" value="@Model.SheetID" hidden="hidden" />
 <hr />
 <button id="shezhi">设置</button>
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <script src="~/Scripts/webuploader.min.js"></script>
+<script src="/Scripts/bootstrap.js"></script>
 <script type="text/javascript">
 
     let table_add_row = null;
@@ -733,12 +743,12 @@
         //    console.log(file.size) // 获取文件的大小
         //    console.log(file);
         //});
-        
+
         uploader.on('uploadBeforeSend', function (obj, data, headers) {
             //data.description = file.description;
             data.description = "xx00";
             //headers.tid = "@Guid.NewGuid().ToString("N")";
-            headers.tid = document.querySelector("#tid").value; 
+            headers.tid = document.querySelector("#tid").value;
         });
        // uploader.on('uploadBeforeSend', function (block, data, headers) {
 
@@ -845,7 +855,7 @@
             //ret { Object } 服务端的返回数据，json格式，如果服务端不是json格式，从ret._raw中取数据，自行解析。
             //当某个文件上传到服务端响应后，会派送此事件来询问服务端响应是否有效。如果此事件handler返回值为false, 则此文件将派送server类型的uploadError事件。
             console.log(ret.FileOldName);//FileOldName  FilePath
-             
+
             let username = document.querySelector("p.down[name='" + ret.FileOldName + "']");
             //////alert(ret.FileOldName); FileNewName FilePath
             //var a = document.createElement("a");

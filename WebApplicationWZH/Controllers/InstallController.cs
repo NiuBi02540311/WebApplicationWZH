@@ -11,45 +11,7 @@ namespace WebApplicationWZH.Controllers
     [SkipCheckLogin]
     public class InstallController : Controller
     {
-        [SkipVerification]
-        public ActionResult ControllerList()
-        {
-            var roleService = new RoleService();
-            #region init permission
-            string nspace = "WebApplicationWZH.Controllers"; // WebApplicationWZH.Controllers...
-            var q = from t in Assembly.GetExecutingAssembly().GetTypes() where t.IsClass && t.Namespace == nspace && t.FullName.EndsWith("Controller") select t;
-            var controllers = q.ToList();
-            //q.ToList().ForEach(
-            //    t => Console.WriteLine(t.Name)
-            //    );
-
-            List<ControllerMenu> list = new List<ControllerMenu>();
-            foreach (var c in controllers)
-            {
-               var find =  createPermission(c);
-                if (find == null || find.Count == 0) continue;
-                list.AddRange(find);
-            }
-            //createPermission(new UserController());
-            #endregion
-
-            //var allDefinedPermissions = roleService.GetDefinedPermissions();
-            #region 超级管理员角色初始化
-            //var adminPermissions = new List<RolePermissionInfo>();
-            //foreach (var d in allDefinedPermissions)
-            //{
-            //    adminPermissions.Add(new RolePermissionInfo { AddDate = DateTime.Now, Permission = d, });
-            //}
-            //int adminRoleId = roleService.AddRole(new Entities.RoleInfo
-            //{
-            //    AddDate = DateTime.Now,
-            //    Description = "",
-            //    Name = "超级管理员",
-            //    Permissions = adminPermissions
-            //});
-            #endregion
-            return RedirectToAction("Success");
-        }
+        
 
         [SkipVerification]
         public ActionResult Index()
@@ -117,6 +79,47 @@ namespace WebApplicationWZH.Controllers
            
             
             return View(controllerArry);
+        }
+
+        [SkipVerification]
+        public ActionResult Index2()
+        {
+            var roleService = new RoleService();
+            #region init permission
+            string nspace = "WebApplicationWZH.Controllers"; // WebApplicationWZH.Controllers...
+            var q = from t in Assembly.GetExecutingAssembly().GetTypes() where t.IsClass && t.Namespace == nspace && t.FullName.EndsWith("Controller") select t;
+            var controllers = q.ToList();
+            //q.ToList().ForEach(
+            //    t => Console.WriteLine(t.Name)
+            //    );
+
+            List<ControllerMenu> list = new List<ControllerMenu>();
+            foreach (var c in controllers)
+            {
+                var find = createPermission(c);
+                if (find == null || find.Count == 0) continue;
+                list.AddRange(find);
+            }
+            //createPermission(new UserController());
+            #endregion
+
+            //var allDefinedPermissions = roleService.GetDefinedPermissions();
+            #region 超级管理员角色初始化
+            //var adminPermissions = new List<RolePermissionInfo>();
+            //foreach (var d in allDefinedPermissions)
+            //{
+            //    adminPermissions.Add(new RolePermissionInfo { AddDate = DateTime.Now, Permission = d, });
+            //}
+            //int adminRoleId = roleService.AddRole(new Entities.RoleInfo
+            //{
+            //    AddDate = DateTime.Now,
+            //    Description = "",
+            //    Name = "超级管理员",
+            //    Permissions = adminPermissions
+            //});
+            #endregion
+            return View();
+           // return RedirectToAction("Success");
         }
         private void createPermission(Controller customController)
         {
