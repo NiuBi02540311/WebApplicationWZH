@@ -19,15 +19,15 @@
     <link rel="stylesheet" type="text/css" href="~/HuiAdmin/static/h-ui/css/H-ui.min.css" />
     <link rel="stylesheet" type="text/css" href="~/HuiAdmin/static/h-ui.admin/css/H-ui.admin.css" />
     <link rel="stylesheet" type="text/css" href="~/HuiAdmin/lib/Hui-iconfont/1.0.8/iconfont.css" />
-    <link rel="stylesheet" type="text/css" href="~/HuiAdmin/static/h-ui.admin/skin/red/default.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="~/HuiAdmin/static/h-ui.admin/skin/red/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="~/HuiAdmin/static/h-ui.admin/css/style.css" />
     <!--[if IE 6]>
     <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
     <title>H-ui.admin v3.1</title>
-    <meta name="keywords" content="H-ui.admin v3.1,H-ui网站后台模版,后台模版下载,后台管理系统模版,HTML后台模版下载">
-    <meta name="description" content="H-ui.admin v3.1，是一款由国人开发的轻量级扁平化网站后台模板，完全免费开源的网站后台管理系统模版，适合中小型CMS后台系统。">
+    <meta name="keywords" content="H-ui.admin v3.1,H-ui网站后台模版">
+    <meta name="description" content="H-ui.admin v3.1">
 </head>
 <body>
     <header class="navbar-wrapper">
@@ -137,19 +137,29 @@
     <aside class="Hui-aside">
         <div class="menu_dropdown bk_2">
             <dl id="menu-article">
-                <dt><i class="Hui-iconfont">&#xe616;</i> 无纸化表单<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+                <dt><i class="Hui-iconfont">&#xe616;</i> 权限管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
                 <dd>
                     <ul>
-                        <li><a data-href="/home/SheetList" data-title="表单录入" href="javascript:void(0)">表单录入</a></li>
-                        <li><a data-href="/home/Index2" data-title="表单录入2" href="javascript:void(0)">表单录入2</a></li>
+                        <li><a data-href="/Install/index" data-title="权限分配" href="javascript:void(0)">权限分配</a></li>
+
                     </ul>
                 </dd>
             </dl>
             <dl id="menu-picture">
-                <dt><i class="Hui-iconfont">&#xe613;</i> 图片管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+                <dt><i class="Hui-iconfont">&#xe613;</i> 菜单管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
                 <dd>
                     <ul>
-                        <li><a data-href="picture-list.html" data-title="图片管理" href="javascript:void(0)">图片管理</a></li>
+                        <li><a data-href="/menu/index" data-title="菜都设置" href="javascript:void(0)">菜都设置</a></li>
+                         
+                    </ul>
+                </dd>
+            </dl>
+            <dl id="menu-picture">
+                <dt><i class="Hui-iconfont">&#xe613;</i> 表单管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+                <dd>
+                    <ul>
+                        <li><a data-href="/sheet/index" data-title="表单录入" href="javascript:void(0)">表单录入</a></li>
+                        <li><a data-href="/sheet/Index2" data-title="表单录入2" href="javascript:void(0)">表单录入2</a></li>
                     </ul>
                 </dd>
             </dl>
