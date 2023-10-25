@@ -7,14 +7,17 @@ using WebApplicationWZH.Models;
 
 namespace WebApplicationWZH.Controllers
 {
+    [Description(ActionOrderNumber = 1, ActionTitle = "表单管理")]
     public class SheetController : Controller
     {
         // GET: Sheet
+        [Description(ActionOrderNumber = 2, ActionTitle = "表单列表")]
         public ActionResult Index()
         {
             return View();
         }
 
+        [Description(ActionOrderNumber = 3, ActionTitle = "表单列表2")]
         public ActionResult Index2()
         {
             Note note = new Note();
@@ -122,6 +125,8 @@ namespace WebApplicationWZH.Controllers
             //return View(list);
             return View(note);
         }
+
+        [Description(ActionOrderNumber = 4, ActionTitle = "表单录入")]
         public ActionResult SheetBody()
         {
             ViewBag.Message = "Your contact SheetList.";
@@ -144,6 +149,8 @@ namespace WebApplicationWZH.Controllers
             //return View(list);
             return View(model);
         }
+
+        [Description(ActionOrderNumber = 5, ActionTitle = "表单数据保存")]
         [HttpPost]
         public ActionResult SheetDataSave(string data)
         {

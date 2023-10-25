@@ -118,7 +118,7 @@ namespace WebApplicationWZH.Controllers
             //    Permissions = adminPermissions
             //});
             #endregion
-            return View();
+            return View(list);
            // return RedirectToAction("Success");
         }
         private void createPermission(Controller customController)
@@ -171,7 +171,7 @@ namespace WebApplicationWZH.Controllers
                 {
                     MenuName = controller,
                     MenuDesc = controllerDesc.Key,
-
+                    OrderNumber = controllerDesc.Value
                 });
 
                 controllerName = controllerDesc.Key;
@@ -192,7 +192,8 @@ namespace WebApplicationWZH.Controllers
                         MenuName = $"/{controller}/{action}",
                         MenuDesc = actionName,
                         PID = controller,
-                        ActionType = HttpAttribute
+                        ActionType = HttpAttribute,
+                        OrderNumber = actionNo
                     });
 
                 }

@@ -1,0 +1,277 @@
+﻿
+@{
+    Layout = null;
+}
+@model IEnumerable<WebApplicationWZH.Models.ControllerMenu>
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index2</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .post {
+            color: blueviolet;
+        }
+    </style>
+    <style>
+        /*httpss://www.webkaka.com/tutorial/html/2022/1206334/*/
+@@supports (-webkit-appearance: none) or (-moz-appearance: none) {
+  input[type=checkbox],
+input[type=radio] {
+    --active: #275EFE;
+    --active-inner: #fff;
+    --focus: 2px rgba(39, 94, 254, .3);
+    --border: #BBC1E1;
+    --border-hover: #275EFE;
+    --background: #fff;
+    --disabled: #F6F8FF;
+    --disabled-inner: #E1E6F9;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    height: 21px;
+    outline: none;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    margin: 0;
+    cursor: pointer;
+    border: 1px solid var(--bc, var(--border));
+    background: var(--b, var(--background));
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+  }
+  input[type=checkbox]:after,
+input[type=radio]:after {
+    content: "";
+    display: block;
+    left: 0;
+    top: 0;
+    position: absolute;
+    transition: transform var(--d-t, 0.3s) var(--d-t-e, ease), opacity var(--d-o, 0.2s);
+  }
+  input[type=checkbox]:checked,
+input[type=radio]:checked {
+    --b: var(--active);
+    --bc: var(--active);
+    --d-o: .3s;
+    --d-t: .6s;
+    --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+  }
+  input[type=checkbox]:disabled,
+input[type=radio]:disabled {
+    --b: var(--disabled);
+    cursor: not-allowed;
+    opacity: 0.9;
+  }
+  input[type=checkbox]:disabled:checked,
+input[type=radio]:disabled:checked {
+    --b: var(--disabled-inner);
+    --bc: var(--border);
+  }
+  input[type=checkbox]:disabled + label,
+input[type=radio]:disabled + label {
+    cursor: not-allowed;
+  }
+  input[type=checkbox]:hover:not(:checked):not(:disabled),
+input[type=radio]:hover:not(:checked):not(:disabled) {
+    --bc: var(--border-hover);
+  }
+  input[type=checkbox]:focus,
+input[type=radio]:focus {
+    box-shadow: 0 0 0 var(--focus);
+  }
+  input[type=checkbox],
+input[type=radio] {
+    width: 21px;
+  }
+  input[type=checkbox]:after,
+input[type=radio]:after {
+    opacity: var(--o, 0);
+  }
+  input[type=checkbox]:checked,
+input[type=radio]:checked {
+    --o: 1;
+  }
+  input[type=checkbox] + label,
+input[type=radio] + label {
+    font-size: 14px;
+    line-height: 21px;
+    display: inline-block;
+    vertical-align: top;
+    cursor: pointer;
+    margin-left: 4px;
+  }
+
+  input[type=checkbox] {
+    border-radius: 7px;
+  }
+  input[type=checkbox]:after {
+    width: 5px;
+    height: 9px;
+    border: 2px solid var(--active-inner);
+    border-top: 0;
+    border-left: 0;
+    left: 7px;
+    top: 4px;
+    transform: rotate(var(--r, 20deg));
+  }
+  input[type=checkbox]:checked {
+    --r: 43deg;
+  }
+
+  input[type=radio] {
+    border-radius: 50%;
+  }
+  input[type=radio]:after {
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: var(--active-inner);
+    opacity: 0;
+    transform: scale(var(--s, 0.7));
+  }
+  input[type=radio]:checked {
+    --s: .5;
+  }
+}
+ul {
+  margin: 12px;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  max-width: 320px;
+}
+ul li {
+  margin: 16px 0;
+  position: relative;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: inherit;
+}
+*:before, *:after {
+  box-sizing: inherit;
+}
+
+bodyy {
+  min-height: 100vh;
+  font-family: "Inter", Arial, sans-serif;
+  color: #8A91B4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #F6F8FF;
+}
+@@media (max-width: 800px) {
+  body {
+    flex-direction: column;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table class="table table-bordered table-striped" id="tb1">
+            <caption>
+                <button class="btn-sm btn-primary" onclick="GetCheck(true,'all')">全选</button>
+                <button class="btn-sm btn-primary" onclick="GetCheck(false, 'all')">全不选</button>
+            </caption>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>ControllerName</th>
+                    <th>ActionItem</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int nn = 1;
+                    var controllers = (from p in Model where p.PID == "0" select p).ToList();
+                }
+                @foreach (var v in controllers)
+                {
+                    var list = (from p in Model where p.PID == v.MenuName orderby p.OrderNumber ascending select p ).ToList();
+                    <tr>
+                        <td>@nn</td>
+                        <td>@v.MenuDesc</td>
+                        <td>
+                            <div id="@v.MenuName">
+                                @foreach (var t in list)
+                                {
+                                    string txt = t.MenuDesc + "【" + t.ActionType + "】  ";
+                                    string _cla = t.ActionType == "Get" ? "" : "post";
+                                    <input type="checkbox" value="@t.MenuName"><label class="@_cla">@txt</label>
+                                }
+                            </div>
+
+                            <button class="btn-sm btn-primary" onclick="GetCheck(true, '@v.MenuName')">全选</button>
+                            <button class="btn-sm btn-primary" onclick="GetCheck(false,'@v.MenuName')">全不选</button>
+                        </td>
+                    </tr>
+                    nn++;
+                }
+            </tbody>
+        </table>
+
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td><button id="searchBtn">获取选中的值</button></td>
+                    <td><div id="data"></div></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        var GetCheck = null;
+        $(document).ready(function () {
+            $("#searchBtn").click(function () {
+
+            });
+
+            GetCheck = function (type, controlleName) {
+                if (controlleName == "all") {
+
+                    $("#tb1").find('input:checkbox').each(function () {
+                        $(this).prop('checked', type);
+                    });
+                    return;
+                }
+                $("#" + controlleName).find('input:checkbox').each(function () {
+                    $(this).prop('checked', type);
+                });
+
+            }
+
+            $("#searchBtn").click(function () {
+
+                //let chk_value = [];
+                $("#tb1 div").find('input:checkbox:checked').each(function () { //遍历，将所有选中的值放到数组中
+                    //chk_value.push($(this).val());
+                });
+                let str = "";
+                $("#tb1 div").each(function () { //遍历，将所有选中的值放到数组中
+                    let id = $(this).attr("id");
+                    let chk_value = [];
+
+                    $(this).find('input:checkbox:checked').each(function () { //遍历，将所有选中的值放到数组中
+                        chk_value.push($(this).val());
+                    });
+                    str += id + " : " + chk_value.join(",") + "</br>";
+                });
+                $("#data").html(str);
+                //console.log(chk_value);
+            });
+
+        });
+    </script>
+</body>
+</html>

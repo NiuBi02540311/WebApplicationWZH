@@ -2334,7 +2334,7 @@
     <Content Include="Views\Sheet\SheetBody.cshtml" />
     <Content Include="Views\Sheet\Index2.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
-    <None Include="Views\Install\Index2cshtml" />
+    <Content Include="Views\Install\Index2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
