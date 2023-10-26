@@ -369,6 +369,56 @@ namespace WebApplicationWZH
             }
 
         }
+
+        /// <summary>
+        /// 增删改，事务执行  insert update delete
+        /// </summary>
+        /// <param name="SqlStrList"></param>
+        /// <returns></returns>
+        public static string ExecuteNonQuery(List<string> SqlStrList)
+        {
+            SqlConnection con = null;
+            SqlTransaction tran = null;
+            string Msg = "";
+            string sql = "";
+            try
+            {
+                con = new SqlConnection(connString);
+                con.Open();
+                tran = con.BeginTransaction();//先实例SqlTransaction类，使用这个事务使用的是con 这个连接，使用BeginTransaction这个方法来开始执行这个事务
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = con;
+                cmd.Transaction = tran;
+                //在try{} 块里执行sqlcommand命令，
+                //cmd.CommandText = "update bb set moneys=moneys-'" + Convert.ToInt32(TextBox1.Text) + "' where ID='1'";
+                //cmd.ExecuteNonQuery();
+                //cmd.CommandText = "update bb set moneys=moneys+' aa ' where ID='2'";
+                //cmd.ExecuteNonQuery();
+                foreach(string str in SqlStrList)
+                {
+                    sql = str;
+                    cmd.CommandText = str;
+                    cmd.ExecuteNonQuery();
+                }
+                tran.Commit();//如果两个sql命令都执行成功，则执行commit这个方法，执行这些操作
+                 
+            }
+            catch(Exception ex)
+            {
+                Msg = sql + " : Exception = " + ex.ToString();
+                tran.Rollback();//如何执行不成功，发生异常，则执行rollback方法，回滚到事务操作开始之前；
+            }
+            finally
+            {
+                if(con != null)
+                {
+                    con.Close();
+                    con.Dispose();
+                }
+              
+            }
+            return Msg;
+        }
     }
 
     /// <summary>

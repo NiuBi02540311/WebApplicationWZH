@@ -135,6 +135,13 @@
 
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
     <script>
+
+        //如果不在最顶层，则刷新页面
+        if (window != top) {
+
+            top.location.href = location.href;
+        }
+
         (function ($) {
             $.login = {
 

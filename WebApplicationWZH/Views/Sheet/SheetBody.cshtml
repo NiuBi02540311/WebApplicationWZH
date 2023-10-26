@@ -31,8 +31,10 @@
         .c {
             text-align: center;
         }
-        .MustInput{
-            color:red;font-weight:bold;
+
+        .MustInput {
+            color: red;
+            font-weight: bold;
         }
     </style>
 
@@ -70,18 +72,18 @@
                         <td class="@_class">@item.WipName</td>
                         @if (arr == null || arr.Count == 0)
                         {
-                    <td class="WipData">
+                            <td class="WipData">
 
-                        @if (item.Datatype == "date")
-                        {
-                            <input type="text" class="form-control form-group-lg" value="" id="@item.WipName" onclick="centerShow(this)"/>
-                        }
-                        else
-                        {
-                            <input type="@item.Datatype" class="form-control form-group-lg" value="@item.defaultData" />
-                        }
-                        <input type="hidden" value="@item.WipName|@item.IsMustInput" />
-                    </td>
+                                @if (item.Datatype == "date")
+                                {
+                                    <input type="text" class="form-control form-group-lg" value="" id="@item.WipName" onclick="centerShow(this)" />
+                                }
+                                else
+                                {
+                                    <input type="@item.Datatype" class="form-control form-group-lg" value="@item.defaultData" />
+                                }
+                                <input type="hidden" value="@item.WipName|@item.IsMustInput" />
+                            </td>
                         }
                         else
                         {
@@ -116,7 +118,7 @@
         </table>
     </div>
     <input type="hidden" value="@SheetName" id="SheetName" />
-    
+
     <!----------------------------------------------------------------------------------------------------->
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
     <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
@@ -181,7 +183,7 @@
                     return;
                 }
 
-                location.href = "/Home/SheetList";
+                location.href = "/sheet/SheetList";
             })
             /*********************************************************************************************************************/
             function _get() {
@@ -286,7 +288,7 @@
             /*********************************************************************************************************************/
         })
 
-       
+
     </script>
 </body>
 

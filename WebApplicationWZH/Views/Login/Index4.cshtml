@@ -77,6 +77,13 @@
     </div>
     
     <script type="text/javascript">
+
+        //如果不在最顶层，则刷新页面
+        if (window != top) {
+
+            top.location.href = location.href;
+        }
+
         $(function () {
             var info = $('#hiddenInfo').val();
             if (info.length > 0) {

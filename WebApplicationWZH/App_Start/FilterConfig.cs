@@ -148,13 +148,14 @@ namespace WebApplicationWZH
                    filterContext.HttpContext.Response.AddHeader("StatusCode", "401");
                    filterContext.HttpContext.Response.StatusCode = 401;//应将状态代码设置为401(未授权)
                    filterContext.HttpContext.Response.End();
-
-                   
                     return;
                 }
 
+                //看上面的代码，假如Session为空是乎就会跳转，但事实上接下去会继续执行你的ActionResult,执行完了之后才会跳转！很可能你的ActionResult中调用Session就会出错！
+                //解决办法：
+                filterContext.Result = new HttpUnauthorizedResult(); // 返回未授权Result
                 //跳转方法1：
-                filterContext.HttpContext.Response.Redirect("/Login/Index");
+               // filterContext.HttpContext.Response.Redirect("/Login/Index");
                 //跳转方法2：
                 //ViewResult view = new ViewResult();
                 //指定要返回的完整视图名称

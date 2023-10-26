@@ -93,7 +93,7 @@ namespace WebApplicationWZH.Controllers
                 FormsAuthHelp.AddFormsAuthCookie(logInView.loginName, userData, 60, logInView.Id);//设置ticket票据的名称为用户的id，设置有效时间为60分钟
 
                 //return RedirectToAction("About");
-                return RedirectToAction("SheetList", "Home");
+                return RedirectToAction("Index", "Home");
             }
             //else
             //{

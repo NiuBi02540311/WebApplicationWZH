@@ -3,7 +3,7 @@
 * http://www.h-ui.net/
 * Created & Modified by guojunhui
 * Date modified 2019.01.21
-* Copyright 2013-2019  All rights reserved.
+* Copyright 2013-2019 北京颖杰联创科技有限公司 All rights reserved.
 * Licensed under MIT license.
 * http://opensource.org/licenses/MIT
 */
@@ -49,7 +49,7 @@ function getskincookie(){
 	}
 }
 /*菜单导航*/
-function Hui_admin_tab(obj) {
+function Hui_admin_tab(obj){
 	var bStop = false,
 		bStopIndex = 0,
 		href = $(obj).attr('data-href'),
@@ -70,18 +70,11 @@ function Hui_admin_tab(obj) {
 		return false;
 	}
 	show_navLi.each(function() {
-		if ($(this).find('span').attr("data-href") == href) {
-			bStop = true;
-			bStopIndex = show_navLi.index($(this));
-			//return false;
-			//normal
-			//
-			//$(this).find('span').css("color", "blue");
-			$(this).find('span').css({ "color": "blue", "font-weight": "bold" });// clw
-		} else {
-			//$(this).find('span').css("color", "black");
-			$(this).find('span').css({ "color": "black", "font-weight": "normal" });// clw
-        }
+		if($(this).find('span').attr("data-href")==href){
+			bStop=true;
+			bStopIndex=show_navLi.index($(this));
+			return false;
+		}
 	});
 	if(!bStop){
 		creatIframe(href,title);
@@ -91,7 +84,6 @@ function Hui_admin_tab(obj) {
 		show_navLi.removeClass("active").eq(bStopIndex).addClass("active");
 		iframe_box.find(".show_iframe").hide().eq(bStopIndex).show().find("iframe").attr("src",href);
 	}
-	 
 }
 
 /*最新tab标题栏列表*/
@@ -113,9 +105,8 @@ function creatIframe(href,titleName){
 	var taballwidth=0;
 
 	show_nav.find('li').removeClass("active");
-	// clw
-	show_nav.append('<li class="active"><span style="color:blue;font-weight:bold" data-href="'+href+'">'+titleName+'</span><i></i><em></em></li>');
-    console.log('1');
+	show_nav.append('<li class="active"><span data-href="'+href+'">'+titleName+'</span><i></i><em></em></li>');
+  console.log('1');
 
   show_nav.find('li').contextMenu('Huiadminmenu', {
     bindings: {
@@ -276,14 +267,11 @@ $(function(){
 		$(this).parent().addClass("current");
 	});
 
-	$(document).on("click", "#min_title_list li", function () {
+	$(document).on("click","#min_title_list li",function(){
 		var bStopIndex=$(this).index();
 		var iframe_box=$("#iframe_box");
 		$("#min_title_list li").removeClass("active").eq(bStopIndex).addClass("active");
 		iframe_box.find(".show_iframe").hide().eq(bStopIndex).show();
-
-		$("#min_title_list li span").css({ "color": "black", "font-weight": "normal" });// clw
-		$("#min_title_list li span").eq(bStopIndex).css({ "color": "blue", "font-weight": "bold" });// clw
 	});
 	$(document).on("click","#min_title_list li i",function(){
 		var aCloseIndex=$(this).parents("li").index();

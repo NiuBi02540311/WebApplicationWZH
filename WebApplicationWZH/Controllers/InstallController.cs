@@ -11,41 +11,7 @@ namespace WebApplicationWZH.Controllers
     [SkipCheckLogin]
     public class InstallController : Controller
     {
-        [SkipVerification]
-        public ActionResult ControllerList()
-        {
-            var roleService = new RoleService();
-            #region init permission
-            string nspace = "WebApplicationWZH.Controllers"; // WebApplicationWZH.Controllers...
-            var q = from t in Assembly.GetExecutingAssembly().GetTypes() where t.IsClass && t.Namespace == nspace && t.FullName.EndsWith("Controller") select t;
-            var controllers = q.ToList();
-            //q.ToList().ForEach(
-            //    t => Console.WriteLine(t.Name)
-            //    );
-            foreach (var c in controllers)
-            {
-                createPermission(c);
-            }
-            createPermission(new UserController());
-            #endregion
-
-            //var allDefinedPermissions = roleService.GetDefinedPermissions();
-            #region 超级管理员角色初始化
-            //var adminPermissions = new List<RolePermissionInfo>();
-            //foreach (var d in allDefinedPermissions)
-            //{
-            //    adminPermissions.Add(new RolePermissionInfo { AddDate = DateTime.Now, Permission = d, });
-            //}
-            //int adminRoleId = roleService.AddRole(new Entities.RoleInfo
-            //{
-            //    AddDate = DateTime.Now,
-            //    Description = "",
-            //    Name = "超级管理员",
-            //    Permissions = adminPermissions
-            //});
-            #endregion
-            return RedirectToAction("Success");
-        }
+        
 
         [SkipVerification]
         public ActionResult Index()
@@ -114,6 +80,47 @@ namespace WebApplicationWZH.Controllers
             
             return View(controllerArry);
         }
+
+        [SkipVerification]
+        public ActionResult Index2()
+        {
+            var roleService = new RoleService();
+            #region init permission
+            string nspace = "WebApplicationWZH.Controllers"; // WebApplicationWZH.Controllers...
+            var q = from t in Assembly.GetExecutingAssembly().GetTypes() where t.IsClass && t.Namespace == nspace && t.FullName.EndsWith("Controller") select t;
+            var controllers = q.ToList();
+            //q.ToList().ForEach(
+            //    t => Console.WriteLine(t.Name)
+            //    );
+
+            List<ControllerMenu> list = new List<ControllerMenu>();
+            foreach (var c in controllers)
+            {
+                var find = createPermission(c);
+                if (find == null || find.Count == 0) continue;
+                list.AddRange(find);
+            }
+            //createPermission(new UserController());
+            #endregion
+
+            //var allDefinedPermissions = roleService.GetDefinedPermissions();
+            #region 超级管理员角色初始化
+            //var adminPermissions = new List<RolePermissionInfo>();
+            //foreach (var d in allDefinedPermissions)
+            //{
+            //    adminPermissions.Add(new RolePermissionInfo { AddDate = DateTime.Now, Permission = d, });
+            //}
+            //int adminRoleId = roleService.AddRole(new Entities.RoleInfo
+            //{
+            //    AddDate = DateTime.Now,
+            //    Description = "",
+            //    Name = "超级管理员",
+            //    Permissions = adminPermissions
+            //});
+            #endregion
+            return View(list);
+           // return RedirectToAction("Success");
+        }
         private void createPermission(Controller customController)
         {
             var roleService = new RoleService();
@@ -142,8 +149,9 @@ namespace WebApplicationWZH.Controllers
                 }
             }
         }
-        private void createPermission(Type t)
+        private List<ControllerMenu> createPermission(Type t)
         {
+            List<ControllerMenu> controllerMenus = new List<ControllerMenu>();
             var roleService = new RoleService();
 
             var controllerName = "";
@@ -155,8 +163,17 @@ namespace WebApplicationWZH.Controllers
             string HttpAttribute = "";// post or get
             controller = controllerType.Name.Replace("Controller", "");//remobe controller posfix
             controllerDesc = getdesc(controllerType);
+           
             if (!string.IsNullOrEmpty(controllerDesc.Key))
             {
+
+                controllerMenus.Add(new ControllerMenu
+                {
+                    MenuName = controller,
+                    MenuDesc = controllerDesc.Key,
+                    OrderNumber = controllerDesc.Value
+                });
+
                 controllerName = controllerDesc.Key;
                 controllerNo = controllerDesc.Value;
                 foreach (var m in controllerType.GetMethods())
@@ -169,10 +186,20 @@ namespace WebApplicationWZH.Controllers
                     actionName = mDesc.Key;//用户首页
                     actionNo = mDesc.Value;//1
                     //roleService.CreatePermissions(actionNo, controllerNo, actionName, controllerName, controller, action);
-                    CreatePermissions(actionNo, controllerNo, actionName, controllerName, controller, action);
+                    //CreatePermissions(actionNo, controllerNo, actionName, controllerName, controller, action);
+                    controllerMenus.Add(new ControllerMenu
+                    {
+                        MenuName = $"/{controller}/{action}",
+                        MenuDesc = actionName,
+                        PID = controller,
+                        ActionType = HttpAttribute,
+                        OrderNumber = actionNo
+                    });
+
                 }
             }
 
+            return controllerMenus;
             //下面面只是httpPost的例子，其他都一样，主要是获取控制器中的所有定义了HttpPost等特性的方法
             //var controllerType = typeof(HomeController);
             //var httpPostMethods = from method in controllerType.GetMethods()
