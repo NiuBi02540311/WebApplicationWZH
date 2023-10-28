@@ -137,29 +137,59 @@ namespace WebApplicationWZH
             {
                 return;
             }
-           
+
+            // 1、允许匿名访问 用于标记在授权期间要跳过 AuthorizeAttribute 的控制器和操作的特性 
+            var actionAnonymous = filterContext.ActionDescriptor.GetCustomAttributes(typeof(AllowAnonymousAttribute), true) as IEnumerable<AllowAnonymousAttribute>;
+            var controllerAnonymous = filterContext.Controller.GetType().GetCustomAttributes(typeof(AllowAnonymousAttribute), true) as IEnumerable<AllowAnonymousAttribute>;
+            if ((actionAnonymous != null && actionAnonymous.Any()) || (controllerAnonymous != null && controllerAnonymous.Any()))
+            {
+                return;
+            }
+ 
             if (filterContext.HttpContext.Session["User"] == null || filterContext.HttpContext.Request.IsAuthenticated == false )
             {
-                if(filterContext.HttpContext.Request.IsAjaxRequest()){
+                bool bAjax = filterContext.HttpContext.Request.IsAjaxRequest();
+                if (bAjax)
+                {
 
                     //Ajax 输出错误信息给脚本
                    filterContext.Result = AjaxError(filterContext);
-
                    filterContext.HttpContext.Response.AddHeader("StatusCode", "401");
                    filterContext.HttpContext.Response.StatusCode = 401;//应将状态代码设置为401(未授权)
                    filterContext.HttpContext.Response.End();
                     return;
                 }
 
+                if (bAjax)
+                {
+                    //https://blog.csdn.net/XR1986687846/article/details/89346166
+                    //BusinessResultBase result = new BusinessResultBase();
+                    //result.Title = "未登录或登录已超时";
+                    //result.Status = false;
+                    //result.StatusCode = 401;
+                    //result.StatusMessage = "请重新登录系统。";
+
+                    //var jsonResult = new JsonResult();
+                    //jsonResult.Data = result;
+                    //filterContext.Result = jsonResult;
+                    //return;
+                }
+ 
                 //看上面的代码，假如Session为空是乎就会跳转，但事实上接下去会继续执行你的ActionResult,执行完了之后才会跳转！很可能你的ActionResult中调用Session就会出错！
                 //解决办法：
                 filterContext.Result = new HttpUnauthorizedResult(); // 返回未授权Result
+                //filterContext.Result = new RedirectResult("~/Login/Index"); // 返回未授权Result
+
                 //跳转方法1：
-               // filterContext.HttpContext.Response.Redirect("/Login/Index");
+                // filterContext.HttpContext.Response.Redirect("/Login/Index");
                 //跳转方法2：
                 //ViewResult view = new ViewResult();
                 //指定要返回的完整视图名称
                 //view.ViewName = "~/View/Login/Login.cshtml";
+
+                filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Login", action = "Index", returnUrl = filterContext.HttpContext.Request.Url, returnMessage = "NoLogin您无权查看" }));
+                
+
                 return;
             }
 
