@@ -2840,4 +2840,14 @@ namespace WebApplicationWZH
         #endregion 参数集检索结束  
     }
 
+    public class BusinessResultBase
+    {
+        public string Title { get; set; }
+        public bool Status { get; set; }
+        public int StatusCode { get; set; }
+        public string StatusMessage { get; set; }
+         
+    }
+
+     
 }

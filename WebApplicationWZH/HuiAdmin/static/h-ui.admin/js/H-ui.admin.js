@@ -148,7 +148,12 @@ function creatIframe(href,titleName){
 	iframe_box.append('<div class="show_iframe"><div class="loading"></div><iframe data-scrollTop="0" frameborder="0" src='+href+'></iframe></div>');
 	var showBox=iframe_box.find('.show_iframe:visible');
 	showBox.find('iframe').load(function(){
-		showBox.find('.loading').hide();
+		 showBox.find('.loading').hide();
+		//setTimeout(function () { alert('xx00') }, 3000);
+		//setTimeout(function ()
+		//{
+		//   showBox.find('.loading').hide();
+		//}, 3000);
 	});
 }
 

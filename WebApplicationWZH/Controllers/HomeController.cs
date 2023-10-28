@@ -22,7 +22,17 @@ namespace WebApplicationWZH.Controllers
         public ActionResult Welcome()
         {
 
-            return View();
+            List<ViewButtonPermissionList> buttonPermissionLists = new List<ViewButtonPermissionList>();
+
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt1", Permission = false});
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt2", Permission = true });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt3", Permission = false });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt4", Permission = true });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt5", Permission = false });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt6", Permission = true });
+
+            ViewBag.buttonPermissionListsJson = JsonConvert.SerializeObject(buttonPermissionLists);
+            return View(buttonPermissionLists);
         }
         
        
