@@ -1,0 +1,68 @@
+USE [WEBAPI]
+GO
+
+/****** Object:  Table [dbo].[Users]    Script Date: 2023/10/29 21:59:48 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Users](
+	[UserID] [int] IDENTITY(1,1) NOT NULL,
+	[UserName] [varchar](20) NULL,
+	[PassWord] [varchar](50) NULL,
+	[ChineseName] [varchar](20) NULL,
+	[Status] [int] NULL,
+	[IsDelete] [int] NULL,
+	[CreateTime] [datetime] NULL,
+ CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
+(
+	[UserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_Status]  DEFAULT ((0)) FOR [Status]
+GO
+
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_IsDelete]  DEFAULT ((0)) FOR [IsDelete]
+GO
+
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_CreateTime]  DEFAULT (getdate()) FOR [CreateTime]
+GO
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+USE [WEBAPI]
+GO
+
+/****** Object:  Table [dbo].[ButtonPermission]    Script Date: 2023/10/29 22:37:51 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ButtonPermission](
+	[Tid] [int] IDENTITY(1,1) NOT NULL,
+	[RoleID] [int] NULL,
+	[ControllerName] [varchar](50) NULL,
+	[ActionName] [varchar](50) NULL,
+	[ButtonID] [varchar](50) NULL,
+	[Permission] [int] NULL,
+	[CreateTime] [datetime] NULL,
+	[IsDelete] [int] NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ButtonPermission] ADD  CONSTRAINT [DF_ButtonPermission_Permission]  DEFAULT ((0)) FOR [Permission]
+GO
+
+ALTER TABLE [dbo].[ButtonPermission] ADD  CONSTRAINT [DF_ButtonPermission_CreateTime]  DEFAULT (getdate()) FOR [CreateTime]
+GO
+
+ALTER TABLE [dbo].[ButtonPermission] ADD  CONSTRAINT [DF_Table_1_sDelete]  DEFAULT ((0)) FOR [IsDelete]
+GO
+
+
+

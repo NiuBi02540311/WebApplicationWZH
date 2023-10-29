@@ -75,8 +75,10 @@ namespace WebApplicationWZH.Controllers
                           ,[Status]
                       FROM [WEBAPI].[dbo].[Users] where IsDelete = 0 and UserName = '{logInView.loginName}' and PassWord = '{logInView.loginPassword}'";
             //var find =  SqlServerSqlHelper.ExecuteScalar(sql);
-            if (logInView.loginName == "admin" && logInView.loginPassword == "123")// admin 12345678910
-           // if(find != null  )
+            
+            var find = DB.SqlServer.Select<Users>().Where(a => a.UserName == logInView.loginName && a.PassWord == logInView.loginPassword).First();
+            //if (logInView.loginName == "admin" && logInView.loginPassword == "123")// admin 12345678910
+            if(find != null )
             {
                 //设置cookie
                 FormsAuthentication.SetAuthCookie(logInView.loginName, false);

@@ -2,7 +2,7 @@
 @{
     Layout = null;
 }
-@model IEnumerable<WebApplicationWZH.Models.ViewButtonPermissionList>
+@model IEnumerable<WebApplicationWZH.Models.ButtonPermission>
 <!DOCTYPE html>
 
 <html>
@@ -36,22 +36,59 @@
     <button id="bt5" @@Html.Raw((from p in Model where p.ButtonID == "bt5" select p).Count() == 0  || (from p in Model where p.ButtonID == "bt5" select p).ToList()[0].Permission == false ? "disabled" : "")>bt1</button> <br />
 
     -->
-    <button id="bt1">bt1</button>  
-    <button id="bt2">bt2</button>  
-    <button id="bt3">bt3</button>  
-    <button id="bt4">bt4</button>  
-    <button id="bt5">bt5</button>  
-    <button id="bt6">bt6</button> 
+    <button id="bt1">bt1</button>
+    <button id="bt2">bt2</button>
+    <button id="bt3">bt3</button>
+    <button id="bt4">bt4</button>
+    <button id="bt5">bt5</button>
+    <button id="bt6">bt6</button>
+    <button id="bt7">bt7</button>
+    <button id="bt8">bt8</button>
+    <button id="bt9">bt9</button>
+    <input type="button" id="bt10" value="bt10"/>
+    <button id="bt11">bt11</button>
+
+    <hr />
+    Input Text:<input type="text" id="t1" name="t1" /><br />
+    button Text:<button id="bt11">bt11</button> <br />
+    Select:
+    <select id="s1" name="s2">
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+        <option value="3">Option 3</option>
+    </select> <br />
+    <a id="a1" href="https://www.baidu.com/?tn=62095104_26_oem_dg"> 超链接</a>
+
 
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-    <script src="~/Scripts/buttonPermission.js?v=1.1"></script>
+    <script src="~/Scripts/buttonPermission.js?v=1.234"></script>
     <script>
+
+        window.onload = function () {
+            return;
+            var obj1 = document.getElementById("t1");
+            alert("obj1的类型是:" + obj1.nodeName);
+            var obj2 = document.getElementById("s1");
+            alert("obj2的类型是:" + obj2.nodeName);
+            var obj3 = document.getElementById("bt11");
+            alert("obj3的类型是:" + obj3.nodeName);
+            var obj4 = document.getElementById("a10");
+            alert("obj4的类型是:" + obj4.nodeName);
+        }
+
+        //httpss://blog.51cto.com/u_16213353/7001827
+        //const element = document.getElementById('bt10');
+        //const attributeValue = element.getAttribute('data-id');
+        //console.log(attributeValue);
 
         var buttonPermissionListsJson = '@Html.Raw(@ViewBag.buttonPermissionListsJson)';
 
         setTimeout(function () {
             //check22();
-        }, 1000);
+            //let a = document.getElementById("bt1");
+            //alert(a);
+            //console.log(a);
+        }, 2000);
 
         setTimeout(function () {
             //check2();

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using WebApplicationWZH.Models;
+using FreeSql;
+using System.Diagnostics;
+using System.Configuration;
 
 namespace WebApplicationWZH.Controllers
 {
@@ -12,6 +15,11 @@ namespace WebApplicationWZH.Controllers
     
     public class HomeController : Controller
     {
+        
+        public HomeController()
+        {
+           
+        }
         //[Description( ActionOrderNumber = 1, ActionTitle = "主页")]
         public ActionResult Index()
         {
@@ -22,14 +30,14 @@ namespace WebApplicationWZH.Controllers
         public ActionResult Welcome()
         {
 
-            List<ViewButtonPermissionList> buttonPermissionLists = new List<ViewButtonPermissionList>();
+            List<ButtonPermission> buttonPermissionLists = new List<ButtonPermission>();
 
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt1", Permission = false});
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt2", Permission = true });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt3", Permission = false });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt4", Permission = true });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt5", Permission = false });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ButtonID = "bt6", Permission = true });
+            buttonPermissionLists.Add(new ButtonPermission { ButtonID = "bt1", Permission = false});
+            buttonPermissionLists.Add(new ButtonPermission { ButtonID = "bt2", Permission = true });
+            buttonPermissionLists.Add(new ButtonPermission { ButtonID = "bt3", Permission = false });
+            buttonPermissionLists.Add(new ButtonPermission { ButtonID = "bt4", Permission = true });
+            buttonPermissionLists.Add(new ButtonPermission { ButtonID = "bt5", Permission = false });
+            buttonPermissionLists.Add(new ButtonPermission { ButtonID = "bt6", Permission = true });
 
             ViewBag.buttonPermissionListsJson = JsonConvert.SerializeObject(buttonPermissionLists);
             return View(buttonPermissionLists);
@@ -121,24 +129,65 @@ namespace WebApplicationWZH.Controllers
             //a = RouteData.Values["action"].ToString();
 
             //WipModelViewModel WipModels = Newtonsoft.Json.JsonConvert.DeserializeObject<WipModelViewModel>("");
-            var data = xxx();
-            var find = (from p in data where p.ControllerAction.ToLower() == pathname.ToLower() select p).ToList();
+            string name = pathname.Replace("?", "");//  /a/b
+            string[] arr = name.Split('/');
+            string ControllerName = arr[1];
+            string ActionName = arr[2];
+            //var data = xxx();
+            //var find = (from p in data 
+            //            where p.ControllerName.ToLower() == ControllerName.ToLower() && p.ActionName == ActionName.ToLower()  && p.IsDelete == 0
+            //            select p).ToList();
 
+            var find = xxx(ControllerName.ToLower(), ActionName.ToLower());
             return Json(find, JsonRequestBehavior.AllowGet);
         }
 
-        private List<ViewButtonPermissionList> xxx()
+        private List<ButtonPermission> xxx(string ControllerName,string ActionName)
         {
-            List<ViewButtonPermissionList> buttonPermissionLists = new List<ViewButtonPermissionList>();
+            //https://freesql.net/guide/getting-started.html#%E8%BF%81%E7%A7%BB
+            //https://www.cnblogs.com/kellynic/p/10645049.html
+            //List<ButtonPermission> buttonPermissionLists = new List<ButtonPermission>();
 
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "/home/welcome", ButtonID = "bt1", Permission = false });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "/home/welcome", ButtonID = "bt2", Permission = true });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "/home/welcome", ButtonID = "bt3", Permission = false });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "/home/welcome", ButtonID = "bt4", Permission = true });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "", ButtonID = "bt5", Permission = false });
-            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "", ButtonID = "bt6", Permission = true });
+            //buttonPermissionLists.Add(new ButtonPermission { RoleID = 1, ControllerName = "home", ActionName = "welcome", ButtonID = "bt1", Permission = false });
+            //buttonPermissionLists.Add(new ButtonPermission { RoleID = 1, ControllerName = "home", ActionName = "welcome", ButtonID = "bt2", Permission = true });
+            //buttonPermissionLists.Add(new ButtonPermission { RoleID = 1, ControllerName = "home", ActionName = "welcome", ButtonID = "bt3", Permission = false });
+            //buttonPermissionLists.Add(new ButtonPermission { RoleID = 1, ControllerName = "home", ActionName = "welcome", ButtonID = "bt4", Permission = true });
+            //buttonPermissionLists.Add(new ButtonPermission { RoleID = 1, ControllerName = "home", ActionName = "welcome", ButtonID = "bt5", Permission = false });
+            //buttonPermissionLists.Add(new ButtonPermission { RoleID = 1, ControllerName = "home", ActionName = "welcome", ButtonID = "bt6", Permission = true });
+
+            //var blogs = DB.SqlServer.Select<ButtonPermission>()
+            //        .Where(b => b.Rating > 3)
+            //        .OrderBy(b => b.Url)
+            //        .Skip(100)
+            //        .Limit(10) //第100行-110行的记录
+            //        .ToList();
+
+            string UserRole = Session["UserRole"].ToString();//"admin,aa,bb";
+            List<string> ls = UserRole.Split(',').ToList();
+            var intList = ls.Select(x => Convert.ToInt32(x));
+            var buttonPermissionLists = DB.SqlServer.Select<ButtonPermission>()
+                    .Where(p => p.ControllerName.ToLower() == ControllerName   && p.ActionName == ActionName
+                    && p.IsDelete == 0
+                    && intList.Contains(p.RoleID)
+                    ) .ToList();
 
             return buttonPermissionLists;
+
+            //1   List<string> 转 List<int>
+
+            //1 var strList = new List<string> { "1", "2", "3" };
+            //2 var intList = strList.Select<string, int>(x => Convert.ToInt32(x));
+
+            //2   List<int> 转 List<string>
+
+            //1 List<int> intList = new List<int> { 1, 2, 3 };
+            //2 List<string> strList = intList.ConvertAll<string>(x => x.ToString());
+
+            //3  List<string> 转 List<long>
+
+            //1 1 var strList = new List<string> { "1", "2", "3" };
+            //2 2 var longList = strList.Select<string, long>(x => Convert.ToInt64(x));
+
         }
     }
 
