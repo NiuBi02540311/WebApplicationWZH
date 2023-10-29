@@ -9,12 +9,5 @@ namespace WebApplicationWZH.Models
     {
     }
 
-    public class ViewButtonPermissionList
-    {
-        public string ControllerAction { get; set; }
-        public string ButtonID { get; set; }
-
-        public bool Permission { get; set; } = false;
-
-    }
+     
 }

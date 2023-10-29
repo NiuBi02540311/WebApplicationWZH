@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -2849,5 +2850,19 @@ namespace WebApplicationWZH
          
     }
 
+    public class DB
+    {
+
+        // private static string connString = ConfigurationManager.ConnectionStrings["connString"].ToString();
+        //https://freesql.net/guide/getting-started.html#%E5%A3%B0%E6%98%8E
+        //https://www.cnblogs.com/kellynic/p/10645049.html
+
+        static Lazy<IFreeSql> sqlserverLazy = new Lazy<IFreeSql>(() => new FreeSql.FreeSqlBuilder()
+         .UseMonitorCommand(cmd => Trace.WriteLine($"Sql：{cmd.CommandText}"))//监听SQL语句,Trace在输出选项卡中查看
+         .UseConnectionString(FreeSql.DataType.SqlServer, ConfigurationManager.ConnectionStrings["connString"].ToString())
+         .UseAutoSyncStructure(false) //自动同步实体结构到数据库，FreeSql不会扫描程序集，只有CRUD时才会生成表。
+         .Build());
+        public static IFreeSql SqlServer => sqlserverLazy.Value;
+    }
      
 }

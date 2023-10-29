@@ -443,7 +443,7 @@ namespace WebApplicationWZH
                     var action = actionDescriptor.ActionName;
                     var ticket = (filterContext.RequestContext.HttpContext.User.Identity as FormsIdentity).Ticket;
                     var role = roleService.GetById(ticket.Version);
-                    if (role != null)
+                    //if (role != null)
                     {
                         //isAuth = role.Permissions.Any(x => x.Permission.Controller.ToLower() == controller.ToLower() && x.Permission.Action.ToLower() == action.ToLower());
                     }
