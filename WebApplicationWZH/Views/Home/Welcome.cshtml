@@ -17,14 +17,16 @@
         https://cloud.tencent.com/developer/article/1351154 <br />
         https://zhuanlan.zhihu.com/p/374993109 <br />
         https://www.cnblogs.com/puzi0315/p/13557251.html  <br />
+        Tid
+        Name
+        Url
+        ParentTid
+        OrderRule
+        Leve
+        lClass
+        IsActive
     </div>
     <hr />
-    @{
-        var find = (from p in Model where p.ButtonID == "1" select p).ToList();
-        string x = (from p in Model where p.ButtonID == "1" select p).Count() == 0 || (from p in Model where p.ButtonID == "1" select p).ToList()[0].Permission == false ? "disabled" : "";
-
-
-    }
     <!--
         方法1：
     <button id="bt1" @@Html.Raw((from p in Model where p.ButtonID == "bt1" select p).Count() == 0  || (from p in Model where p.ButtonID == "bt1" select p).ToList()[0].Permission == false ? "disabled" : "")>bt1</button> <br />
@@ -34,21 +36,33 @@
     <button id="bt5" @@Html.Raw((from p in Model where p.ButtonID == "bt5" select p).Count() == 0  || (from p in Model where p.ButtonID == "bt5" select p).ToList()[0].Permission == false ? "disabled" : "")>bt1</button> <br />
 
     -->
-    <button id="bt1">bt1</button> <br />
-    <button id="bt2">bt2</button> <br />
-    <button id="bt3">bt3</button> <br />
-    <button id="bt4">bt4</button> <br />
-    <button id="bt5">bt5</button> <br />
-    <button id="bt6">bt6</button> <br />
+    <button id="bt1">bt1</button>  
+    <button id="bt2">bt2</button>  
+    <button id="bt3">bt3</button>  
+    <button id="bt4">bt4</button>  
+    <button id="bt5">bt5</button>  
+    <button id="bt6">bt6</button> 
 
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/buttonPermission.js?v=1.123"></script>
     <script>
 
         var buttonPermissionListsJson = '@Html.Raw(@ViewBag.buttonPermissionListsJson)';
 
         setTimeout(function () {
-            check();
+            //check22();
         }, 1000);
+
+        setTimeout(function () {
+            //check2();
+        }, 3000);
+
+        setTimeout(function () {
+
+            //const currentLocation = window.location;
+            //console.log(currentLocation);
+            //alert(currentLocation.pathname);
+        }, 30000);
 
         function GetObj() {
 
@@ -74,7 +88,7 @@
             return o;
         }
 
-        function check() {
+        function check22() {
             let json = '@Html.Raw(@ViewBag.buttonPermissionListsJson)';
             if (json == null || json == undefined || json == "") {
                 return;
@@ -107,6 +121,47 @@
             }
         }
 
+        function check2() {
+            const pathname = window.location.pathname;
+
+            var xhr = null;
+            try {
+                xhr = new XMLHttpRequest();
+            } catch (error) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            //2、调用open
+            xhr.open("get", "/home/GetbuttonPermissionList?pathname=" + pathname, true);
+            //3、调用send
+            xhr.send();
+            //4、等待数据响应
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    //判断本次下载的状态码都是多少
+                    if (xhr.status == 200) {
+                        //alert(xhr.responseText);
+                        console.log(xhr);
+
+                        let obj = JSON.parse(xhr.responseText);
+                        if (obj == null || obj == undefined) {
+                            return;
+                        }
+                        for (const item of obj) {
+                            console.log(item.ButtonID, item.Permission);
+                            //document.getElementById(item.ButtonID).disabled = item.Permission;
+                            //document.getElementById(item.ButtonID).style.display = item.Permission ? "block" : "none";
+                            //let display = document.getElementById(item.ButtonID).style.display;
+                            //document.getElementById(item.ButtonID).style.display = item.Permission ? display: "none";
+                            document.getElementById(item.ButtonID).disabled = item.Permission;
+                        }
+
+                    } else {
+                        alert("Error:" + xhr.status);
+                    }
+                }
+            }
+
+        }
         function xx() {
             //那么JSON数组如何遍历呢，如下：
 
