@@ -97,7 +97,49 @@ namespace WebApplicationWZH.Controllers
 
             Console.ReadKey();
         }
- 
+
+        [HttpGet]
+        public ActionResult GetbuttonPermissionList(string pathname = "")
+        {
+            //string url = HttpContext.Request.Url.AbsoluteUri;//http://localhost:57526/home/GetbuttonPermissionList
+            ////string ur2 = HttpContext.Request.UrlReferrer.AbsoluteUri.;
+            //string ur3 = HttpContext.Request.RawUrl;//   /home/GetbuttonPermissionList
+            //string ur4 = HttpContext.Request.Url.PathAndQuery;///home/GetbuttonPermissionList
+
+
+            //string a =  RouteData.Route.GetRouteData(this.HttpContext).Values["controller"].ToString();
+            //a = RouteData.Route.GetRouteData(this.HttpContext).Values["action"].ToString();
+            ////或
+            //a = RouteData.Values["controller"].ToString();
+            //a = RouteData.Values["action"].ToString();
+
+            ////如果在视图中可以用
+            //a = RouteData.Route.GetRouteData(this.HttpContext).Values["controller"].ToString();
+            //a = RouteData.Route.GetRouteData(this.HttpContext).Values["action"].ToString();
+            ////或
+            //a = RouteData.Values["controller"].ToString();
+            //a = RouteData.Values["action"].ToString();
+
+            //WipModelViewModel WipModels = Newtonsoft.Json.JsonConvert.DeserializeObject<WipModelViewModel>("");
+            var data = xxx();
+            var find = (from p in data where p.ControllerAction.ToLower() == pathname.ToLower() select p).ToList();
+
+            return Json(find, JsonRequestBehavior.AllowGet);
+        }
+
+        private List<ViewButtonPermissionList> xxx()
+        {
+            List<ViewButtonPermissionList> buttonPermissionLists = new List<ViewButtonPermissionList>();
+
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "/home/welcome", ButtonID = "bt1", Permission = false });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "/home/welcome", ButtonID = "bt2", Permission = true });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "/home/welcome", ButtonID = "bt3", Permission = false });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "/home/welcome", ButtonID = "bt4", Permission = true });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "", ButtonID = "bt5", Permission = false });
+            buttonPermissionLists.Add(new ViewButtonPermissionList { ControllerAction = "", ButtonID = "bt6", Permission = true });
+
+            return buttonPermissionLists;
+        }
     }
 
     
