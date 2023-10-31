@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link href="~/HuiAdmin/lib/zTreev3/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="~/HuiAdmin/lib/zTreev3/js/jquery.ztree.core.min.js"></script>
+
 </head>
 <body>
 
@@ -23,21 +27,20 @@
 
 
             <div class="col-md-12" style="background-color: #ffffff;box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
-                
+
                 <div class="row">
                     <div class="col-md-12" style="background-color: #dedef8;  box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
-                        
-                            第二列 - 分为四个盒子.
-                        
+
+                        第二列 - 分为四个盒子.
+
                     </div>
-                    
+
                 </div>
                 <div class="row">
                     <!--background-color: #dedef8; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;-->
                     <div class="col-md-4" style="background-color: #f5e5e5; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
 
-                        sed do eiusmod tempor incididunt ut labore et dolore magna   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                        
+                        <ul id="treeDemo" class="ztree"></ul>
 
                     </div>
                     <div class="col-md-8" style="background-color: #f5e5e5; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
@@ -60,7 +63,7 @@
 
     <div class="container">
 
-        <h1>Hello, world!</h1>
+        <h5>Hello, world!</h5>
 
         <div class="row">
             <p>排序前</p>
@@ -91,5 +94,58 @@
         </div>
 
     </div>
+
+    <SCRIPT>
+        var zTreeObj;
+        // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+        var setting = {};
+        // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+        var zNodes = [
+            {
+                name: "test1", open: true, children: [
+                    { name: "test1_1" }, { name: "test1_2" }]
+            },
+            {
+                name: "test2", open: true, children: [
+                    { name: "test2_1" }, { name: "test2_2" }]
+            }
+        ];
+        $(document).ready(function () {
+            //zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+        });
+    </SCRIPT>
+
+   <script>
+       //定义接收节点数据的变量
+       var zNodes2;
+       //节点配置信息
+       var setting2 = {
+           data: {
+               //控制子节点加载时候是加载还是折叠
+               simpleData: {
+                   enable: false
+               }
+           }
+       };
+       $(function () {
+
+           var dd = [
+               { id: 1, pId: 0, iconOpen: null, conClose: null, open: false, isParent: true, name: "首页        ", icon: null }
+               , { id: 2, pId: 0, iconOpen: null, iconClose: null, open: false, isParent: true, name: "攻略", icon: null }
+               , { id: 3, pId: 2, iconOpen: null, iconClose: null, open: false, isParent: false, name: "王者攻略 ", icon: null }
+               , { id: 4, pId: 2, iconOpen: null, iconClose: null, open: false, isParent: false, name: "王者攻略2 ", icon: null }
+           ];
+           //获取访问方法获取节点数据
+           $.getJSON('/Menu/GetjsonDb', function (res) {
+           // $.get('/Menu/GetjsonDb', function (res) {
+               zNodes2 = res;
+               console.log(res);
+               console.log(zNodes);
+               //初始化树节点
+               $.fn.zTree.init($("#treeDemo"), setting2, zNodes2);
+               //$.fn.zTree.init($("#treeDemo"), setting2, dd);
+           })
+       });
+   </script>
 </body>
 </html>
