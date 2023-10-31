@@ -41,7 +41,8 @@
                     <div class="col-md-4" style="background-color: #f5e5e5; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
 
                         <ul id="treeDemo" class="ztree"></ul>
-
+                        <ul id="treeDemo2" class="ztree"></ul>
+                        <ul id="treeDemo3" class="ztree"></ul>
                     </div>
                     <div class="col-md-8" style="background-color: #f5e5e5; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
 
@@ -111,7 +112,7 @@
             }
         ];
         $(document).ready(function () {
-            //zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+            zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
         });
     </SCRIPT>
 
@@ -123,7 +124,7 @@
            data: {
                //控制子节点加载时候是加载还是折叠
                simpleData: {
-                   enable: false
+                   enable: true
                }
            }
        };
@@ -140,12 +141,39 @@
            // $.get('/Menu/GetjsonDb', function (res) {
                zNodes2 = res;
                console.log(res);
-               console.log(zNodes);
+               console.log(zNodes2);
                //初始化树节点
-               $.fn.zTree.init($("#treeDemo"), setting2, zNodes2);
+               $.fn.zTree.init($("#treeDemo2"), setting2, zNodes2);
                //$.fn.zTree.init($("#treeDemo"), setting2, dd);
            })
        });
    </script>
+    <script>
+        //https://pythonjishu.com/fwhsfqpucuktbda/
+        //https://blog.csdn.net/zouzoutingtinging/article/details/79212175
+        //https://blog.csdn.net/qq_26312205/article/details/107718641
+
+        //https://www.cnblogs.com/puke/archive/2012/08/10/2631513.html 
+        var setting = {
+            async: {
+                enable: true, //异步加载开关
+                url: "getNodes", //异步加载的URL地址
+                autoParam: ["id"], //异步加载需要传入的参数，默认是id
+                dataFilter: filter //数据预处理函数
+            }
+        };
+
+        function filter(treeId, parentNode, childNodes) {
+            if (!childNodes) return null;
+            for (var i = 0, l = childNodes.length; i < l; i++) {
+                childNodes[i].name = childNodes[i].name.replace(/\.n/g, '.');
+            }
+            return childNodes;
+        }
+        $(document).ready(function () {
+            //配置树状结构
+            $.fn.zTree.init($("#treeDemo3"), setting);
+        });
+    </script>
 </body>
 </html>

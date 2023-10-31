@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using WebApplicationWZH.Models;
@@ -152,6 +153,14 @@ namespace WebApplicationWZH.Controllers
             return json;
         }
 
+
+        public ActionResult getNodes(string id)
+        {
+            //根据传入的id查询子节点数据
+            List<TreeNode> nodes = new List<TreeNode>();
+            nodes.Add(new TreeNode { id = 1, isParent = true, name = "a", open = true });
+            return Json(nodes, JsonRequestBehavior.AllowGet);
+        }
         private List<SysMenu> GetAllMenu()
         {
             // https://www.treejs.cn/v3/main.php#_zTreeInfo
@@ -182,6 +191,104 @@ namespace WebApplicationWZH.Controllers
 
             return sysMenus;
 
+        }
+
+        /// <summary>
+        /// 生成zTree标准json数据源
+        /// </summary>
+        /// <param name="parent_id">父节点</param>
+        /// <returns></returns>
+        public string GetModuleTreeJson(string parent_id)
+        {
+            //https://www.cnblogs.com/tlbxygw/p/2642086.html
+
+            // 调用  GetModuleTreeJson("0");
+            StringBuilder jsonTree = new StringBuilder();
+            if (string.IsNullOrEmpty(parent_id))
+            {
+                parent_id = "0";
+            }
+            string where = string.Format(" and parent_id='{0}'", parent_id);
+            DataSet ds = null; //DALModul.getModuleList(where);//封装的查询数据库方法
+
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                jsonTree.Append("[");
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                {
+                    DataRow dr = ds.Tables[0].Rows[i];
+                    jsonTree.Append("{\"id\":\"").Append(dr["id"]).Append("\",");
+                    jsonTree.Append("\"name\":\"").Append(dr["module"]).Append("\",");
+                    //在此处添加其他DIY属性，注意最后的“,”
+                    jsonTree.Append("\"product\":\"").Append(dr["product"]).Append("\",");
+                    jsonTree.Append("\"children\":").Append(GetModuleTreeJson(dr["id"].ToString()));
+                    jsonTree.Append("},");
+                    if (i == (ds.Tables[0].Rows.Count - 1))
+                    {
+                        jsonTree.Remove(jsonTree.Length - 1, 1);
+                    }
+                }
+                jsonTree.Append("]");
+            }
+            else
+            {
+                jsonTree.Append("\"\"");
+            }
+
+            return jsonTree.ToString();
+        }
+
+
+        /// <summary>
+        /// 获取json字符
+        /// </summary>
+        public string josn()
+        {
+            //https://www.cnblogs.com/tlbxygw/p/2642086.html
+            List<fruit> listAll = null;//查询全部数据，查询省略，封装到list
+
+            List<zTree> listZtree = GetJsonTreefruit(listAll, 0);
+
+            return JsonConvert.SerializeObject(listZtree);
+        }
+        /// <summary>
+        /// 封装成ztree类
+        /// </summary>
+        /// <param name="listAll">全部数据list</param>
+        /// <param name="parentid">根节点的id</param>
+        /// <returns></returns>
+        public List<zTree> GetJsonTreefruit(List<fruit> listAll, int parentid)
+        {
+            List<zTree> listTree = new List<zTree>();
+
+            IEnumerable<fruit> list = listAll.Where(p => p.parent_id == parentid);//使用linq查询，必须重复查询数据库，数据量小时适用
+            if (list.Count() > 0)
+            {
+                zTree ztree = null;
+
+                foreach (fruit item in list)
+                {
+                    ztree = new zTree();
+                    ztree.id = item.id.ToString();
+                    ztree.pId = item.parent_id.ToString();
+                    ztree.name = item.name;
+                    List<zTree> listChildren = GetJsonTreefruit(listAll, item.id);
+                    if (listChildren.Count > 0)
+                    {
+                        ztree.isParent = true;
+                        ztree.children = listChildren;
+                    }
+                    else
+                    {
+                        ztree.isParent = false;
+                        ztree.children = null;
+                    }
+
+                    listTree.Add(ztree);
+                }
+            }
+
+            return listTree;
         }
     }
     public class sys_device
@@ -263,4 +370,44 @@ namespace WebApplicationWZH.Controllers
             }
         }
        }
+
+    public class TreeNode
+    {
+        public int id { get; set; } //节点ID
+        public string name { get; set; } //节点名称
+        public bool isParent { get; set; } //是否是父节点
+        public bool open { get; set; } //是否展开
+    }
+
+    /// <summary>
+    /// 用来生成zTree需要的json格式，类属性与ztree配置节点对应
+    /// </summary>
+    public class zTree
+    {
+        public string id { get; set; }
+        /// <summary>
+        /// 父节点id
+        /// </summary>
+        public string pId { get; set; }
+        public string name { get; set; }
+        public bool isParent { get; set; }
+        /// <summary>
+        /// 是否展开
+        /// </summary>
+        public bool open { get; set; }
+        /// <summary>
+        /// 子节点列表
+        /// </summary>
+        public List<zTree> children { get; set; }
+    }
+
+    /// <summary>
+    /// 水果类
+    /// </summary>
+    public class fruit
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public int parent_id { get; set; }
+    }
 }
