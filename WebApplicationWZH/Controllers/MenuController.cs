@@ -166,6 +166,9 @@ namespace WebApplicationWZH.Controllers
             // https://www.treejs.cn/v3/main.php#_zTreeInfo
             //https://blog.csdn.net/qq_26312205/article/details/107718641
             List<SysMenu> sysMenus = new List<SysMenu>();
+
+            //sysMenus.Add(new SysMenu { Tid = 0, MenuName = "财务管理员", MenuUrl = "", ParentTid = -1, OrderRule = 1, Level = 1, IsActive = 1 });
+
             sysMenus.Add(new SysMenu { Tid = 1, MenuName = "a", MenuUrl = "", ParentTid = 0 , OrderRule = 1, Level = 1, IsActive = 1});
             sysMenus.Add(new SysMenu { Tid = 2, MenuName = "a1", MenuUrl = "", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
             sysMenus.Add(new SysMenu { Tid = 3, MenuName = "a2", MenuUrl = "", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
@@ -251,13 +254,24 @@ namespace WebApplicationWZH.Controllers
 
             return JsonConvert.SerializeObject(listZtree);
         }
+
+        public ActionResult josn2()
+        {
+            
+            List<SysMenu> listAll = GetAllMenu();//查询全部数据，查询省略，封装到list
+
+            //List<zTree> listZtree = GetJsonTreeMenu(listAll, -1);// 财务管理员
+              List<zTree> listZtree = GetJsonTreeMenu(listAll, 0);
+            return Json(listZtree, JsonRequestBehavior.AllowGet);
+        }
+
         /// <summary>
         /// 封装成ztree类
         /// </summary>
         /// <param name="listAll">全部数据list</param>
         /// <param name="parentid">根节点的id</param>
         /// <returns></returns>
-        public List<zTree> GetJsonTreefruit(List<fruit> listAll, int parentid)
+        private List<zTree> GetJsonTreefruit(List<fruit> listAll, int parentid)
         {
             List<zTree> listTree = new List<zTree>();
 
@@ -273,6 +287,40 @@ namespace WebApplicationWZH.Controllers
                     ztree.pId = item.parent_id.ToString();
                     ztree.name = item.name;
                     List<zTree> listChildren = GetJsonTreefruit(listAll, item.id);
+                    if (listChildren.Count > 0)
+                    {
+                        ztree.isParent = true;
+                        ztree.children = listChildren;
+                    }
+                    else
+                    {
+                        ztree.isParent = false;
+                        ztree.children = null;
+                    }
+
+                    listTree.Add(ztree);
+                }
+            }
+
+            return listTree;
+        }
+
+        private List<zTree> GetJsonTreeMenu(List<SysMenu> listAll, int parentid)
+        {
+            List<zTree> listTree = new List<zTree>();
+
+            IEnumerable<SysMenu> list = listAll.Where(p => p.ParentTid == parentid);//使用linq查询，必须重复查询数据库，数据量小时适用
+            if (list.Count() > 0)
+            {
+                zTree ztree = null;
+
+                foreach (SysMenu item in list)
+                {
+                    ztree = new zTree();
+                    ztree.id = item.Tid.ToString();
+                    ztree.pId = item.ParentTid.ToString();
+                    ztree.name = item.MenuName;
+                    List<zTree> listChildren = GetJsonTreeMenu(listAll, item.Tid);
                     if (listChildren.Count > 0)
                     {
                         ztree.isParent = true;
@@ -394,7 +442,7 @@ namespace WebApplicationWZH.Controllers
         /// <summary>
         /// 是否展开
         /// </summary>
-        public bool open { get; set; }
+        public bool open { get; set; } = true;
         /// <summary>
         /// 子节点列表
         /// </summary>
