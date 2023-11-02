@@ -43,7 +43,7 @@
                         <div style="border-bottom: solid 1px #ff0000; padding: 10px; ">
                             <button class="btn-primary btn-sm" id="checkAllTrue" disabled>全选</button>
                             <button class="btn-danger btn-sm" id="checkAllFalse" disabled>全不选</button>
-                            
+                            <button class="btn-info btn-sm" id="test" >测试</button>
                         </div>
 
                         <ul id="treeDemo" class="ztree"></ul>
@@ -117,7 +117,14 @@
                 simpleData: {
                     enable: false
                 }
+            },
+            callback: {
+                onClick: zTreeOnClick
             }
+        };
+
+        function zTreeOnClick(event, treeId, treeNode) {
+            alert(treeNode.tId + ", " + treeNode.name +  ", " + treeNode.url);
         };
         // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
         var zNodes = [
@@ -179,6 +186,31 @@
                     }
                 }
             }
+
+            $("#test").click(function () {
+
+                 
+                var nodes = zTreeObj.getCheckedNodes();// 复选框选中的节点
+                var nodes2 = zTreeObj.getNodes();// 所有节点
+                
+                //console.log(nodes);
+                let aa = [1];
+                for (let i = 0; i < nodes2.length;  i++) {
+
+                    //zTreeObj.checkNode(nodes2[i], true, true);
+                    let n = (nodes2[i].id);
+                    // if (nodes[i].id)
+                    //if (n % 2 == 0) 
+                    if (aa.indexOf(n) > -1 && nodes2[i].isParent == true) {
+                        zTreeObj.checkNode(nodes2[i], true, true);
+                        console.log(nodes2[i]);
+                    } 
+                     
+                 }
+               // zTreeObj.checkNode(nodes2[0], true, true);
+                
+
+            });
         });
     </SCRIPT>
 

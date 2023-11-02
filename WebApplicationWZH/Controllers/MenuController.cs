@@ -170,9 +170,9 @@ namespace WebApplicationWZH.Controllers
             //sysMenus.Add(new SysMenu { Tid = 0, MenuName = "财务管理员", MenuUrl = "", ParentTid = -1, OrderRule = 1, Level = 1, IsActive = 1 });
 
             sysMenus.Add(new SysMenu { Tid = 1, MenuName = "a", MenuUrl = "", ParentTid = 0 , OrderRule = 1, Level = 1, IsActive = 1});
-            sysMenus.Add(new SysMenu { Tid = 2, MenuName = "a1", MenuUrl = "", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 3, MenuName = "a2", MenuUrl = "", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 4, MenuName = "a3", MenuUrl = "", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
+            sysMenus.Add(new SysMenu { Tid = 2, MenuName = "a1", MenuUrl = @"/a/a1", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
+            sysMenus.Add(new SysMenu { Tid = 3, MenuName = "a2", MenuUrl = @"/a/a2", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
+            sysMenus.Add(new SysMenu { Tid = 4, MenuName = "a3", MenuUrl = @"/a/a3", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
 
             sysMenus.Add(new SysMenu { Tid = 5, MenuName = "a11", MenuUrl = "", ParentTid = 2, OrderRule = 1, Level = 3, IsActive = 1 });
             sysMenus.Add(new SysMenu { Tid = 6, MenuName = "a21", MenuUrl = "", ParentTid = 3, OrderRule = 1, Level = 3, IsActive = 1 });
@@ -283,8 +283,8 @@ namespace WebApplicationWZH.Controllers
                 foreach (fruit item in list)
                 {
                     ztree = new zTree();
-                    ztree.id = item.id.ToString();
-                    ztree.pId = item.parent_id.ToString();
+                    ztree.id = item.id;
+                    ztree.pId = item.parent_id;
                     ztree.name = item.name;
                     List<zTree> listChildren = GetJsonTreefruit(listAll, item.id);
                     if (listChildren.Count > 0)
@@ -317,9 +317,11 @@ namespace WebApplicationWZH.Controllers
                 foreach (SysMenu item in list)
                 {
                     ztree = new zTree();
-                    ztree.id = item.Tid.ToString();
-                    ztree.pId = item.ParentTid.ToString();
+                    ztree.id = item.Tid;
+                    ztree.pId = item.ParentTid;
                     ztree.name = item.MenuName;
+                    ztree.@checked = true;
+                    ztree.url = item.MenuUrl;
                     List<zTree> listChildren = GetJsonTreeMenu(listAll, item.Tid);
                     if (listChildren.Count > 0)
                     {
@@ -432,13 +434,19 @@ namespace WebApplicationWZH.Controllers
     /// </summary>
     public class zTree
     {
-        public string id { get; set; }
+        public int id { get; set; }
         /// <summary>
         /// 父节点id
         /// </summary>
-        public string pId { get; set; }
+        public int pId { get; set; }
         public string name { get; set; }
         public bool isParent { get; set; }
+
+        public string url { get; set; }
+        /// <summary>
+        /// 是否复选框选中
+        /// </summary>
+        public bool @checked { get; set; }
         /// <summary>
         /// 是否展开
         /// </summary>
