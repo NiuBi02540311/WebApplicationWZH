@@ -86,10 +86,13 @@ function Hui_admin_tab(obj) {
 	if(!bStop){
 		creatIframe(href,title);
 		min_titleList();
+		console.log('11111');
 	}
 	else{
 		show_navLi.removeClass("active").eq(bStopIndex).addClass("active");
-		iframe_box.find(".show_iframe").hide().eq(bStopIndex).show().find("iframe").attr("src",href);
+		//iframe_box.find(".show_iframe").hide().eq(bStopIndex).show().find("iframe").attr("src", href);// 此处会刷新已经打开的页面
+		iframe_box.find(".show_iframe").hide().eq(bStopIndex).show();// 只切换页面，不刷新页面 2023.11.03
+		console.log('22222');
 	}
 	 
 }
