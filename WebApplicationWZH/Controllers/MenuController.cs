@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using WebApplicationWZH.Models;
+using WebApplicationWZH.ViewModel;
 namespace WebApplicationWZH.Controllers
 {
     //[SkipCheckLogin]
@@ -19,7 +20,11 @@ namespace WebApplicationWZH.Controllers
         [Description(ActionOrderNumber = 2, ActionTitle = "主页")]
         public ActionResult Index()
         {
-            return View();
+            var roles = DB.SqlServer.Select<SysRole>().Where(p => p.IsActive == 1).OrderBy(x=>x.OrderRule).ToList();
+
+            MenuViewModel menuView = new MenuViewModel();
+            menuView.sysRoles = roles;
+            return View(menuView);
         }
 
         [Description(ActionOrderNumber = 2, ActionTitle = "新增")]
@@ -169,30 +174,32 @@ namespace WebApplicationWZH.Controllers
 
             //sysMenus.Add(new SysMenu { Tid = 0, MenuName = "财务管理员", MenuUrl = "", ParentTid = -1, OrderRule = 1, Level = 1, IsActive = 1 });
 
-            sysMenus.Add(new SysMenu { Tid = 1, MenuName = "a", MenuUrl = "", ParentTid = 0 , OrderRule = 1, Level = 1, IsActive = 1});
-            sysMenus.Add(new SysMenu { Tid = 2, MenuName = "a1", MenuUrl = @"/a/a1", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 3, MenuName = "a2", MenuUrl = @"/a/a2", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 4, MenuName = "a3", MenuUrl = @"/a/a3", ParentTid = 1, OrderRule = 1, Level = 2, IsActive = 1 });
+            sysMenus.Add(new SysMenu { MenuID = 1, MenuName = "a", MenuUrl = "", ParentTid = 0 , OrderRule = 1, MenuLevel = 1, IsActive = 1});
+            //sysMenus.Add(new SysMenu { MenuID = 2, MenuName = "a1", MenuUrl = @"/a/a1", ParentTid = 1, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { MenuID = 3, MenuName = "a2", MenuUrl = @"/a/a2", ParentTid = 1, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { MenuID = 4, MenuName = "a3", MenuUrl = @"/a/a3", ParentTid = 1, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
 
-            sysMenus.Add(new SysMenu { Tid = 5, MenuName = "a11", MenuUrl = "", ParentTid = 2, OrderRule = 1, Level = 3, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 6, MenuName = "a21", MenuUrl = "", ParentTid = 3, OrderRule = 1, Level = 3, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 7, MenuName = "a31", MenuUrl = "", ParentTid = 4, OrderRule = 1, Level = 3, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { MenuID = 5, MenuName = "a11", MenuUrl = "", ParentTid = 2, OrderRule = 1, MenuLevel = 3, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { MenuID = 6, MenuName = "a21", MenuUrl = "", ParentTid = 3, OrderRule = 1, MenuLevel = 3, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { MenuID = 7, MenuName = "a31", MenuUrl = "", ParentTid = 4, OrderRule = 1, MenuLevel = 3, IsActive = 1 });
 
-            sysMenus.Add(new SysMenu { Tid = 8, MenuName  = "b", MenuUrl = "", ParentTid = 0, OrderRule = 1, Level = 1, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 9, MenuName  = "b1", MenuUrl = "", ParentTid = 8, OrderRule = 1, Level = 2, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 10, MenuName = "b2", MenuUrl = "", ParentTid = 8, OrderRule = 1, Level = 2, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 11, MenuName = "b3", MenuUrl = "", ParentTid = 8, OrderRule = 1, Level = 2, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 8, MenuName  = "b", MenuUrl = "", ParentTid = 0, OrderRule = 1, MenuLevel = 1, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 9, MenuName  = "b1", MenuUrl = "", ParentTid = 8, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 10, MenuName = "b2", MenuUrl = "", ParentTid = 8, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 11, MenuName = "b3", MenuUrl = "", ParentTid = 8, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
 
-            sysMenus.Add(new SysMenu { Tid = 12, MenuName = "b11", MenuUrl = "", ParentTid = 9, OrderRule = 1, Level = 3, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 13, MenuName = "b21", MenuUrl = "", ParentTid = 10, OrderRule = 1, Level = 3, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 14, MenuName = "b31", MenuUrl = "", ParentTid = 11, OrderRule = 1, Level = 3, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 12, MenuName = "b11", MenuUrl = "", ParentTid = 9, OrderRule = 1, MenuLevel = 3, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 13, MenuName = "b21", MenuUrl = "", ParentTid = 10, OrderRule = 1, MenuLevel = 3, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 14, MenuName = "b31", MenuUrl = "", ParentTid = 11, OrderRule = 1, MenuLevel = 3, IsActive = 1 });
 
-            sysMenus.Add(new SysMenu { Tid = 15, MenuName = "c",  MenuUrl = "", ParentTid = 0, OrderRule = 1, Level = 1, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 16, MenuName = "c1", MenuUrl = "", ParentTid = 15, OrderRule = 1, Level = 2, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 17, MenuName = "c2", MenuUrl = "", ParentTid = 15, OrderRule = 1, Level = 2, IsActive = 1 });
-            sysMenus.Add(new SysMenu { Tid = 18, MenuName = "c3", MenuUrl = "", ParentTid = 15, OrderRule = 1, Level = 2, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 15, MenuName = "c",  MenuUrl = "", ParentTid = 0, OrderRule = 1, MenuLevel = 1, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 16, MenuName = "c1", MenuUrl = "", ParentTid = 15, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 17, MenuName = "c2", MenuUrl = "", ParentTid = 15, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
+            //sysMenus.Add(new SysMenu { Tid = 18, MenuName = "c3", MenuUrl = "", ParentTid = 15, OrderRule = 1, MenuLevel = 2, IsActive = 1 });
 
-            return sysMenus;
+            var menus = DB.SqlServer.Select<SysMenu>().Where(p => p.IsActive == 1 ).ToList();
+
+            return menus;
 
         }
 
@@ -265,6 +272,7 @@ namespace WebApplicationWZH.Controllers
             return Json(listZtree, JsonRequestBehavior.AllowGet);
         }
 
+       
         /// <summary>
         /// 封装成ztree类
         /// </summary>
@@ -317,12 +325,12 @@ namespace WebApplicationWZH.Controllers
                 foreach (SysMenu item in list)
                 {
                     ztree = new zTree();
-                    ztree.id = item.Tid;
+                    ztree.id = item.MenuID;
                     ztree.pId = item.ParentTid;
                     ztree.name = item.MenuName;
                     ztree.@checked = true;
                     ztree.url = item.MenuUrl;
-                    List<zTree> listChildren = GetJsonTreeMenu(listAll, item.Tid);
+                    List<zTree> listChildren = GetJsonTreeMenu(listAll, item.MenuID);
                     if (listChildren.Count > 0)
                     {
                         ztree.isParent = true;

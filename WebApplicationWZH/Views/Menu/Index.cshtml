@@ -1,8 +1,9 @@
 ﻿
 @{
     Layout = null;
+    //@model  IEnumerable<WebApplicationWZH.Models.SysRole>
 }
-
+@model  WebApplicationWZH.ViewModel.MenuViewModel
 <!DOCTYPE html>
 
 <html>
@@ -18,7 +19,10 @@
     <script src="~/HuiAdmin/lib/zTreev3/js/jquery.ztree.excheck.min.js"></script>
 </head>
 <body>
+    @{
+        var roles = Model.sysRoles;
 
+     }
     <div class="container">
 
         <h4>Hello, world!</h4>
@@ -38,19 +42,41 @@
                 </div>
                 <div class="row">
                     <!--background-color: #dedef8; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;-->
-                    <div class="col-md-4" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+                    <div class="col-md-3" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
 
                         <div style="border-bottom: solid 1px #ff0000; padding: 10px; ">
                             <button class="btn-primary btn-sm" id="checkAllTrue" disabled>全选</button>
                             <button class="btn-danger btn-sm" id="checkAllFalse" disabled>全不选</button>
-                            <button class="btn-info btn-sm" id="test" >测试</button>
+                            <button class="btn-info btn-sm" id="test">测试</button>
                         </div>
 
                         <ul id="treeDemo" class="ztree"></ul>
                         <ul id="treeDemo2" class="ztree" style="display:none"></ul>
                         <ul id="treeDemo3" class="ztree" style="display:none">></ul>
                     </div>
-                    <div class="col-md-8" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
+                    <div class="col-md-3" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+                        <div style="border-bottom: solid 1px #ff0000; padding: 10px; ">
+                            <button class="btn-primary btn-sm" id="checkAllTrue" disabled>全选</button>
+                            <button class="btn-danger btn-sm" id="checkAllFalse" disabled>全不选</button>
+                            <button class="btn-info btn-sm" id="test">测试</button>
+                        </div>
+                        
+                        @{
+                           int m = 1;
+                            string ck = "";
+                            foreach( var t in roles )
+                            {
+                                ck = m == 1000 ? "checked" : "";
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="optionsRadios" id="role_@t.RoleID" value="@t.RoleID" @ck>@t.OrderRule . @t.RoleName 
+                                    </label>
+                                </div>
+                                m++;
+                            }
+                        }
+                    </div>
+                    <div class="col-md-6" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
 
                         sed do eiusmod tempor incididunt ut labore et dolore magna
                         aliqua. Ut enim ad minim veniam, quis nostrud exercitation23
@@ -124,7 +150,7 @@
         };
 
         function zTreeOnClick(event, treeId, treeNode) {
-            alert(treeNode.tId + ", " + treeNode.name +  ", " + treeNode.url);
+            alert(treeNode.tId + ", " + treeNode.name + ", " + treeNode.url);
         };
         // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
         var zNodes = [
@@ -148,7 +174,7 @@
                 document.getElementById("checkAllTrue").disabled = false
                 document.getElementById("checkAllFalse").disabled = false;
 
-              
+
 
             })
 
@@ -189,69 +215,69 @@
 
             $("#test").click(function () {
 
-                 
+
                 var nodes = zTreeObj.getCheckedNodes();// 复选框选中的节点
                 var nodes2 = zTreeObj.getNodes();// 所有节点
-                
+
                 //console.log(nodes);
                 let aa = [1];
-                for (let i = 0; i < nodes2.length;  i++) {
+                for (let i = 0; i < nodes2.length; i++) {
 
                     //zTreeObj.checkNode(nodes2[i], true, true);
                     let n = (nodes2[i].id);
                     // if (nodes[i].id)
-                    //if (n % 2 == 0) 
+                    //if (n % 2 == 0)
                     if (aa.indexOf(n) > -1 && nodes2[i].isParent == true) {
                         zTreeObj.checkNode(nodes2[i], true, true);
                         console.log(nodes2[i]);
-                    } 
-                     
-                 }
-               // zTreeObj.checkNode(nodes2[0], true, true);
-                
+                    }
+
+                }
+                // zTreeObj.checkNode(nodes2[0], true, true);
+
 
             });
         });
     </SCRIPT>
 
-   <script>
-       //定义接收节点数据的变量
-       var zNodes2;
-       //节点配置信息
-       var setting2 = {
-           data: {
-               //控制子节点加载时候是加载还是折叠
-               simpleData: {
-                   enable: true
-               }
-           }
-       };
-       $(function () {
+    <script>
+        //定义接收节点数据的变量
+        var zNodes2;
+        //节点配置信息
+        var setting2 = {
+            data: {
+                //控制子节点加载时候是加载还是折叠
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+        $(function () {
 
-           var dd = [
-               { id: 1, pId: 0, iconOpen: null, conClose: null, open: false, isParent: true, name: "首页        ", icon: null }
-               , { id: 2, pId: 0, iconOpen: null, iconClose: null, open: false, isParent: true, name: "攻略", icon: null }
-               , { id: 3, pId: 2, iconOpen: null, iconClose: null, open: false, isParent: false, name: "王者攻略 ", icon: null }
-               , { id: 4, pId: 2, iconOpen: null, iconClose: null, open: false, isParent: false, name: "王者攻略2 ", icon: null }
-           ];
-           //获取访问方法获取节点数据
-           $.getJSON('/Menu/GetjsonDb', function (res) {
-           // $.get('/Menu/GetjsonDb', function (res) {
-               zNodes2 = res;
-               console.log(res);
-               console.log(zNodes2);
-               //初始化树节点
-               $.fn.zTree.init($("#treeDemo2"), setting2, zNodes2);
-               //$.fn.zTree.init($("#treeDemo"), setting2, dd);
-           })
-       });
-   </script>
+            var dd = [
+                { id: 1, pId: 0, iconOpen: null, conClose: null, open: false, isParent: true, name: "首页        ", icon: null }
+                , { id: 2, pId: 0, iconOpen: null, iconClose: null, open: false, isParent: true, name: "攻略", icon: null }
+                , { id: 3, pId: 2, iconOpen: null, iconClose: null, open: false, isParent: false, name: "王者攻略 ", icon: null }
+                , { id: 4, pId: 2, iconOpen: null, iconClose: null, open: false, isParent: false, name: "王者攻略2 ", icon: null }
+            ];
+            //获取访问方法获取节点数据
+            $.getJSON('/Menu/GetjsonDb', function (res) {
+                // $.get('/Menu/GetjsonDb', function (res) {
+                zNodes2 = res;
+                console.log(res);
+                console.log(zNodes2);
+                //初始化树节点
+                $.fn.zTree.init($("#treeDemo2"), setting2, zNodes2);
+                //$.fn.zTree.init($("#treeDemo"), setting2, dd);
+            })
+        });
+    </script>
     <script>
         //https://pythonjishu.com/fwhsfqpucuktbda/
         //https://blog.csdn.net/zouzoutingtinging/article/details/79212175
         //https://blog.csdn.net/qq_26312205/article/details/107718641
 
-        //https://www.cnblogs.com/puke/archive/2012/08/10/2631513.html 
+        //https://www.cnblogs.com/puke/archive/2012/08/10/2631513.html
         var setting = {
             async: {
                 enable: true, //异步加载开关

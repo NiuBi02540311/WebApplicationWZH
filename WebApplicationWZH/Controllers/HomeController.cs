@@ -18,7 +18,10 @@ namespace WebApplicationWZH.Controllers
         
         public HomeController()
         {
-           
+            for (int i = 0; i < 10; i++)
+            {
+
+            }
         }
         //[Description( ActionOrderNumber = 1, ActionTitle = "主页")]
         public ActionResult Index()
