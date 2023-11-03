@@ -86,10 +86,13 @@ function Hui_admin_tab(obj) {
 	if(!bStop){
 		creatIframe(href,title);
 		min_titleList();
+		console.log('11111');
 	}
 	else{
 		show_navLi.removeClass("active").eq(bStopIndex).addClass("active");
-		iframe_box.find(".show_iframe").hide().eq(bStopIndex).show().find("iframe").attr("src",href);
+		//iframe_box.find(".show_iframe").hide().eq(bStopIndex).show().find("iframe").attr("src", href);// 此处会刷新已经打开的页面
+		iframe_box.find(".show_iframe").hide().eq(bStopIndex).show();// 只切换页面，不刷新页面 2023.11.03
+		console.log('22222');
 	}
 	 
 }
@@ -126,7 +129,38 @@ function creatIframe(href,titleName){
         }
       },
       'closeall': function(t) {
-        show_nav.find('li i').trigger("click");
+		  layer.confirm('您确定要关闭当前页面吗？', { icon: 3, title: '提示' }, function (index) {
+			  show_nav.find('li i').trigger("click");
+			  //关闭确认框
+			  layer.close(index);
+		  });
+       
+		  },
+      'shuaxin': function (t) {
+			  var $t = $(t);
+		     let src = $t.find('span').attr("data-href");
+		     let active = $t.hasClass("active"); // 判断是否是当前激活的页面选项卡
+		  // alert(active);
+			  if (active == false) {
+				  showMsg("当前不是激活页面，不能刷新！");
+			  }
+		     if (active) {
+				 let topWindow  = $(window.parent.document);
+				 let iframe_box = topWindow.find('#iframe_box');
+				 let show_navLi = topWindow.find("#min_title_list li");
+				 let bStop = false;
+				 let bStopIndex = 0;
+				 show_navLi.each(function () {
+					 if ($(this).find('span').attr("data-href") == src) {
+						 bStop = true;
+						 bStopIndex = show_navLi.index($(this));
+					 }  
+				 });
+				 if (bStop) {
+					 iframe_box.find(".show_iframe").eq(bStopIndex).find("iframe").attr("src", src);// 此处会刷新已经打开的页面
+                 }
+				
+			 }
       },
     }
   });
@@ -145,10 +179,13 @@ function creatIframe(href,titleName){
 		$tabNav.css({left:0})
 	}
 	iframeBox.hide();
-	iframe_box.append('<div class="show_iframe"><div class="loading"></div><iframe data-scrollTop="0" frameborder="0" src='+href+'></iframe></div>');
+	let index = layer.msg("页面加载中......", { icon: 16, time: 0, shade: [0.5, '#000', true] });
+	//iframe_box.append('<div class="show_iframe"><div class="loading"></div><iframe data-scrollTop="0" frameborder="0" src='+href+'></iframe></div>');
+	iframe_box.append('<div class="show_iframe"><iframe data-scrollTop="0" frameborder="0" src=' + href + '></iframe></div>');
 	var showBox=iframe_box.find('.show_iframe:visible');
 	showBox.find('iframe').load(function(){
-		 showBox.find('.loading').hide();
+		 //showBox.find('.loading').hide();
+		  setTimeout(function () { layer.close(index); }, 1000);
 		//setTimeout(function () { alert('xx00') }, 3000);
 		//setTimeout(function ()
 		//{

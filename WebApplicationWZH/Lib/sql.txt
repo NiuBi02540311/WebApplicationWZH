@@ -65,4 +65,47 @@ ALTER TABLE [dbo].[ButtonPermission] ADD  CONSTRAINT [DF_Table_1_sDelete]  DEFAU
 GO
 
 
+---------------------------------------------------------------------------------------------------------------------------------
 
+USE [WEBAPI]
+GO
+
+/****** Object:  Table [dbo].[SysMenu]    Script Date: 2023/11/3 20:07:05 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[SysMenu](
+	[Tid] [int] NULL,
+	[MenuName] [varchar](50) NULL,
+	[MenuUrl] [varchar](50) NULL,
+	[ParentTid] [int] NULL,
+	[OrderRule] [int] NULL,
+	[MenuLevel] [int] NULL,
+	[IsActive] [int] NULL,
+	[createTime] [datetime] NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[SysMenu] ADD  CONSTRAINT [DF_SysMenu_Tid]  DEFAULT ((0)) FOR [Tid]
+GO
+
+ALTER TABLE [dbo].[SysMenu] ADD  CONSTRAINT [DF_SysMenu_ParentTid]  DEFAULT ((0)) FOR [ParentTid]
+GO
+
+ALTER TABLE [dbo].[SysMenu] ADD  CONSTRAINT [DF_SysMenu_OrderRule]  DEFAULT ((0)) FOR [OrderRule]
+GO
+
+ALTER TABLE [dbo].[SysMenu] ADD  CONSTRAINT [DF_Table_1_Level]  DEFAULT ((0)) FOR [MenuLevel]
+GO
+
+ALTER TABLE [dbo].[SysMenu] ADD  CONSTRAINT [DF_SysMenu_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+
+ALTER TABLE [dbo].[SysMenu] ADD  CONSTRAINT [DF_SysMenu_createTime]  DEFAULT (getdate()) FOR [createTime]
+GO
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
