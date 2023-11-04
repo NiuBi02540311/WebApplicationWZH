@@ -271,13 +271,16 @@
     <script type="text/javascript" src="~/HuiAdmin/lib/layer/2.4/layer.js"></script>
     <script type="text/javascript" src="~/HuiAdmin/static/h-ui/js/H-ui.min.js"></script>
     <script>
-        function showMsg(Msg, time) {
+        function showmsg(Msg, icon, time) {
+
+            // 
             //let Msg  = arguments[0] ? arguments[0] : "什么都没有填写";//设置参数a的默认值为1
             //let time = arguments[1] ? arguments[1] : 3000;//设置参数b的默认值为2
             //layer.msg(Msg, { icon: 16, time: 3000, shade: [0.5, '#000', true] });
             Msg = Msg || '什么都没有填写';
             time = time || 3000;
-            layer.msg(Msg, { icon: 16, time: time, shade: [0.5, '#000', true] });
+            icon = icon || 1; // icon = 0 警告  icon = 1 成功  icon = 2   失败
+            layer.msg(Msg, { icon: icon, time: time, shade: [0.5, '#000000', true] });
         }
 
         //var indexx = layer.msg("xxx", { icon: 16, time: 0, shade: [0.5, '#000', true] });
@@ -285,7 +288,7 @@
         //setTimeout(function () { layer.close(indexx); }, 5000);
         //showMsg("hasdhausdhuhauh",1000)
     </script>
-    <script type="text/javascript" src="~/HuiAdmin/static/h-ui.admin/js/H-ui.admin.js?v=2023.11.04.0.47"></script>
+    <script type="text/javascript" src="~/HuiAdmin/static/h-ui.admin/js/H-ui.admin.js?v=2023.11.04"></script>
     <!--/_footer 作为公共模版分离出去-->
     <!--请在下方写此页面业务相关的脚本-->
     <script type="text/javascript" src="~/HuiAdmin/lib/jquery.contextmenu/jquery.contextmenu.r2.js"></script>

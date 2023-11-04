@@ -54,11 +54,9 @@
                         <ul id="treeDemo2" class="ztree" style="display:none"></ul>
                         <ul id="treeDemo3" class="ztree" style="display:none">></ul>
                     </div>
-                    <div class="col-md-3" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+                    <div class="col-md-2" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
                         <div style="border-bottom: solid 1px #ff0000; padding: 10px; ">
-                            <button class="btn-primary btn-sm" id="checkAllTrue" disabled>全选</button>
-                            <button class="btn-danger btn-sm" id="checkAllFalse" disabled>全不选</button>
-                            <button class="btn-info btn-sm" id="test">测试</button>
+                            <button class="btn-primary btn-sm" id="SaveRoleMenu" >保存权限</button>
                         </div>
                         
                         @{
@@ -69,19 +67,15 @@
                                 ck = m == 1000 ? "checked" : "";
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="optionsRadios" id="role_@t.RoleID" value="@t.RoleID" @ck>@t.OrderRule . @t.RoleName 
+                                        <input onclick="radioclick(this)"type="radio" name="optionsRadios" id="role_@t.RoleID" value="@t.RoleID" @ck>@t.OrderRule . @t.RoleName 
                                     </label>
                                 </div>
                                 m++;
                             }
                         }
                     </div>
-                    <div class="col-md-6" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
-
-                        sed do eiusmod tempor incididunt ut labore et dolore magna
-                        aliqua. Ut enim ad minim veniam, quis nostrud exercitation23
-
-
+                    <div  class="col-md-7" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
+                    
                     </div>
                 </div>
 
@@ -164,7 +158,7 @@
             }
         ];
         $(document).ready(function () {
-            $.get("/menu/josn2", function (res) {
+            $.get("/menu/GetSysMenus", function (res) {
 
                 var nodes = res;
                 console.log(nodes);
@@ -237,7 +231,45 @@
 
 
             });
+
+            $("#SaveRoleMenu").click(function () {
+
+                var radio = document.querySelector('.col-md-2 input[name="optionsRadios"]:checked');
+                //window.parent.showmsg("您选择的是：" + radio.value);
+                //alert("您选择的是：" + radio.value);
+                if (radio == null || radio == undefined || radio == "") {
+                    showmsg("请选择一个角色名称后再保存数据！");
+                    return;
+                }
+                let nodes = zTreeObj.getCheckedNodes();// 复选框选中的节点
+                let Arr = [];
+                for (let i = 0; i < nodes.length; i++) {
+                    let n = (nodes[i].id);
+                    Arr.push(n);
+                }
+                let data = radio.value + "=" + Arr.join(",");
+                //$(".col-md-7").html(JSON.stringify(Arr));
+                $(".col-md-7").html(data);
+            });
+
+
+            
         });
+        function radioclick(obj) {
+            showmsg("xxx")
+            obj.style.color = "red";
+        }
+        function showmsg(msg) {
+
+            var p = window.parent;
+            console.log(p);
+            if (p == null || p == undefined) {
+                alert(msg);
+            } else {
+                window.parent.showmsg(msg, 2);
+            }
+
+        }
     </SCRIPT>
 
     <script>

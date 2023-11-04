@@ -214,9 +214,15 @@ namespace WebApplicationWZH
             if (UserRole == "admin" || UserRole.StartsWith("admin,") || UserRole.EndsWith(",admin") || UserRole.Contains(",admin,"))
             {
                 //管理员不验证权限
-                return;
+                //return;
             }
-            UserRole = string.Empty;
+            // role = 1 代表是超级管理员
+            if (UserRole.Split(',').Contains("1"))
+            {
+                //管理员不验证权限
+                //return;
+            }
+            //UserRole = string.Empty;
             //ajax 请求判断访问权限
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {

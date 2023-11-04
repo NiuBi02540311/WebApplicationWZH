@@ -262,9 +262,9 @@ namespace WebApplicationWZH.Controllers
             return JsonConvert.SerializeObject(listZtree);
         }
 
-        public ActionResult josn2()
+        [SkipVerification]
+        public ActionResult GetSysMenus()
         {
-            
             List<SysMenu> listAll = GetAllMenu();//查询全部数据，查询省略，封装到list
 
             //List<zTree> listZtree = GetJsonTreeMenu(listAll, -1);// 财务管理员

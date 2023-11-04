@@ -142,7 +142,7 @@ function creatIframe(href,titleName){
 		     let active = $t.hasClass("active"); // 判断是否是当前激活的页面选项卡
 		  // alert(active);
 			  if (active == false) {
-				  showMsg("当前不是激活页面，不能刷新！");
+				  showmsg("当前不是激活页面，不能刷新！");
 			  }
 		     if (active) {
 				 let topWindow  = $(window.parent.document);

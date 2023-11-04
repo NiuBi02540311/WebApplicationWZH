@@ -85,7 +85,7 @@ namespace WebApplicationWZH.Controllers
 
                 //logInView.Id = Guid.NewGuid().ToString("D");//为了测试手动设置一个用户id
                 //logInView.Id = find.ToString();//为了测试手动设置一个用户id
-                logInView.Id = "1001";//为了测试手动设置一个用户id
+                logInView.Id = find.UserID.ToString();//为了测试手动设置一个用户id
                 UserData userData = new UserData { 
                  UserId = logInView.Id, 
                  UserName = logInView.loginName,
@@ -218,8 +218,12 @@ namespace WebApplicationWZH.Controllers
         /// <param name="loginName">Forms身份验证票相关联的用户名(一般是当前用户的id，作为ticket的名称使用)</param>
         /// <param name="userData">用户信息</param>
         /// <param name="expireMin">有效期</param>
-        public static void AddFormsAuthCookie(string loginName, object userData, int expireMin, string Id)
+        public static void AddFormsAuthCookie(string loginName, UserData userData, int expireMin, string Id)
         {
+            var userRoles = DB.SqlServer.Select<SysUserRole>().Where(a => a.UserID == int.Parse(Id) && a.IsActive == 1).ToList();
+            var roles = (from p in userRoles select p.RoleID).ToList();
+
+            userData.Roles = roles;
             //将当前登入的用户信息序列化
             var data = JsonConvert.SerializeObject(userData);
 
@@ -252,8 +256,9 @@ namespace WebApplicationWZH.Controllers
             context.Response.Cookies.Add(cookie);
 
             HttpContext.Current.Session["User"] = data;
-            HttpContext.Current.Session["UserRole"] = "1,2";//"admin,aa,bb";
+            //HttpContext.Current.Session["UserRole"] = "1,2";//"admin,aa,bb";
             HttpContext.Current.Session["UserID"] = Id;
+            HttpContext.Current.Session["UserRole"] = string.Join(",", roles);
         }
         /// <summary>
         /// 删除用户ticket票据
