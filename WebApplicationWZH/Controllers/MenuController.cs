@@ -27,6 +27,12 @@ namespace WebApplicationWZH.Controllers
             return View(menuView);
         }
 
+        [Description(ActionOrderNumber = 2, ActionTitle = "主页2")]
+        public ActionResult Index2()
+        {
+            return View();
+        }
+
         [Description(ActionOrderNumber = 2, ActionTitle = "新增")]
         [HttpPost]
         public ActionResult Insert()

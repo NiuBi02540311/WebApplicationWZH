@@ -10,19 +10,34 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Index</title>
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+    <!-- jQuery -->
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <!-- bootstrap -->
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <!-- ztree -->
     <link href="~/HuiAdmin/lib/zTreev3/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
     <script src="~/HuiAdmin/lib/zTreev3/js/jquery.ztree.core.min.js"></script>
     <script src="~/HuiAdmin/lib/zTreev3/js/jquery.ztree.excheck.min.js"></script>
+
+    <!-- font-awesome -->
+    <link href="~/Scripts/dlshouwengrid/dependents/fontAwesome/css/font-awesome.min.css" rel="stylesheet" media="all" />
+
+    <!-- DLShouWen Grid httpss://os.dlshouwen.com/grid/doc/i18n/zh-cn/reference.html -->
+    <script src="~/Scripts/dlshouwengrid/dlshouwen.grid.min.js"></script>
+    <script src="~/Scripts/dlshouwengrid/i18n/zh-cn.js"></script>
+    <link href="~/Scripts/dlshouwengrid/dlshouwen.grid.min.css" rel="stylesheet" />
+    <!-- datePicker -->
+    <script src="~/Scripts/dlshouwengrid/dependents/datePicker/WdatePicker.js" defer="defer"></script>
+    <link href="~/Scripts/dlshouwengrid/dependents/datePicker/skin/WdatePicker.css" rel="stylesheet" />
+    <link href="~/Scripts/dlshouwengrid/dependents/datePicker/skin/default/datepicker.css" rel="stylesheet" />
+
 </head>
 <body>
     @{
         var roles = Model.sysRoles;
 
-     }
+    }
     <div class="container">
 
         <h4>Hello, world!</h4>
@@ -55,38 +70,40 @@
                         <ul id="treeDemo3" class="ztree" style="display:none">></ul>
                     </div>
                     <div class="col-md-2" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
-                        <div style="border-bottom: solid 1px #ff0000; padding: 10px; ">
-                            <button class="btn-primary btn-sm" id="SaveRoleMenu" >保存权限</button>
+                        <div style="border-bottom: solid 1px #ff0000; padding: 10px:">
+                            <button class="btn-primary btn-sm" id="SaveRoleMenu" style="margin: 10px;">保存权限</button>
                         </div>
-                        
+
                         @{
-                           int m = 1;
+                            int m = 1;
                             string ck = "";
-                            foreach( var t in roles )
+                            foreach (var t in roles)
                             {
                                 ck = m == 1000 ? "checked" : "";
                                 <div class="radio">
                                     <label>
-                                        <input onclick="radioclick(this)"type="radio" name="optionsRadios" id="role_@t.RoleID" value="@t.RoleID" @ck>@t.OrderRule . @t.RoleName 
+                                        <input onclick="radioclick(this)" type="radio" name="optionsRadios" id="role_@t.RoleID" value="@t.RoleID" @ck>@t.OrderRule . @t.RoleName
                                     </label>
                                 </div>
                                 m++;
                             }
                         }
                     </div>
-                    <div  class="col-md-7" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
-                    
+                    <div class="col-md-7" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
+                        <div>
+                            <div id="gridContainer_2_1_1" class="dlshouwen-grid-container"></div>
+                            <div id="gridToolBarContainer_2_1_1" class="dlshouwen-grid-toolbar-container"></div>
+                        </div>
                     </div>
+
+
+
                 </div>
-
-
 
             </div>
 
         </div>
-
     </div>
-
 
     <div class="container" style="display:none">
 
@@ -121,7 +138,7 @@
 
     </div>
 
-    <SCRIPT>
+    <script>
         var zTreeObj;
         // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
         var setting8 = {
@@ -238,7 +255,7 @@
                 //window.parent.showmsg("您选择的是：" + radio.value);
                 //alert("您选择的是：" + radio.value);
                 if (radio == null || radio == undefined || radio == "") {
-                    showmsg("请选择一个角色名称后再保存数据！");
+                    log("请选择一个角色名称后再保存数据！");
                     return;
                 }
                 let nodes = zTreeObj.getCheckedNodes();// 复选框选中的节点
@@ -253,25 +270,25 @@
             });
 
 
-            
+
         });
         function radioclick(obj) {
-            showmsg("xxx")
-            obj.style.color = "red";
+            //log("xxx")
+            console.log(obj);
+            //document.getElementById().style.color
+            //obj.style.background = "blueviolet";
         }
-        function showmsg(msg) {
+        function log(msg) {
 
-            var p = window.parent;
-            console.log(p);
-            if (p == null || p == undefined) {
+            let showmsg = window.parent.showmsg;
+            if (showmsg == null || showmsg == undefined) {
                 alert(msg);
             } else {
-                window.parent.showmsg(msg, 2);
+                showmsg(msg, 2, 3000);
             }
 
         }
-    </SCRIPT>
-
+    </script>
     <script>
         //定义接收节点数据的变量
         var zNodes2;
@@ -331,63 +348,186 @@
             $.fn.zTree.init($("#treeDemo3"), setting);
         });
     </script>
+    <script type="text/javascript">
+		<!--
+        var setting4 = {
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+
+        var zNodes4 = [
+            { id: 1, pId: 0, name: "can check 1", open: true },
+            { id: 11, pId: 1, name: "can check 1-1", open: true },
+            { id: 111, pId: 11, name: "can check 1-1-1" },
+            { id: 112, pId: 11, name: "can check 1-1-2" },
+            { id: 12, pId: 1, name: "can check 1-2", open: true },
+            { id: 121, pId: 12, name: "can check 1-2-1" },
+            { id: 122, pId: 12, name: "can check 1-2-2" },
+            { id: 2, pId: 0, name: "can check 2", checked: true, open: true },
+            { id: 21, pId: 2, name: "can check 2-1" },
+            { id: 22, pId: 2, name: "can check 2-2", open: true },
+            { id: 221, pId: 22, name: "can check 2-2-1", checked: true },
+            { id: 222, pId: 22, name: "can check 2-2-2" },
+            { id: 23, pId: 2, name: "can check 2-3" }
+        ];
+
+        var code;
+
+        function setCheck() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+                py = $("#py").attr("checked") ? "p" : "",
+                sy = $("#sy").attr("checked") ? "s" : "",
+                pn = $("#pn").attr("checked") ? "p" : "",
+                sn = $("#sn").attr("checked") ? "s" : "",
+                type = { "Y": py + sy, "N": pn + sn };
+            zTree.setting.check.chkboxType = type;
+            showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
+        }
+        function showCode(str) {
+            if (!code) code = $("#code");
+            code.empty();
+            code.append("<li>" + str + "</li>");
+        }
+
+        $(document).ready(function () {
+            return;
+            $.fn.zTree.init($("#treeDemo"), setting4, zNodes4);
+            setCheck();
+            $("#py").bind("change", setCheck);
+            $("#sy").bind("change", setCheck);
+            $("#pn").bind("change", setCheck);
+            $("#sn").bind("change", setCheck);
+        });
+        //-->
+    </script>
+    <script>
+        //映射内容
+        var sex = { 1: '男', 2: '女' };
+        var degree = { 1: '小学', 2: '初中', 3: '高中', 4: '中专', 5: '大学', 6: '硕士', 7: '博士', 8: '其他' };
+        //模拟数据（薪水在6000-12000之间，日期在1980-01-01 00::00:00到2014-10-01 00:00:00之间）
+        var datas = new Array();
+        for (var i = 0; i < 186; i++) {
+            var user = new Object();
+            user.user_id = 'user_' + i;
+            user.user_code = 'user_' + i;
+            user.user_name = '模拟用户' + (Math.floor(Math.random() * 1000) + 10000) + '号';
+            user.sex = (Math.floor(Math.random() * 2) + 1);
+            user.salary = (Math.floor(Math.random() * 6000) + 6000);
+            user.degree = (Math.floor(Math.random() * 8) + 1);
+            user.time = new Date(Math.floor(Math.random() * 1096588800000) + 315504000000);
+            user.time_stamp_s = Math.floor((Math.floor(Math.random() * 1096588800000) + 315504000000) / 1000);
+            user.time_stamp_ms = Math.floor(Math.random() * 1096588800000) + 315504000000;
+            user.string_date = $.fn.dlshouwen.grid.tools.dateFormat(new Date(Math.floor(Math.random() * 1096588800000) + 315504000000), 'yyyy-MM-dd');
+            user.string_time = $.fn.dlshouwen.grid.tools.dateFormat(new Date(Math.floor(Math.random() * 1096588800000) + 315504000000), 'yyyy-MM-dd hh:mm:ss');
+            datas.push(user);
+        }
+        //定义表格
+        var gridColumns = [
+            { id: 'user_code', title: '用户编号', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'eq' },
+            { id: 'user_name', title: '用户名称', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk' },
+            {
+                id: 'sex', title: '性别', type: 'string', codeTable: sex, columnClass: 'text-center', hideType: 'xs', fastQuery: true, fastQueryType: 'eq', resolution: function (record, value) {
+                    var content = '';
+                    if (value == 1) {
+                        content += '<span style="background:#00a2ca;padding:2px 10px;color:white;">Male</span>';
+                    } else {
+                        content += '<span style="background:#c447ae;padding:2px 10px;color:white;">Female</span>';
+                    }
+                    return content;
+                }
+            },
+            { id: 'salary', title: '薪水', type: 'number', format: '#,###.00', columnClass: 'text-center', hideType: 'xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'degree', title: '学历', type: 'string', codeTable: degree, columnClass: 'text-center', hideType: 'sm|xs', fastQuery: true, fastQueryType: 'eq' },
+            { id: 'time', title: '日期对象', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', columnClass: 'text-center', hideType: 'md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'time_stamp_s', title: '秒级时间戳', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', otype: 'time_stamp_s', columnClass: 'text-center', hideType: 'lg|md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'time_stamp_ms', title: '毫秒级时间戳', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', otype: 'time_stamp_ms', columnClass: 'text-center', hideType: 'lg|md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'string_date', title: '日期格式字符串', type: 'date', format: 'yyyy-MM-dd', otype: 'string', oformat: 'yyyy-MM-dd', columnClass: 'text-center', hideType: 'lg|md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'string_time', title: '时间格式字符串', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', otype: 'string', oformat: 'yyyy-MM-dd hh:mm:ss', columnClass: 'text-center', hideType: 'lg|md|sm|xs', fastQuery: true, fastQueryType: 'range' }
+        ];
+        var gridOption = {
+            ajaxLoad: false,
+            exportFileName: '用户列表',
+            datas: datas,
+            columns: gridColumns,
+            pageSize: 10
+        };
+        var grid = $.fn.dlshouwen.grid.init(gridOption);
+        $(function () {
+           // grid.load();
+        });
+    </script>
+    <script>
+        var sex = { 1: '男', 2: '女' };
+        var gridColumns_2_1_1 = [
+            { id: 'user_code', title: '用户编号', type: 'string', columnClass: 'text-center' },
+            { id: 'user_name', title: '用户名称', type: 'string', columnClass: 'text-center' },
+            { id: 'sex', title: '性别', type: 'string', codeTable: sex, columnClass: 'text-center' },
+            { id: 'salary', title: '薪水', type: 'number', format: '#,###.00', columnClass: 'text-center' }
+        ];
+        var gridOption_2_1_1 = {
+            lang: 'zh-cn',
+            check: true,
+            checkWidth: 40,
+            ajaxLoad: false,
+            exportFileName: '用户列表',
+            datas: datas,
+            columns: gridColumns_2_1_1,
+            gridContainer: 'gridContainer_2_1_1',
+            toolbarContainer: 'gridToolBarContainer_2_1_1',
+            tools: '',
+            pageSize: 10,
+            pageSizeLimit: [10, 20, 50]
+        };
+        var grid_2_1_1 = $.fn.dlshouwen.grid.init(gridOption_2_1_1);
+        $(function () {
+            //grid_2_1_1.load();
+        });
+    </script>
+    <script>
+        var gridColumns_2_2_2 = [
+            { id: 'user_code', title: '用户编号', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'eq' },
+            { id: 'user_name', title: '用户名称', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk' },
+            {
+                id: 'sex', title: '性别', type: 'string', codeTable: sex, columnClass: 'text-center', hideType: 'xs', fastQuery: true, fastQueryType: 'eq', resolution: function (value, record, column, grid, dataNo, columnNo) {
+                    var content = '';
+                    if (value == 1) {
+                        content += '<span style="background:#00a2ca;padding:2px 10px;color:white;">Male</span>';
+                    } else {
+                        content += '<span style="background:#c447ae;padding:2px 10px;color:white;">Female</span>';
+                    }
+                    return content;
+                }
+            },
+            { id: 'salary', title: '薪水', type: 'number', format: '#,###.00', columnClass: 'text-center', hideType: 'xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'degree', title: '学历', type: 'string', codeTable: degree, columnClass: 'text-center', hideType: 'sm|xs', fastQuery: true, fastQueryType: 'eq' },
+            { id: 'time', title: '日期对象', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', columnClass: 'text-center', hideType: 'md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'time_stamp_s', title: '秒级时间戳', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', otype: 'time_stamp_s', columnClass: 'text-center', hideType: 'lg|md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'time_stamp_ms', title: '毫秒级时间戳', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', otype: 'time_stamp_ms S', columnClass: 'text-center', hideType: 'lg|md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'string_date', title: '日期格式字符串', type: 'date', format: 'yyyy-MM-dd', otype: 'string', oformat: 'yyyy-MM-dd', columnClass: 'text-center', hideType: 'lg|md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'string_time', title: '时间格式字符串', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', otype: 'string', oformat: 'yyyy-MM-dd hh:mm:ss', columnClass: 'text-center', hideType: 'lg|md|sm|xs', fastQuery: true, fastQueryType: 'range' }
+        ];
+        var gridOption_2_2_2 = {
+            lang: 'zh-cn',
+            ajaxLoad: true,
+            loadURL: '/Role/GetRoleUser',
+            exportFileName: '用户列表',
+            columns: gridColumns_2_2_2,
+            gridContainer: 'gridContainer_2_1_1',
+            toolbarContainer: 'gridToolBarContainer_2_1_1',
+            tools: '',
+            pageSize: 10,
+            pageSizeLimit: [10, 20, 50]
+        };
+        var grid_2_2_2 = $.fn.dlshouwen.grid.init(gridOption_2_2_2);
+        $(function () {
+            grid_2_2_2.load();
+        });
+    </script>
 </body>
 </html>
-<SCRIPT type="text/javascript">
-		<!--
-    var setting4 = {
-        check: {
-            enable: true
-        },
-        data: {
-            simpleData: {
-                enable: true
-            }
-        }
-    };
-
-    var zNodes4 = [
-        { id: 1, pId: 0, name: "can check 1", open: true },
-        { id: 11, pId: 1, name: "can check 1-1", open: true },
-        { id: 111, pId: 11, name: "can check 1-1-1" },
-        { id: 112, pId: 11, name: "can check 1-1-2" },
-        { id: 12, pId: 1, name: "can check 1-2", open: true },
-        { id: 121, pId: 12, name: "can check 1-2-1" },
-        { id: 122, pId: 12, name: "can check 1-2-2" },
-        { id: 2, pId: 0, name: "can check 2", checked: true, open: true },
-        { id: 21, pId: 2, name: "can check 2-1" },
-        { id: 22, pId: 2, name: "can check 2-2", open: true },
-        { id: 221, pId: 22, name: "can check 2-2-1", checked: true },
-        { id: 222, pId: 22, name: "can check 2-2-2" },
-        { id: 23, pId: 2, name: "can check 2-3" }
-    ];
-
-    var code;
-
-    function setCheck() {
-        var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
-            py = $("#py").attr("checked") ? "p" : "",
-            sy = $("#sy").attr("checked") ? "s" : "",
-            pn = $("#pn").attr("checked") ? "p" : "",
-            sn = $("#sn").attr("checked") ? "s" : "",
-            type = { "Y": py + sy, "N": pn + sn };
-        zTree.setting.check.chkboxType = type;
-        showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
-    }
-    function showCode(str) {
-        if (!code) code = $("#code");
-        code.empty();
-        code.append("<li>" + str + "</li>");
-    }
-
-    $(document).ready(function () {
-        return;
-        $.fn.zTree.init($("#treeDemo"), setting4, zNodes4);
-        setCheck();
-        $("#py").bind("change", setCheck);
-        $("#sy").bind("change", setCheck);
-        $("#pn").bind("change", setCheck);
-        $("#sn").bind("change", setCheck);
-    });
-        //-->
-</SCRIPT>

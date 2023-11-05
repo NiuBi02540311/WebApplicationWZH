@@ -1,0 +1,89 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index2</title>
+    <!-- jQuery -->
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <!-- bootstrap -->
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+    <!--[if lt IE 9]>
+        <script src="../../../dependents/bootstrap/plugins/ie/html5shiv.js"></script>
+        <script src="../../../dependents/bootstrap/plugins/ie/respond.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+        <script src="../../../dependents/bootstrap/plugins/ie/json2.js"></script>
+    <![endif]-->
+    <!-- font-awesome -->
+    <link href="~/Scripts/dlshouwengrid/dependents/fontAwesome/css/font-awesome.min.css" rel="stylesheet" media="all" />
+
+    <!-- DLShouWen Grid httpss://os.dlshouwen.com/grid/doc/i18n/zh-cn/reference.html   en.js  zh-cn.js -->
+    <script src="~/Scripts/dlshouwengrid/dlshouwen.grid.min.js"></script>
+    <script src="~/Scripts/dlshouwengrid/i18n/zh-cn.js"></script>
+    <link href="~/Scripts/dlshouwengrid/dlshouwen.grid.min.css" rel="stylesheet" />
+    <!-- datePicker -->
+    <script src="~/Scripts/dlshouwengrid/dependents/datePicker/WdatePicker.js" defer="defer"></script>
+    <link href="~/Scripts/dlshouwengrid/dependents/datePicker/skin/WdatePicker.css" rel="stylesheet" />
+    <link href="~/Scripts/dlshouwengrid/dependents/datePicker/skin/default/datepicker.css" rel="stylesheet" />
+
+
+</head>
+<body>
+    <div class="container">
+        <div id="gridContainer_2_1_1" class="dlshouwen-grid-container"></div>
+        <div id="gridToolBarContainer_2_1_1" class="dlshouwen-grid-toolbar-container"></div>
+    </div>
+
+    <script>
+        var sex = { 1: '男', 2: '女' };
+        var datas = new Array();
+        for (var i = 0; i < 186; i++) {
+            var user = new Object();
+            user.user_id = 'user_' + i;
+            user.user_code = 'user_' + i;
+            user.user_name = '模拟用户' + (Math.floor(Math.random() * 1000) + 10000) + '号';
+            user.sex = (Math.floor(Math.random() * 2) + 1);
+            user.salary = (Math.floor(Math.random() * 6000) + 6000);
+            user.degree = (Math.floor(Math.random() * 8) + 1);
+            user.time = new Date(Math.floor(Math.random() * 1096588800000) + 315504000000);
+            user.time_stamp_s = Math.floor((Math.floor(Math.random() * 1096588800000) + 315504000000) / 1000);
+            user.time_stamp_ms = Math.floor(Math.random() * 1096588800000) + 315504000000;
+            user.string_date = $.fn.dlshouwen.grid.tools.dateFormat(new Date(Math.floor(Math.random() * 1096588800000) + 315504000000), 'yyyy-MM-dd');
+            user.string_time = $.fn.dlshouwen.grid.tools.dateFormat(new Date(Math.floor(Math.random() * 1096588800000) + 315504000000), 'yyyy-MM-dd hh:mm:ss');
+            datas.push(user);
+        }
+        var gridColumns_2_1_1 = [
+            { id: 'user_code', title: '用户编号', type: 'string', columnClass: 'text-center' },
+            { id: 'user_name', title: '用户名称', type: 'string', columnClass: 'text-center' },
+            { id: 'sex', title: '性别', type: 'string', codeTable: sex, columnClass: 'text-center' },
+            { id: 'salary', title: '薪水', type: 'number', format: '#,###.00', columnClass: 'text-center' }
+        ];
+        var gridOption_2_1_1 = {
+            lang: 'zh-cn',
+            ajaxLoad: false,
+            check: true,
+            checkWidth: 40,
+            exportFileName: '用户列表',
+            datas: datas,
+            columns: gridColumns_2_1_1,
+            gridContainer: 'gridContainer_2_1_1',
+            toolbarContainer: 'gridToolBarContainer_2_1_1',
+            tools: '',
+            pageSize: 10,
+            pageSizeLimit: [10, 20, 50]
+        };
+        var grid_2_1_1 = $.fn.dlshouwen.grid.init(gridOption_2_1_1);
+        $(function () {
+            grid_2_1_1.load();
+        });
+    </script>
+</body>
+</html>
