@@ -31,7 +31,7 @@ namespace WebApplicationWZH.Controllers
     public class gridPager
     {
         //{"isExport":false,"pageSize":10,"startRecord":0,"nowPage":1,"recordCount":-1,"pageCount":-1,"parameters":{},"fastQueryParameters":{},"advanceQueryConditions":[],"advanceQuerySorts":[]}
-
+        //https://os.dlshouwen.com/grid/doc/i18n/zh-cn/example.html#2.2.2
         public bool isExport { get; set; }
         public int pageSize { get; set; }
         public int startRecord { get; set; }
@@ -50,4 +50,28 @@ namespace WebApplicationWZH.Controllers
         public object advanceQueryConditions { get; set; }
         public object advanceQuerySorts { get; set; }
     }
+
+    /*
+     查询返回
+     {
+	"advanceQueryConditions": [],
+	"advanceQuerySorts": [],
+	"exhibitDatas": [数据],
+	"exportAllData": false,
+	"exportColumns": [],
+	"exportDataIsProcessed": false,
+	"exportDatas": [],
+	"exportFileName": "",
+	"exportType": "",
+	"fastQueryParameters": {},
+	"isExport": false,
+	"isSuccess": true,
+	"nowPage": 1,
+	"pageCount": 20,
+	"pageSize": 10,
+	"parameters": {},
+	"recordCount": 200,
+	"startRecord": 0
+     }
+     */
 }
