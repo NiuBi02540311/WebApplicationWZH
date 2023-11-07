@@ -16,9 +16,9 @@ namespace WebApplicationWZH.Controllers
         }
         
         [HttpPost]
-        //[ValidateAntiForgeryToken]
-        [SkipCheckLogin]
-        [SkipVerification]
+        [MyValidateAntiForgeryToken]
+        //[SkipCheckLogin]
+        //[SkipVerification]
         public string GetRoleUser()
         {
             string gridpager = HttpContext.Request.Params["gridPager"];
@@ -50,102 +50,5 @@ namespace WebApplicationWZH.Controllers
         }
     }
 
-    public class GridRequestModel
-    {
-        //{"isExport":false,"pageSize":10,"startRecord":0,"nowPage":1,"recordCount":-1,"pageCount":-1,"parameters":{},"fastQueryParameters":{},"advanceQueryConditions":[],"advanceQuerySorts":[]}
-        //https://os.dlshouwen.com/grid/doc/i18n/zh-cn/example.html#2.2.2
-        public bool isExport { get; set; }
-        public int pageSize { get; set; }
-        public int startRecord { get; set; }
-
-        public int nowPage { get; set; }
-        public int recordCount { get; set; }
-        public int pageCount { get; set; }
-
-        public class parameters
-        { 
-        }
-        public class fastQueryParameters
-        {
-        }
-
-        public object advanceQueryConditions { get; set; }
-        public object advanceQuerySorts { get; set; }
-
-        public List<object> exhibitDatas { get; set; }
-
-        public bool exportAllData { get; set; } = false;
-
-        public List<object> exportColumns { get; set; }
-
-        public bool exportDataIsProcessed { get; set; } = false;
-    }
-
-    public class GridResponseModel<T> where T : new()
-    {
-        //{"isExport":false,"pageSize":10,"startRecord":0,"nowPage":1,"recordCount":-1,"pageCount":-1,"parameters":{},"fastQueryParameters":{},"advanceQueryConditions":[],"advanceQuerySorts":[]}
-        //https://os.dlshouwen.com/grid/doc/i18n/zh-cn/example.html#2.2.2
-        public bool isExport { get; set; }
-        public int pageSize { get; set; }
-        public int startRecord { get; set; }
-
-        public int nowPage { get; set; }
-        public int recordCount { get; set; }
-        public int pageCount { get; set; }
-
-        public parameters parameters { get; set; } = new parameters();
-
-        public fastQueryParameters fastQueryParameters { get; set; } = new fastQueryParameters();
-
-        public object advanceQueryConditions { get; set; } = new List<object>();
-        public object advanceQuerySorts { get; set; } = new List<object>();
-
-        public List<T> exhibitDatas { get; set; }
-
-      
-
-        public bool exportAllData { get; set; } = false;
-
-        public List<object> exportColumns { get; set; } = new List<object>();
-
-        public bool exportDataIsProcessed { get; set; } = false;
-
-        public List<object> exportDatas { get; set; } = new List<object>();
-
-        public string exportFileName { get; set; } = "";
-
-        public string exportType { get; set; } = "";
-
-        public bool isSuccess { get; set; } = true;
  
-    }
-    public class parameters
-    {
-    }
-    public class fastQueryParameters
-    {
-    }
-    /*
-     查询返回
-     {
-	"advanceQueryConditions": [],
-	"advanceQuerySorts": [],
-	"exhibitDatas": [数据],
-	"exportAllData": false,
-	"exportColumns": [],
-	"exportDataIsProcessed": false,
-	"exportDatas": [],
-	"exportFileName": "",
-	"exportType": "",
-	"fastQueryParameters": {},
-	"isExport": false,
-	"isSuccess": true,
-	"nowPage": 1,
-	"pageCount": 20,
-	"pageSize": 10,
-	"parameters": {},
-	"recordCount": 200,
-	"startRecord": 0
-     }
-     */
 }

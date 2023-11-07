@@ -138,6 +138,7 @@
 
     </div>
 
+    @Html.AntiForgeryToken()
     <script>
         var zTreeObj;
         // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
@@ -500,6 +501,15 @@
             { id: 'IsDelete', title: 'IsDelete', type: 'number', format: '#,###.00', columnClass: 'text-center', hideType: 'xs', fastQuery: true, fastQueryType: 'range' },
             { id: 'CreateTime', title: '日期对象', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', columnClass: 'text-center', hideType: 'md|sm|xs', fastQuery: true, fastQueryType: 'range' },
         ];
+
+
+         function gettoken() {
+           let token = '@Html.AntiForgeryToken()';
+           return $(token).val();
+        }
+
+         
+
         var gridOption_2_2_2 = {
             lang: 'zh-cn',
             ajaxLoad: true,
@@ -510,10 +520,24 @@
             toolbarContainer: 'gridToolBarContainer_2_1_1',
             tools: '',
             pageSize: 10,
-            pageSizeLimit: [10, 20, 50]
+            pageSizeLimit: [10, 20, 50],
+            //parameters: { "__RequestVerificationToken": gettoken() }
+            //parameters: parameters
         };
+
+      
+      
         var grid_2_2_2 = $.fn.dlshouwen.grid.init(gridOption_2_2_2);
         $(function () {
+            var token = document.getElementsByName("__RequestVerificationToken")[0].value
+            grid_2_2_2.parameters = new Object();
+            grid_2_2_2.parameters['__RequestVerificationToken'] = token;
+
+            //grid_2_2_2.fastQueryParameters = new Object();
+            //grid_2_2_2.fastQueryParameters['__RequestVerificationToken'] = gettoken();
+
+            
+            console.log(grid_2_2_2);
             grid_2_2_2.load();
         });
 
