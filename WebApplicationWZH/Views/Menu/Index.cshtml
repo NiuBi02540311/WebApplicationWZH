@@ -32,21 +32,18 @@
     <link href="~/Scripts/dlshouwengrid/dependents/datePicker/skin/WdatePicker.css" rel="stylesheet" />
     <link href="~/Scripts/dlshouwengrid/dependents/datePicker/skin/default/datepicker.css" rel="stylesheet" />
 
+    <style>
+         
+    </style>
 </head>
 <body>
     @{
         var roles = Model.sysRoles;
 
     }
-    <div class="container">
-
-        <h4>Hello, world!</h4>
-
+    <div class="container" style="margin-top:10px;">
         <div class="row">
-
-
             <div class="col-md-12" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
-
                 <div class="row">
                     <div class="col-md-12" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
 
@@ -493,13 +490,13 @@
     <script>
         //https://os.dlshouwen.com/grid/doc/i18n/zh-cn/example.html#2.2.2
         var gridColumns_2_2_2 = [
-            { id: 'UserID', title: '用户编号', type: 'number', columnClass: 'text-center', fastQuery: true, fastQueryType: 'range' },
-            { id: 'UserName', title: '用户名称', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk' },
-            { id: 'PassWord', title: 'PassWord', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk' },
-            { id: 'ChineseName', title: 'ChineseName', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk' },
-            { id: 'Statu', title: 'Statu', type: 'number', format: '#,###.00', columnClass: 'text-center', hideType: 'xs', fastQuery: true, fastQueryType: 'range' },
-            { id: 'IsDelete', title: 'IsDelete', type: 'number', format: '#,###.00', columnClass: 'text-center', hideType: 'xs', fastQuery: true, fastQueryType: 'range' },
-            { id: 'CreateTime', title: '日期对象', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', columnClass: 'text-center', hideType: 'md|sm|xs', fastQuery: true, fastQueryType: 'range' },
+            { id: 'UserID', title: '用户编号', type: 'number', columnClass: 'text-center', fastQuery: true, fastQueryType: 'range', headerStyle: 'background:#00a2ca;color:white;' },
+            { id: 'UserName', title: '用户名称', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk', headerStyle: 'background:#00a2ca;color:white;'  },
+            { id: 'PassWord', title: 'PassWord', type: 'string', columnClass: 'text-center', hide: true, fastQueryType: 'lk' },
+            { id: 'ChineseName', title: 'ChineseName', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk', headerStyle: 'background:#00a2ca;color:white;' },
+            { id: 'Statu', title: 'Statu', type: 'number', format: '#,###.00', columnClass: 'text-center', hideType: 'xs', hide: true, fastQueryType: 'range' },
+            { id: 'IsDelete', title: 'IsDelete', type: 'number', format: '#,###.00', columnClass: 'text-center', hideType: 'xs', hide: true, fastQueryType: 'range' },
+            { id: 'CreateTime', title: '日期对象', type: 'date', format: 'yyyy-MM-dd hh:mm:ss', columnClass: 'text-center', hideType: 'md|sm|xs', hide: true, fastQueryType: 'range' },
         ];
 
 
@@ -521,6 +518,8 @@
             tools: '',
             pageSize: 10,
             pageSizeLimit: [10, 20, 50],
+            check: true,
+            checkWidth: 40
             //parameters: { "__RequestVerificationToken": gettoken() }
             //parameters: parameters
         };
