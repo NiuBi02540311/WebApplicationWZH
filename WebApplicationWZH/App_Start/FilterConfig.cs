@@ -312,7 +312,17 @@ namespace WebApplicationWZH
                     {
                         // AntiForgery.Validate在NetCore中没有的
                         //AntiForgery.Validate(cookieValue, request["__RequestVerificationToken"]);//验证 HTML 表单字段中的输入数据是否来自已提交数据的用户。
-                        AntiForgery.Validate(cookieValue, request.Headers["__RequestVerificationToken"]);
+                        string tk = request.Headers["__RequestVerificationToken"];
+                        if (string.IsNullOrWhiteSpace(tk))
+                        {
+                            GridRequestModel gridRequestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<GridRequestModel>(request.Params["gridPager"]);
+                            AntiForgery.Validate(cookieValue, gridRequestModel.parameters.__RequestVerificationToken);
+                        }
+                        else
+                        {
+                            AntiForgery.Validate(cookieValue, tk);
+                        }
+
                     }
                     catch (Exception ex)
                     {

@@ -53,7 +53,7 @@ namespace WebApplicationWZH.Controllers
                     //    ReturnParameter = "HttpResponseMessage";
                     //}
                     if (m.IsVirtual) continue;
-                    if (ReturnParameter.Contains("ActionResult") || ReturnParameter.Contains("HttpResponseMessage"))
+                    if (ReturnParameter.Contains("ActionResult") || ReturnParameter.Contains("HttpResponseMessage") || ReturnParameter.Contains("System.String"))
                     {
                         //ReturnParameter = "ActionResult";
                         //continue;

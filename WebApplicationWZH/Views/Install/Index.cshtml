@@ -33,9 +33,10 @@
                 </tr>
             </thead>
             <tbody>
-                @{ int nn = 1; }
+                @{ int nnn = 1; }
                 @foreach (var v in Model)
                 {
+                    int nn = 1;
                     var list = v.controllerItem;
                     <tr>
                         <td>@nn</td>
@@ -44,8 +45,9 @@
                             <div id="@v.controlleName">
                                 @foreach (var t in list)
                                 {
-                                    string txt = t.ActionName + "【" + t.ActionType + "】  ";
-                                    <input type="checkbox" value="@t.ActionName">@txt
+                                   string txt = t.ActionName + "【" + t.ActionType + "】  ";
+                                   @nn <input type="checkbox" value="@t.ActionName">@txt 
+                                    nn++;
                                 }
                             </div>
 
@@ -53,7 +55,7 @@
                             <button class="btn-sm btn-primary" onclick="GetCheck(false,'@v.controlleName')">全不选</button>
                         </td>
                     </tr>
-                    nn++;
+                   
                 }
             </tbody>
         </table>
