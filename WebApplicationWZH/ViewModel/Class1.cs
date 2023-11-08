@@ -13,4 +13,14 @@ namespace WebApplicationWZH.ViewModel
     {
        public List<SysRole> sysRoles { get; set; }
     }
+
+    public class SysUserRoleViewModel
+    {
+        public string UserName { get; set; }
+        public int Tid { get; set; }
+        public int UserID { get; set; }
+        public int RoleID { get; set; } = 0;
+        //public int lClass { get; set; }
+         
+    }
 }

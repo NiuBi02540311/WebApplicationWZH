@@ -152,6 +152,7 @@
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\SheetController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -2883,6 +2884,7 @@
     <Content Include="Scripts\dlshouwengrid\doc\fonts\dlshouwen.eot" />
     <Content Include="Scripts\dlshouwengrid\doc\fonts\dlshouwen.ttf" />
     <Content Include="Scripts\dlshouwengrid\doc\fonts\dlshouwen.woff" />
+    <Content Include="Content\demo1.json" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\buttonPermission.js" />
     <Content Include="Scripts\dateMultiFunc.js" />
@@ -3003,6 +3005,8 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\layui\layui.css" />
+    <Content Include="Scripts\layui\layui.js" />
     <Content Include="Scripts\Login\app.js" />
     <Content Include="Scripts\Login\particles.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
@@ -3034,11 +3038,14 @@
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Install\Index2.cshtml" />
     <Content Include="Views\Menu\Index2.cshtml" />
+    <Content Include="Views\Role\Index.cshtml" />
+    <Content Include="Views\Test\Index.cshtml" />
+    <Content Include="Views\Test\Demo1.cshtml" />
+    <Content Include="Views\Test\Demo2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\image\" />
-    <Folder Include="Views\Role\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
