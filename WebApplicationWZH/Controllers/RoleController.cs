@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebApplicationWZH.Models;
-
+using WebApplicationWZH.ViewModel; 
 namespace WebApplicationWZH.Controllers
 {
     public class RoleController : Controller
@@ -47,6 +47,26 @@ namespace WebApplicationWZH.Controllers
 
             // 2. DataTable 转 List
             //List<CustomerContact> list2 = DtToList<CustomerContact>.ConvertToModel(dt);
+        }
+
+        public ActionResult GetSysUserRoleViewModel()
+        {
+            //fsql.Select<Xxx>.LeftJoin<Yyy>((a, b) => a.YyyId == b.Id).ToList();
+            //var data = DB.SqlServer.Select<SysUserRole>()
+            //      .InnerJoin<Users>((a, b) => a.UserID == b.UserID && a.IsActive == 1 && b.IsDelete == 0)
+            //      .ToList(a => new { a.UserID, a.RoleID, a.Tid });
+
+            string sql = $@"
+                 SELECT b.UserName,a.Tid,a.UserID,a.RoleID FROM dbo.SysUserRole a 
+                  inner join dbo.Users b on a.UserID = b.UserID
+                  where a.IsActive = 1 and b.IsDelete = 0 and a.RoleID = 1";
+            //直接查询
+          var data = DB.SqlServer.Ado.Query<SysUserRoleViewModel>(sql);
+
+            //嵌套一层做二次查询
+            //fsql.Select<T>().WithSql(sql).Page(1, 10).ToList();
+
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
     }
 
