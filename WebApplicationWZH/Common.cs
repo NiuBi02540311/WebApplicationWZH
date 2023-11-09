@@ -2933,6 +2933,8 @@ namespace WebApplicationWZH
     public class parameters
     {
         public string __RequestVerificationToken { get; set; }
+
+        public int RoleID { get; set; } = 0;
     }
     public class fastQueryParameters
     {

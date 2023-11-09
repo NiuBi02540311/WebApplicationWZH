@@ -79,7 +79,7 @@
                                 ck = m == 1000 ? "checked" : "";
                                 <div class="radio">
                                     <label>
-                                        <input onclick="radioclick(this)" type="radio" name="optionsRadios" id="role_@t.RoleID" value="@t.RoleID" @ck>@t.OrderRule . @t.RoleName
+                                        <input onclick="radioclick(this,@t.RoleID)" type="radio" name="optionsRadios" id="role_@t.RoleID" value="@t.RoleID" @ck>@t.OrderRule . @t.RoleName
                                     </label>
                                 </div>
                                 m++;
@@ -270,7 +270,7 @@
 
 
         });
-        function radioclick(obj) {
+        function radioclick2(obj) {
             //log("xxx")
             console.log(obj);
             //document.getElementById().style.color
@@ -536,8 +536,8 @@
             //grid_2_2_2.fastQueryParameters['__RequestVerificationToken'] = gettoken();
 
             
-            console.log(grid_2_2_2);
-            grid_2_2_2.load();
+            //console.log(grid_2_2_2);
+            //grid_2_2_2.load();
         });
 
      var u =    {
@@ -548,6 +548,55 @@
                 "Status": 0,
                 "IsDelete": 0,
                 "CreateTime": "\/Date(1584101408137)\/"
+        }
+    </script>
+    <script>
+        //b.UserName,a.Tid,a.UserID,a.RoleID 
+        var gridColumns_22_22_22 = [
+            { id: 'UserID', title: 'UserID', type: 'number', columnClass: 'text-center', fastQuery: true, fastQueryType: 'range', headerStyle: 'background:#00a2ca;color:white;' },
+            { id: 'UserName', title: 'UserName', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk', headerStyle: 'background:#00a2ca;color:white;' },
+            { id: 'Tid', title: 'Tid', type: 'number', columnClass: 'text-center', hide: true, fastQueryType: 'range', headerStyle: 'background:#00a2ca;color:white;' },
+            { id: 'RoleID', title: 'RoleID', type: 'number', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk', headerStyle: 'background:#00a2ca;color:white;' },
+        ];
+
+        var gridOption3 = {
+            lang: 'zh-cn',
+            ajaxLoad: true,
+            loadURL: '/Role/GetSysUserRoleViewModel',
+            exportFileName: '用户列表',
+            columns: gridColumns_22_22_22,
+            gridContainer: 'gridContainer_2_1_1',
+            toolbarContainer: 'gridToolBarContainer_2_1_1',
+            tools: '',
+            pageSize: 10,
+            pageSizeLimit: [10, 20, 50],
+            check: true,
+            checkWidth: 40
+            //parameters: { "__RequestVerificationToken": gettoken() }
+            //parameters: parameters
+        };
+        var grid_3_3_3 = $.fn.dlshouwen.grid.init(gridOption3);
+        $(function () {
+            var token = document.getElementsByName("__RequestVerificationToken")[0].value
+            grid_3_3_3.parameters = new Object();
+            grid_3_3_3.parameters['__RequestVerificationToken'] = token;
+
+            //grid_2_2_2.fastQueryParameters = new Object();
+            //grid_2_2_2.fastQueryParameters['__RequestVerificationToken'] = gettoken();
+
+
+            //console.log(grid_2_2_2);
+            grid_3_3_3.load();
+        });
+        function radioclick(obj,RoleID) {
+            //log("xxx")
+            // console.log(obj);
+            //alert(RoleID);
+            let token = document.getElementsByName("__RequestVerificationToken")[0].value
+            grid_3_3_3.parameters = new Object();
+            grid_3_3_3.parameters['__RequestVerificationToken'] = token;
+            grid_3_3_3.parameters['RoleID'] = RoleID;
+            grid_3_3_3.refresh(true);
         }
     </script>
 </body>
