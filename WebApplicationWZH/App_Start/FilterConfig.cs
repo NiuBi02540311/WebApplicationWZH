@@ -333,7 +333,7 @@ namespace WebApplicationWZH
 
                         filterContext.Result = result;
                         //filterContext.HttpContext.Response.StatusCode = 401;//应将状态代码设置为401(未授权)
-                        filterContext.HttpContext.Response.AddHeader("StatusCode", "401");
+                        filterContext.HttpContext.Response.AddHeader("StatusCode", "302");
                         return;
                     }
                 }
