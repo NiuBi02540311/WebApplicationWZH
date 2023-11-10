@@ -297,7 +297,25 @@
             icon = icon || 1; // icon = 0 警告  icon = 1 成功  icon = 2   失败
             layer.msg(Msg, { icon: icon, time: time, shade: [0.5, '#000000', true] });
         }
+        function confirmX(msg, fn,data ) {
+        //  function confirmX(msg, fn) {
+            layer.confirm(msg, {
+                btn: ['确定', '取消'] //可以无限个按钮
+               
+            }, function (index, layero) {
+                //按钮【按钮一】的回调
+                layer.close(index);
+                fn(data);
+               
+            }, function (index) {
+                //按钮【按钮二】的回调
+                layer.msg('哦', { icon: 1 });
+            });
 
+            
+        }
+
+        //confirmX("xx");
         //var indexx = layer.msg("xxx", { icon: 16, time: 0, shade: [0.5, '#000', true] });
 
         //setTimeout(function () { layer.close(indexx); }, 5000);

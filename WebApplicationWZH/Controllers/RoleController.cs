@@ -102,6 +102,17 @@ namespace WebApplicationWZH.Controllers
             return Newtonsoft.Json.JsonConvert.SerializeObject(res);
         }
 
+
+        [HttpPost]
+        [MyValidateAntiForgeryToken]
+        public ActionResult SysUserRoleDelete(string data)
+        {
+
+            string bb = data;
+
+            return View();
+        }
+
         [HttpPost]
         [MyValidateAntiForgeryToken]
         public ActionResult GetSysUserRoleViewModel2(string RoleID = "1")

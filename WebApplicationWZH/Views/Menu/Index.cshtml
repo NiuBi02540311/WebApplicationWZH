@@ -580,7 +580,7 @@
         };
         var grid_3_3_3 = $.fn.dlshouwen.grid.init(gridOption3);
         $(function () {
-            var token = document.getElementsByName("__RequestVerificationToken")[0].value
+            var token = document.getElementsByName("__RequestVerificationToken")[0].value;
             grid_3_3_3.parameters = new Object();
             grid_3_3_3.parameters['__RequestVerificationToken'] = token;
 
@@ -590,8 +590,53 @@
 
             //console.log(grid_2_2_2);
             grid_3_3_3.load();
+
+            $("#DeleteUserRole").click(function () {
+                let record =  grid_3_3_3.getCheckedRecords();
+                let recordCount = grid_3_3_3.getCheckedRecords().length;
+                if (recordCount == 0) return;
+                //window.parent.confirmX("确定要删除这些数据？", DeleteUserRole, record);
+                window.parent.confirmX("确定要删除这些数据？", DeleteUserRole, record);
+            })
+
+            function DeleteUserRole(record) {
+                //log(record);
+                let token = document.getElementsByName("__RequestVerificationToken")[0].value;
+                $.ajax({
+                    url: "/role/SysUserRoleDelete",
+                    type: 'post',
+                    headers: { "__RequestVerificationToken": token },
+                    /*__RequestVerificationToken放在请求头中，是没有效果的，是必须作为参数传递的*/
+                    beforeSend: function (XMLHttpRequest) {
+                        //XMLHttpRequest.setRequestHeader("__RequestVerificationToken", gettoken());
+                    },
+                    data: { "data": "hahaha" }// $("form").serializeArray(),
+                    //dataType: 'json',
+                    , success: function (res) {
+                        alert(res);
+                    },
+                    complete: function (xhr) {
+                        //console.log(xhr)
+                        let StatusCode = xhr.getResponseHeader('StatusCode');
+                        if (StatusCode != null && StatusCode != undefined) {
+                            alert("StatusCode = " + StatusCode);
+                            if (StatusCode == 401) {
+                                alert("当前未登录或登录过期，请重新登录!");
+                                location.href = "/Login/Index";
+                            }
+                            if (StatusCode == 302) {
+                                alert("没有访问权限");
+                            }
+                        }
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                })
+            }
         });
-        function radioclick(obj,RoleID) {
+        function radioclick(obj, RoleID) {
             //log("xxx")
             // console.log(obj);
             //alert(RoleID);
