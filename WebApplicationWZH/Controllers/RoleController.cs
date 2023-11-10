@@ -107,10 +107,13 @@ namespace WebApplicationWZH.Controllers
         [MyValidateAntiForgeryToken]
         public ActionResult SysUserRoleDelete(string data)
         {
-
-            string bb = data;
-
-            return View();
+            //2,1002,1003,1007,1008
+             
+            var a = data.Split(',').ToList();
+            var b = a.ConvertAll(x => Convert.ToInt32(x));
+            var rows = DB.SqlServer.Delete<SysUserRole>(b).ExecuteAffrows();
+                  
+            return Json(new { success = true, ExecuteAffrows = rows });
         }
 
         [HttpPost]

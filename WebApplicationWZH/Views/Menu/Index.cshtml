@@ -592,16 +592,37 @@
             grid_3_3_3.load();
 
             $("#DeleteUserRole").click(function () {
-                let record =  grid_3_3_3.getCheckedRecords();
+                let record = grid_3_3_3.getCheckedRecords();
+                console.log(record);
                 let recordCount = grid_3_3_3.getCheckedRecords().length;
                 if (recordCount == 0) return;
+
+                 
+                let Arr = [];
+               
+                for (let i = 0; i < record.length; i++) {
+                    let n = (record[i].Tid);
+                   
+                    Arr.push(n);
+                }
+                let RoleID = record[0].RoleID;
+                let str = RoleID + "_"+ Arr.join(',');
                 //window.parent.confirmX("确定要删除这些数据？", DeleteUserRole, record);
-                window.parent.confirmX("确定要删除这些数据？", DeleteUserRole, record);
+                try {
+                    window.parent.confirmX("确定要删除这些数据？", DeleteUserRole, str);
+                } catch {
+                    if (confirm("确定要删除这些数据2？")) {
+                        DeleteUserRole(str);
+                    }
+                }
+              
             })
 
             function DeleteUserRole(record) {
                 //log(record);
                 let token = document.getElementsByName("__RequestVerificationToken")[0].value;
+                let arr = record.split('_');
+                let RoleID = arr[0];
                 $.ajax({
                     url: "/role/SysUserRoleDelete",
                     type: 'post',
@@ -610,10 +631,12 @@
                     beforeSend: function (XMLHttpRequest) {
                         //XMLHttpRequest.setRequestHeader("__RequestVerificationToken", gettoken());
                     },
-                    data: { "data": "hahaha" }// $("form").serializeArray(),
+                    data: { "data": arr[1] }// $("form").serializeArray(),
                     //dataType: 'json',
                     , success: function (res) {
-                        alert(res);
+                        if (res.success) {
+                            radioclick(null, RoleID);
+                        }
                     },
                     complete: function (xhr) {
                         //console.log(xhr)
