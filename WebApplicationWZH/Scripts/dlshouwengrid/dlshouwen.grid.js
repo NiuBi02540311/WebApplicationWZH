@@ -4,6 +4,7 @@
  * includes: jquery, bootstrap, fontawesome, My97 DatePicker
  * Copyright 2016, http://os.dlshouwen.com/grid, http://www.dlshouwen.com
  */
+var show_msg = window.parent.showmsg;
 (function($) {
 	if(!$.fn.dlshouwen){
 		$.fn.dlshouwen = {};
@@ -239,8 +240,12 @@
 							data:params,
 							contentType: "application/x-www-form-urlencoded; charset=utf-8",
 							beforeSend: function(xhr) {xhr.setRequestHeader("__REQUEST_TYPE", "AJAX_REQUEST");},
-							success:function(pager){
-								pager = $.parseJSON(pager);
+							success: function (pager) {
+								try {
+									pager = $.parseJSON(pager);
+								} catch {
+
+                                }
 								//如果出错表示有可能是程序问题或高级查询方案配置有误
 								if(!pager.isSuccess){
 									$.fn.dlshouwen.grid.tools.toast($.fn.dlshouwen.grid.lang[gridReflectionObj.option.lang].errors.ajaxLoadError, 'error', 5000);
@@ -270,6 +275,37 @@
 									gridReflectionObj.constructGrid();
 									gridReflectionObj.constructGridPageBar();
 								});
+							},   
+							complete: function (xhr) {
+								//请求完成后，获取fileName，处理数据
+								//获取Response Headers 中的 Content-Disposition
+								//console.log(xhr)
+								//let ContentDisposition = xhr.getResponseHeader('Content-Disposition');
+								let StatusCode = xhr.getResponseHeader('StatusCode');
+								if (StatusCode != null && StatusCode != undefined) {
+									//alert("StatusCode = " + StatusCode);
+									
+									
+									if (StatusCode == 401) {
+										
+										if (show_msg == null || show_msg == undefined) {
+											alert("当前未登录或登录过期，请重新登录!");
+										} else {
+											show_msg("当前未登录或登录过期，请重新登录!", 2, 3000);
+											setTimeout(function () { location.href = "/Login/Index"; }, 3000);
+										}
+										
+									}
+									if (StatusCode == 302) {
+										if (show_msg == null || show_msg == undefined) {
+											alert("访问权限异常，请尝试重新登陆！");
+										} else {
+											show_msg("访问权限异常，请尝试重新登陆！", 2, 3000);
+										}
+										 
+									}
+								}
+
 							}
 						});
 					}
