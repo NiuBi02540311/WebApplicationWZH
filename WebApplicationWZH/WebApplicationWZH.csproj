@@ -2885,6 +2885,7 @@
     <Content Include="Scripts\dlshouwengrid\doc\fonts\dlshouwen.ttf" />
     <Content Include="Scripts\dlshouwengrid\doc\fonts\dlshouwen.woff" />
     <Content Include="Content\demo1.json" />
+    <Content Include="Scripts\font\iconfont.woff2" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\buttonPermission.js" />
     <Content Include="Scripts\dateMultiFunc.js" />
