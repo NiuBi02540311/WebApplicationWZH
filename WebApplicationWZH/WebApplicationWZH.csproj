@@ -3010,6 +3010,8 @@
     <Content Include="Scripts\Login\app.js" />
     <Content Include="Scripts\Login\particles.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\other\DropdownSearch.css" />
+    <Content Include="Scripts\other\DropdownSearch.js" />
     <Content Include="Scripts\Uploader.swf" />
     <Content Include="Scripts\webuploader.min.js" />
     <Content Include="Web.config" />

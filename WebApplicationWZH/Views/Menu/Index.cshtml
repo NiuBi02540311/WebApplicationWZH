@@ -32,9 +32,12 @@
     <link href="~/Scripts/dlshouwengrid/dependents/datePicker/skin/WdatePicker.css" rel="stylesheet" />
     <link href="~/Scripts/dlshouwengrid/dependents/datePicker/skin/default/datepicker.css" rel="stylesheet" />
 
-    <style>
-         
-    </style>
+    <link href="~/Scripts/other/DropdownSearch.css?v=1.123" rel="stylesheet" />
+    <script src="~/Scripts/other/DropdownSearch.js"></script>
+
+    <link href="~/Scripts/layui/layui.css" rel="stylesheet" />
+    <script src="~/Scripts/layui/layui.js"></script>
+
 </head>
 <body>
     @{
@@ -88,20 +91,33 @@
                     </div>
                     <div class="col-md-7" style="background-color: white; box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444; ">
                         <div style="border-bottom: solid 1px #ff0000; padding: 10px:">
-                            <button class="btn-danger btn-sm" id="DeleteUserRole" style="margin: 10px;">删除</button>
+                            <button class="btn-primary btn-sm" id="AddUserRole" style="margin: 10px;">添加</button>
+                            <button class="btn-danger btn-sm" id="DeleteUserRole">删除</button>
                         </div>
+                        <div class="DropdownSearchBox">
+                            <div class="dropdown custom1">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                    <em>请选择用户账户</em>
+                                    <i class="caret"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <input class="form-control seach_name" placeholder="请输入搜索内容" />
+                                        <i class="glyphicon glyphicon-search"></i>
+                                    </li>
+                                    <li data="网页特效"><a>网页特效</a></li>
+
+                                </ul>
+                            </div>
+                        </div>
+
                         <div>
                             <div id="gridContainer_2_1_1" class="dlshouwen-grid-container"></div>
                             <div id="gridToolBarContainer_2_1_1" class="dlshouwen-grid-toolbar-container"></div>
                         </div>
                     </div>
-
-
-
                 </div>
-
             </div>
-
         </div>
     </div>
 
@@ -138,6 +154,11 @@
 
     </div>
 
+    <div id="UserSearchDiv">
+        <div id="gridContainer44" class="dlshouwen-grid-container"></div>
+        <div id="gridToolBarContainer44" class="dlshouwen-grid-toolbar-container"></div>
+    </div>
+   
     @Html.AntiForgeryToken()
     <script>
         var zTreeObj;
@@ -460,7 +481,7 @@
         };
         var grid = $.fn.dlshouwen.grid.init(gridOption);
         $(function () {
-           // grid.load();
+            // grid.load();
         });
     </script>
     <script>
@@ -508,7 +529,7 @@
            return $(token).val();
         }
 
-         
+
 
         var gridOption_2_2_2 = {
             lang: 'zh-cn',
@@ -527,8 +548,8 @@
             //parameters: parameters
         };
 
-      
-      
+
+
         var grid_2_2_2 = $.fn.dlshouwen.grid.init(gridOption_2_2_2);
         $(function () {
             var token = document.getElementsByName("__RequestVerificationToken")[0].value
@@ -538,7 +559,7 @@
             //grid_2_2_2.fastQueryParameters = new Object();
             //grid_2_2_2.fastQueryParameters['__RequestVerificationToken'] = gettoken();
 
-            
+
             //console.log(grid_2_2_2);
             //grid_2_2_2.load();
         });
@@ -554,7 +575,7 @@
         }
     </script>
     <script>
-        //b.UserName,a.Tid,a.UserID,a.RoleID 
+        //b.UserName,a.Tid,a.UserID,a.RoleID
         var gridColumns_22_22_22 = [
             { id: 'UserID', title: 'UserID', type: 'number', columnClass: 'text-center', fastQuery: true, fastQueryType: 'range', headerStyle: 'background:#00a2ca;color:white;' },
             { id: 'UserName', title: 'UserName', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk', headerStyle: 'background:#00a2ca;color:white;' },
@@ -578,7 +599,26 @@
             //parameters: { "__RequestVerificationToken": gettoken() }
             //parameters: parameters
         };
+        var gridOption4 = {
+            lang: 'zh-cn',
+            ajaxLoad: true,
+            loadURL: '/Role/GetSysUserRoleViewModel',
+            exportFileName: '用户列表',
+            columns: gridColumns_22_22_22,
+            gridContainer: 'gridContainer4',
+            toolbarContainer: 'gridToolBarContainer4',
+            tools: '',
+            pageSize: 10,
+            pageSizeLimit: [10, 15, 20],
+            check: true,
+            checkWidth: 40
+            //parameters: { "__RequestVerificationToken": gettoken() }
+            //parameters: parameters
+        };
         var grid_3_3_3 = $.fn.dlshouwen.grid.init(gridOption3);
+        var layer = layui.layer; // 弹层
+        var UserList = null;
+        var grid4 = null;
         $(function () {
             var token = document.getElementsByName("__RequestVerificationToken")[0].value;
             grid_3_3_3.parameters = new Object();
@@ -590,23 +630,23 @@
 
             //console.log(grid_2_2_2);
             grid_3_3_3.load();
-
+            GetUserList();
             $("#DeleteUserRole").click(function () {
                 let record = grid_3_3_3.getCheckedRecords();
                 console.log(record);
                 let recordCount = grid_3_3_3.getCheckedRecords().length;
                 if (recordCount == 0) return;
 
-                 
+
                 let Arr = [];
-               
+
                 for (let i = 0; i < record.length; i++) {
                     let n = (record[i].Tid);
-                   
+
                     Arr.push(n);
                 }
                 let RoleID = record[0].RoleID;
-                let str = RoleID + "_"+ Arr.join(',');
+                let str = RoleID + "_" + Arr.join(',');
                 //window.parent.confirmX("确定要删除这些数据？", DeleteUserRole, record);
                 try {
                     window.parent.confirmX("确定要删除这些数据？", DeleteUserRole, str);
@@ -615,9 +655,61 @@
                         DeleteUserRole(str);
                     }
                 }
-              
+
             })
 
+            $("#AddUserRole").click(function () {
+
+                
+                // 在此处输入 layer 的任意代码
+                layer.open({
+                    type: 1, // page 层类型
+                    area: ['500px', '500px'],
+                    title: '选择用户',
+                    shade: 0.6, // 遮罩透明度
+                    shadeClose: true, // 点击遮罩区域，关闭弹层
+                    maxmin: true, // 允许全屏最小化
+                    anim: 3, // 0-6 的动画形式，-1 不开启
+                    content: '<div id="UserList" style ="padding:10px;"></div>'
+                    //content: $("#UserSearchDiv")
+                });
+                
+                var index = layer.load(0, { shade: false });
+                $("div #UserList").empty();
+                let str = "";
+                str += '<div class="form-group"><label for="name">按用户名称搜索（回车键）</label><input type="text" class="form-control" id="name"  placeholder="请输入名称"></div>';
+                str += '<div class="form-group"><button type="submit" class="btn btn-primary btn-sm btn-block">确认</button></div>';
+                str += '<div id="gridContainer4" class="dlshouwen-grid-container"></div><div id="gridToolBarContainer4 class="dlshouwen-grid-toolbar-container"></div>'
+                //str += '<div id="gridContainer4" class="dlshouwen-grid-container"></div>'
+                $("div #UserList").append(str)
+                //$("div #UserList").append($("#UserSearchDiv"))
+                //$("div #UserList").append($('<div id="gridToolBarContainer4 class="dlshouwen-grid-toolbar-container"></div>'))
+                grid4 = $.fn.dlshouwen.grid.init(gridOption4);
+                grid4.parameters = new Object();
+                grid4.parameters['__RequestVerificationToken'] = token;
+                grid4.parameters['RoleID'] = 3;
+                setTimeout(function () {
+                    grid4.load();
+                    layer.close(index); // 关闭 loading
+                }, 1000);
+                
+               
+            })
+            function GetUserList() {
+
+                $.get("/User/GetUserList", function (data, status) {
+                    //alert("数据: " + data + "\n状态: " + status);
+                    UserList = data;
+                    console.log(UserList)
+
+                    let li = "";
+                    for (let i = 0; i < UserList.length; i++) {
+                        li += '<li data="' + UserList[i].UserName + '"><a>' + UserList[i].UserName + '</a></li>';
+                    }
+                    $(".dropdown-menu").append(li);
+                    new DropdownSearch('.custom1')
+                });
+            }
             function DeleteUserRole(record) {
                 //log(record);
                 let token = document.getElementsByName("__RequestVerificationToken")[0].value;

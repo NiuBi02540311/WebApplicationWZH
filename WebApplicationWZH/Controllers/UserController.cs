@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WebApplicationWZH.Models;
 
 namespace WebApplicationWZH.Controllers
 {
@@ -33,6 +34,12 @@ namespace WebApplicationWZH.Controllers
         public ActionResult test()
         {
             return View();
+        }
+
+        public ActionResult GetUserList()
+        {
+            var list = DB.SqlServer.Select<Users>().ToList(a => new { a.UserID,a.UserName});
+            return Json(list,JsonRequestBehavior.AllowGet);
         }
     }
 }
