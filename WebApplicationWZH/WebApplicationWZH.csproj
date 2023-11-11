@@ -3044,6 +3044,7 @@
     <Content Include="Views\Test\Index.cshtml" />
     <Content Include="Views\Test\Demo1.cshtml" />
     <Content Include="Views\Test\Demo2.cshtml" />
+    <Content Include="Views\Test\Demo3.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
