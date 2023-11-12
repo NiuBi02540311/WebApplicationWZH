@@ -1,0 +1,118 @@
+﻿
+@{
+    Layout = null;
+    //https://layui.dev/docs/2/table/
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <!-- 引入 layui.css -->
+    <link href="~/Scripts/layui/layui.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div>
+        https://layui.dev/docs/2/table/
+    </div>
+    <div>
+        <input type="button" onclick="add()" value="增加">
+        <input type="button" onclick="query()" value="查看">
+        <ul>
+            <li>
+                <span>A:</span>
+                <input type="checkbox">
+                <input type="text">
+                <input type="button" class="del" value="删除">
+            </li>
+            <li>
+                <span>B:</span>
+                <input type="checkbox">
+                <input type="text">
+                <input type="button" class="del" value="删除">
+            </li>
+            <li>
+                <span>C:</span>
+                <input type="checkbox">
+                <input type="text">
+                <input type="button" class="del" value="删除">
+            </li>
+            <li>
+                <span>D:</span>
+                <input type="checkbox">
+                <input type="text">
+                <input type="button" class="del" value="删除">
+            </li>
+        </ul>
+    </div>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <!-- 引入 layui.js -->
+    <script src="~/Scripts/layui/layui.js"></script>
+    <script>
+        // Usage
+        layui.use(function () {
+            var layer = layui.layer;
+            // Welcome
+            layer.msg('Hello World', { icon: 6 });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            init();
+        });
+        //初始4个选项
+        var num = 4;
+        //添加选项
+        function add() {
+            // alert(num)
+            //添加一行,num加一
+            num++;
+            //通过知道当前有的按钮数算出选项名
+            var str = String.fromCharCode(64 + num);
+            //编辑新选项的html代码
+            var $li = $("<li>" + "<span>" + str + ":</span> " + " <input type=\"checkbox\"/>" + "  <input type=\"text\"  class=\"str\"/>" + "  <input type=\"button\"   class=\"del\" value=\"删除\"/></li>");
+            //将新的一行添加到<ul>中
+            var $parent = $("ul");
+            $parent.append($li);
+            //因为添加了新的选项需要重新绑定按钮
+            init();
+        }
+        function query() {
+            // alert(num)
+            var str = "";
+            var str1 = "";
+            //for循环查询已有控件的输入值
+            for (var i = 0; i < num; i++) {
+                var a = $("ul li:eq(" + i + ") :text").val();
+                var b = $("ul li:eq(" + i + ") :checkbox").is(':checked');
+                var j = i + 1;
+                str += "第" + j + "个文本框输入：" + a;
+                str1 += "第" + j + "个复选框选中：" + b;
+            }
+            alert(str);
+            alert(str1);
+        }
+        //绑定每个ul li下的删除按钮
+        function init() {
+            //这里其实用ul li input :button就可以，但是给按钮加一个class方便用css给按钮添加样式，这里本人比较懒没有添加样式。
+            $("ul li input.del").unbind("click").click(function () {
+                //$(this).parent().remove();链式操作，$(this)为该按钮本事,parent()为其父元素即<li>，调用renmove()将整个<li>节点删除
+                $(this).parent().remove();
+                //alert(num)
+                //for循环刷新列表，因为考试往往用ABC，所以利用ascii码通过获取当前控件的索引来转换成对应的英文字母,
+                for (var i = 0; i < num - 1; i++) {
+                    //ascii码65对应的A,65加上当前索引值再转成字符即可
+                    var str = String.fromCharCode(65 + i) + ":";
+                    //定位到每个<li>下的<span>节点，将选项号刷新到页面
+                    $("ul li:eq(" + i + ") span").html(str);
+                }
+                //删除一行，num减一
+                num--;
+            });
+        }
+    </script>
+</body>
+</html>

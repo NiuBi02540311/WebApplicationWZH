@@ -146,6 +146,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Controllers\FileController.cs" />
+    <Compile Include="Controllers\FreeSqlController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InstallController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -2885,6 +2886,7 @@
     <Content Include="Scripts\dlshouwengrid\doc\fonts\dlshouwen.ttf" />
     <Content Include="Scripts\dlshouwengrid\doc\fonts\dlshouwen.woff" />
     <Content Include="Content\demo1.json" />
+    <Content Include="Scripts\font\iconfont.woff2" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\buttonPermission.js" />
     <Content Include="Scripts\dateMultiFunc.js" />
@@ -3010,6 +3012,8 @@
     <Content Include="Scripts\Login\app.js" />
     <Content Include="Scripts\Login\particles.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\other\DropdownSearch.css" />
+    <Content Include="Scripts\other\DropdownSearch.js" />
     <Content Include="Scripts\Uploader.swf" />
     <Content Include="Scripts\webuploader.min.js" />
     <Content Include="Web.config" />
@@ -3042,10 +3046,12 @@
     <Content Include="Views\Test\Index.cshtml" />
     <Content Include="Views\Test\Demo1.cshtml" />
     <Content Include="Views\Test\Demo2.cshtml" />
+    <Content Include="Views\Test\Demo3.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\image\" />
+    <Folder Include="Views\FreeSql\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
