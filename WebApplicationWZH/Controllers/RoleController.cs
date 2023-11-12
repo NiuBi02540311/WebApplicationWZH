@@ -125,6 +125,20 @@ namespace WebApplicationWZH.Controllers
 
         [HttpPost]
         [MyValidateAntiForgeryToken]
+        public ActionResult SysUserRoleAdd(string data)
+        {
+            //2,1002,1003,1007,1008
+            // let str = checkRoleID + "_" + Arr.join(',');
+            string[] arr = data.Split('_');
+            string RoleID = arr[0];
+            var UserList = arr[1].Split(',').ToList();
+            var b = UserList.ConvertAll(x => Convert.ToInt32(x));
+            var rows = DB.SqlServer.Delete<SysUserRole>(b).ExecuteAffrows();
+
+            return Json(new { success = true, ExecuteAffrows = rows });
+        }
+        [HttpPost]
+        [MyValidateAntiForgeryToken]
         public ActionResult GetSysUserRoleViewModel2(string RoleID = "1")
         {
             //fsql.Select<Xxx>.LeftJoin<Yyy>((a, b) => a.YyyId == b.Id).ToList();

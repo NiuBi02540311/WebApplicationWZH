@@ -773,8 +773,45 @@
             })
 
             function SaveRoleUser(str) {
-                alert("保存成功 " + str);
+                //alert("保存成功 " + str);
                 $('#myModal').modal('hide')
+                let token = document.getElementsByName("__RequestVerificationToken")[0].value;
+                //let arr = record.split('_');
+                //let RoleID = arr[0];
+                $.ajax({
+                    url: "/role/SysUserRoleAdd",
+                    type: 'post',
+                    headers: { "__RequestVerificationToken": token },
+                    /*__RequestVerificationToken放在请求头中，是没有效果的，是必须作为参数传递的*/
+                    beforeSend: function (XMLHttpRequest) {
+                        //XMLHttpRequest.setRequestHeader("__RequestVerificationToken", gettoken());
+                    },
+                    data: { "data": str }// $("form").serializeArray(),
+                    //dataType: 'json',
+                    , success: function (res) {
+                        if (res.success) {
+                            radioclick(null, RoleID);
+                        }
+                    },
+                    complete: function (xhr) {
+                        //console.log(xhr)
+                        let StatusCode = xhr.getResponseHeader('StatusCode');
+                        if (StatusCode != null && StatusCode != undefined) {
+                            alert("StatusCode = " + StatusCode);
+                            if (StatusCode == 401) {
+                                alert("当前未登录或登录过期，请重新登录!");
+                                location.href = "/Login/Index";
+                            }
+                            if (StatusCode == 302) {
+                                alert("没有访问权限");
+                            }
+                        }
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                })
             }
             $('#myModal').on('show.bs.modal', function () {
                 //
