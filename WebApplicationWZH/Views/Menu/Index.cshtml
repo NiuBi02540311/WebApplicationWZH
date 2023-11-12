@@ -94,7 +94,7 @@
                             <button class="btn-primary btn-sm" id="AddUserRole" style="margin: 10px;">添加</button>
                             <button class="btn-danger btn-sm" id="DeleteUserRole">删除</button>
                             <!-- 按钮触发模态框 -->
-                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">开始演示模态框</button>
+                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">添加</button>
                         </div>
                         <div class="DropdownSearchBox">
                             <div class="dropdown custom1">
@@ -174,10 +174,10 @@
                 <div class="modal-body">
                     <div class="form-group">
                     <label for="name">按用户名称搜索（回车键）</label>
-                    <input type="text" class="form-control" id="name" placeholder="请输入名称">
+                    <input type="text" class="form-control" id="UserName" placeholder="请输入用户名">
                     </div>
                     <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-sm btn-block">查询</button>
+                    <button id="searchUser" class="btn btn-primary btn-sm btn-block">查询</button>
                     </div>
                     <div id="UserSearchDiv">
                         <div id="gridContainer4" class="dlshouwen-grid-container"></div>
@@ -615,6 +615,11 @@
             { id: 'RoleID', title: 'RoleID', type: 'number', columnClass: 'text-center', hide: true, fastQueryType: 'lk', headerStyle: 'background:#00a2ca;color:white;' },
         ];
 
+        var gridColumns4 = [
+            { id: 'UserID', title: 'UserID', type: 'number', columnClass: 'text-center', fastQuery: true, fastQueryType: 'range', headerStyle: 'background:#00a2ca;color:white;' },
+            { id: 'UserName', title: 'UserName', type: 'string', columnClass: 'text-center', fastQuery: true, fastQueryType: 'lk', headerStyle: 'background:#00a2ca;color:white;' }
+        ];
+
         var gridOption3 = {
             lang: 'zh-cn',
             ajaxLoad: true,
@@ -634,14 +639,14 @@
         var gridOption4 = {
             lang: 'zh-cn',
             ajaxLoad: true,
-            loadURL: '/Role/GetSysUserRoleViewModel',
+            loadURL: '/User/GetUserListString',
             exportFileName: '用户列表',
-            columns: gridColumns_22_22_22,
+            columns: gridColumns4,
             gridContainer: 'gridContainer4',
             toolbarContainer: 'gridToolBarContainer4',
             tools: '',
-            pageSize: 10,
-            pageSizeLimit: [10, 15, 20],
+            pageSize: 5,
+            pageSizeLimit: [5, 10],
             check: true,
             checkWidth: 40
             //parameters: { "__RequestVerificationToken": gettoken() }
@@ -738,23 +743,72 @@
 
             $("#SaveRoleUser").click(function () {
 
-                alert("保存成功")
-                $('#myModal').modal('hide')
+                let checkRoleID = $("div.col-md-2").find("input[name='optionsRadios']:checked").val();
+             
+
+                let record = grid4.getCheckedRecords();
+                console.log(record);
+                let recordCount = record.length;
+                if (recordCount == 0) return;
+
+
+                let Arr = [];
+
+                for (let i = 0; i < record.length; i++) {
+                    let n = (record[i].UserID);
+
+                    Arr.push(n);
+                }
+                 
+                let str = checkRoleID + "_" + Arr.join(',');
+                //window.parent.confirmX("确定要删除这些数据？", DeleteUserRole, record);
+                try {
+                    window.parent.confirmX("确定要保存数据？", SaveRoleUser, str);
+                } catch {
+                    if (confirm("确定要保存数据2？")) {
+                        SaveRoleUser(str);
+                    }
+                }
+
             })
+
+            function SaveRoleUser(str) {
+                alert("保存成功 " + str);
+                $('#myModal').modal('hide')
+            }
             $('#myModal').on('show.bs.modal', function () {
                 //
-                let $this = $(this);
-                let $modal_dialog = $this.find('.modal-dialog');
-                // 垂直居中，如果觉得离top太远了可以修改除数，上面的图除数我改为了3
-                let m_top = ($(window).height() - $modal_dialog.height()) / 10;
-                $modal_dialog.css({ 'margin': m_top + 'px auto' });
-                
+                let checkRoleID = $("div.col-md-2").find("input[name='optionsRadios']:checked").val();
+                if (checkRoleID == null || checkRoleID == undefined) {
+                    log("请先选中具体的岗位再添加成员！");
+                    
+
+                    setTimeout(function () { $('#myModal').modal('hide'); }, 500);
+                    return;
+                }
+                if (1 == 0) {
+                    let $this = $(this);
+                    let $modal_dialog = $this.find('.modal-dialog');
+                    // 垂直居中，如果觉得离top太远了可以修改除数，上面的图除数我改为了3
+                    let m_top = ($(window).height() - $modal_dialog.height()) / 20;
+                    $modal_dialog.css({ 'margin': m_top + 'px auto' });
+                }
+               
                 // 执行一些动作...
                 grid4.parameters = new Object();
                 grid4.parameters['__RequestVerificationToken'] = token;
-                grid4.parameters['RoleID'] = 3;
+                grid4.parameters['RoleID'] = checkRoleID;
                 grid4.load();
             })
+
+            $("#searchUser").click(function () {
+                grid4.parameters = new Object();
+                grid4.parameters['__RequestVerificationToken'] = token;
+                grid4.parameters['RoleID'] = $("div.col-md-2").find("input[name='optionsRadios']:checked").val();;
+                grid4.parameters['UserName'] = $("#UserName").val();
+                grid4.refresh(true);
+            })
+            
             function GetUserList() {
 
                 $.get("/User/GetUserList", function (data, status) {

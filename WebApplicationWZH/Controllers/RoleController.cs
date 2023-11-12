@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApplicationWZH.Models;
@@ -21,10 +22,10 @@ namespace WebApplicationWZH.Controllers
         [MyValidateAntiForgeryToken]
         //[SkipCheckLogin]
         //[SkipVerification]
-        public string GetRoleUser()
+        public  string GetRoleUser()
         {
             string gridpager = HttpContext.Request.Params["gridPager"];
-            GridRequestModel grid = Newtonsoft.Json.JsonConvert.DeserializeObject<GridRequestModel>(gridpager);
+            GridRequestModel grid = JsonConvert.DeserializeObject<GridRequestModel>(gridpager);
             var find = DB.SqlServer.Select<Users>().Where(a => a.IsDelete == 0).ToList();
 
             int pageCount = find.Count / grid.pageSize;
@@ -35,9 +36,14 @@ namespace WebApplicationWZH.Controllers
 
             //GridResponseModel res =   new  GridResponseModel<Users>(find);
             var v = find.Skip((grid.nowPage - 1) * grid.pageSize).Take(grid.pageSize).ToList();
+
+            var find2 = DB.SqlServer.Select<Users>().Where(a => a.IsDelete == 0);
+            var v2 = find2.Page(grid.nowPage, grid.pageSize).ToList();
+
             //var v = find.Skip(grid.nowPage  * grid.pageSize).Take(grid.pageSize).ToList();
             var res = new GridResponseModel<Users>();
-            res.exhibitDatas = v;
+            //res.exhibitDatas = v;
+            res.exhibitDatas = v2;
             res.isSuccess = true;
             res.nowPage = grid.nowPage;
             res.recordCount = find.Count;
@@ -90,6 +96,7 @@ namespace WebApplicationWZH.Controllers
             }
 
             var v = find.Skip((nowPage - 1) * pageSize).Take(pageSize).ToList();
+                
             //var v = find.Skip(grid.nowPage  * grid.pageSize).Take(grid.pageSize).ToList();
             var res = new GridResponseModel<SysUserRoleViewModel>();
             res.exhibitDatas = v;

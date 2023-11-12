@@ -146,6 +146,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Controllers\FileController.cs" />
+    <Compile Include="Controllers\FreeSqlController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InstallController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -3050,6 +3051,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\image\" />
+    <Folder Include="Views\FreeSql\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
