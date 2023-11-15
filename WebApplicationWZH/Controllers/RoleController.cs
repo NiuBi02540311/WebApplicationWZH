@@ -133,7 +133,13 @@ namespace WebApplicationWZH.Controllers
             string RoleID = arr[0];
             var UserList = arr[1].Split(',').ToList();
             var b = UserList.ConvertAll(x => Convert.ToInt32(x));
-            var rows = DB.SqlServer.Delete<SysUserRole>(b).ExecuteAffrows();
+            List<SysUserRole> sysUserRoles = new List<SysUserRole>();
+
+            foreach(int t in b)
+            {
+                sysUserRoles.Add(new SysUserRole {  RoleID = int.Parse(RoleID), UserID = t, IsActive = 1 });
+            }
+            var rows = DB.SqlServer.Insert<SysUserRole>().AppendData(sysUserRoles).ExecuteAffrows();
 
             return Json(new { success = true, ExecuteAffrows = rows });
         }
