@@ -133,7 +133,35 @@ namespace WebApplicationWZH.Controllers
             string RoleID = arr[0];
             var UserList = arr[1].Split(',').ToList();
             var b = UserList.ConvertAll(x => Convert.ToInt32(x));
-            var rows = DB.SqlServer.Delete<SysUserRole>(b).ExecuteAffrows();
+            List<SysUserRole> sysUserRoles = new List<SysUserRole>();
+
+            foreach(int t in b)
+            {
+                sysUserRoles.Add(new SysUserRole {  RoleID = int.Parse(RoleID), UserID = t, IsActive = 1 });
+            }
+            var rows = DB.SqlServer.Insert<SysUserRole>().AppendData(sysUserRoles).ExecuteAffrows();
+
+            return Json(new { success = true, ExecuteAffrows = rows });
+        }
+
+        [HttpPost]
+        [MyValidateAntiForgeryToken]
+        public ActionResult SysMenuRoleAdd(string data)
+        {
+            
+            // let str = checkRoleID + "_" + Arr.join(',');
+            //2=1,2,3,4
+            string[] arr = data.Split('=');
+            string RoleID = arr[0];
+            var MenuList = arr[1].Split(',').ToList();
+            var b = MenuList.ConvertAll(x => Convert.ToInt32(x));
+            List<SysMenuRole> sysUserRoles = new List<SysMenuRole>();
+
+            foreach (int t in b)
+            {
+                sysUserRoles.Add(new SysMenuRole { RoleID = int.Parse(RoleID), MenuID = t, IsActive = 1 });
+            }
+            var rows = DB.SqlServer.Insert<SysMenuRole>().AppendData(sysUserRoles).ExecuteAffrows();
 
             return Json(new { success = true, ExecuteAffrows = rows });
         }

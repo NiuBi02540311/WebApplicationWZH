@@ -338,7 +338,7 @@
             if (showmsg == null || showmsg == undefined) {
                 alert(msg);
             } else {
-                showmsg(msg, 2, 3000);
+                showmsg(msg, 1, 3000);
             }
 
         }
@@ -776,8 +776,8 @@
                 //alert("保存成功 " + str);
                 $('#myModal').modal('hide')
                 let token = document.getElementsByName("__RequestVerificationToken")[0].value;
-                //let arr = record.split('_');
-                //let RoleID = arr[0];
+                let arr = str.split('_');
+                let RoleID = arr[0];
                 $.ajax({
                     url: "/role/SysUserRoleAdd",
                     type: 'post',
@@ -878,7 +878,9 @@
                     //dataType: 'json',
                     , success: function (res) {
                         if (res.success) {
+                          
                             radioclick(null, RoleID);
+                            
                         }
                     },
                     complete: function (xhr) {
@@ -911,6 +913,9 @@
             grid_3_3_3.parameters['__RequestVerificationToken'] = token;
             grid_3_3_3.parameters['RoleID'] = RoleID;
             grid_3_3_3.refresh(true);
+            if(obj == null){
+                setTimeout(function () { log("数据保存成功！", 2); }, 1000);
+            }
         }
     </script>
 </body>
