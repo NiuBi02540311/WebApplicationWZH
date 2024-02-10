@@ -1,0 +1,74 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Demo4</title>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+    <div>
+        <button id="bt1">getAccessToken</button><br />
+        <input type="text" id="access_token" style="width:1000px;" value="" /><br />
+        <input type="text" id="code" style="width:800px;" value="" />
+        <hr />
+        <button id="bt2">getPluginOpenPId</button><br />
+        <hr />
+        <button id="bt3">code2Session</button><br />
+        <button id="bt4">bushu</button><br />
+        <div id="show"></div>
+    </div>
+    <div>
+
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("#bt1").click(function () {
+                    $.get("/test/getAccessToken", function (res) {
+                        console.log(res);
+                        let o = res.Message;
+                        let j = JSON.parse(o);
+                        $("#access_token").val(j.access_token)
+
+                    })
+                })
+
+            $("#bt2").click(function () {
+                let access_token = $("#access_token").val();
+                let code = $("#code").val();
+                $.get("/test/getPluginOpenPId?access_token=" + access_token + "&code=" + code, function (res) {
+                    console.log(res);
+
+                    $("#show").html(JSON.stringify(res))
+                })
+            })
+
+            $("#bt3").click(function () {
+                let code = $("#code").val();
+                $.get("/test/code2Session?code=" + code, function (res) {
+                    console.log(res);
+                    $("#show").html(JSON.stringify(res))
+
+                })
+            })
+
+            $("#bt4").click(function () {
+                let encryptedData = $("#code").val();
+                let iv = "DI6lF3c8ugW7qi5Ms5yG8w==";
+                let sessionKey = "bSOA+aMRaMkb2KNlcsAqBQ=="; 
+                // encryptedData, string iv, string sessionKey
+                $.get("/test/Decrypt?encryptedData=" + encryptedData + "&iv=" + iv + "&sessionKey=" + sessionKey, function (res) {
+                    console.log(res);
+                    $("#show").html(JSON.stringify(res))
+
+                })
+            })
+        })
+    </script>
+</body>
+</html>
