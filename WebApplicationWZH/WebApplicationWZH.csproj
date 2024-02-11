@@ -155,6 +155,7 @@
     <Compile Include="Controllers\SheetController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\WxController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -3053,6 +3054,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\image\" />
     <Folder Include="Views\FreeSql\" />
+    <Folder Include="Views\Wx\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

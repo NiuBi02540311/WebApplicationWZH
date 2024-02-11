@@ -281,15 +281,44 @@ namespace WebApplicationWZH
         }
         public static int ExecuteNonQuery(string sql)
         {
-            using (SqlConnection con = new SqlConnection(connString))
+            try
             {
-                using (SqlCommand cmd = new SqlCommand(sql, con))
+                using (SqlConnection con = new SqlConnection(connString))
                 {
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
+                    {
 
-                    con.Open();
-                    return cmd.ExecuteNonQuery();
+                        con.Open();
+                        return cmd.ExecuteNonQuery();
+                    }
                 }
             }
+            catch
+            {
+                return -99;
+            }
+           
+        }
+        public static string ExecuteNonQuery2(string sql)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
+                    {
+
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        return "";
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                return ex.Message;
+            }
+
         }
         //执行返回SqlDataReader
         public static SqlDataReader ExecuteReader(string sql, params SqlParameter[] pms)
@@ -366,6 +395,7 @@ namespace WebApplicationWZH
             using (SqlDataAdapter adapter = new SqlDataAdapter(sql, connString))
             {
                 adapter.Fill(dt);
+                if (dt.Rows.Count == 0) return null;
                 return dt;
             }
 
