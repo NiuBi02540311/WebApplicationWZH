@@ -9,18 +9,22 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Data;
+using System.Configuration;
 
 namespace WebApplicationWZH.Controllers
 {
     [SkipCheckLogin]
     public class WxController : Controller
     {
+        private static string appid = ConfigurationManager.AppSettings["appid"].ToString();
+        private static string secret = ConfigurationManager.AppSettings["secret"].ToString();
+        
         // GET: Wx
         public ActionResult Index()
         {
             return View();
         }
-        #region weixin 小程序接口  wx 8402e983cc0607 df / xx00
+        #region weixin 小程序接口   / xx00
         public ActionResult Demo5(string name)
         {
 
@@ -59,7 +63,7 @@ namespace WebApplicationWZH.Controllers
             //客户端请求
             HttpClient http = new HttpClient();
             //请求地址
-            string url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=xx00&secret=a189e38e324c1782321d0d1f01bcfdd9";
+            string url = $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appid}&secret={secret}";
             //异步请求
             Task<string> task = http.GetStringAsync(url);
             //获取数据解析，并发送至前台
@@ -76,7 +80,7 @@ namespace WebApplicationWZH.Controllers
             //客户端请求
             HttpClient http = new HttpClient();
             //请求地址
-            string url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=xx00&secret=a189e38e324c1782321d0d1f01bcfdd9";
+            string url = $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appid}&secret={secret}";
             //异步请求
             Task<string> task = http.GetStringAsync(url);
             //获取数据解析，并发送至前台
@@ -95,7 +99,7 @@ namespace WebApplicationWZH.Controllers
             //客户端请求
             HttpClient http = new HttpClient();
             //请求地址
-            string url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=xx00&secret=a189e38e324c1782321d0d1f01bcfdd9";
+            string url = $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appid}&secret={secret}";
             //异步请求
             Task<string> task = http.GetStringAsync(url);
             //获取数据解析，并发送至前台
@@ -111,15 +115,23 @@ namespace WebApplicationWZH.Controllers
             //客户端请求
             HttpClient http = new HttpClient();
             //请求地址
-            string url = "https://api.weixin.qq.com/sns/jscode2session?" +
-                "appid=xx00&secret=a189e38e324c1782321d0d1f01bcfdd9&grant_type=authorization_code&js_code=" + code;
+            string url = $"https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&grant_type=authorization_code&js_code=" + code;
             //异步请求
             Task<string> task = http.GetStringAsync(url);
             //获取数据解析，并发送至前台
             //ViewBag.ResultTyle = JsonConvert.DeserializeObject<ResultType>(task.Result);
             //var obj = new { code = 1, Message = task.Result };
-
+            bool admin = false;
             var obj = JsonConvert.DeserializeObject<session_key_openid>(task.Result);
+            if(obj != null && obj.openid != "" && obj.session_key != "")
+            {
+                useradd(obj.openid, obj.session_key);
+
+                string sql = $"select 1 from wx_users where admin = 1 and openid = '{obj.openid}'";
+                DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
+                admin = dt != null;
+            }
+            obj.admin = admin;
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
@@ -302,11 +314,15 @@ namespace WebApplicationWZH.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult getGoodDatalist(int pid, string openid, int nowPage = 1, int pageSize = 5)
+        public ActionResult getGoodDatalist(int pid, string openid, int nowPage = 1, int pageSize = 5,string isadmin = "")
         {
             //http://localhost:57526/Test/getGoodDatalist?pid=1&openid=aaa&nowPage=5&pageSize=10
             //http://localhost:57526/Test/getGoodDatalist?pid=1&openid=aaa&nowPage=1&pageSize=3
-            string sql = $@"SELECT [id]
+            // approveID = 1 代表信息已被审核通过
+            string sql = $"select 1 from wx_users where admin = 1 and openid = '{openid}'";
+            DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
+            bool admin = dt != null;
+            sql = $@"SELECT [id]
                           ,[pid]
                           ,[openid]
                           ,[title]
@@ -316,18 +332,47 @@ namespace WebApplicationWZH.Controllers
                           ,[tag]
                           ,[buytime]
                           ,[addtime]
-                      FROM wx_goodadd where pid = '{pid}' and openid = '{openid}' and isdelete = 0 order by id ";
+                      FROM wx_goodadd where pid = '{pid}' and openid = '{openid}' and approveID = 1 and isdelete = 0 order by id ";
+         
+            sql = $@"
+                SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime,approveID
+	                ,b.uid,b.name,b.admin
+                  FROM wx_goodadd as a
+                  inner join wx_users as b on a.openid = b.openid
+                  where pid = '{pid}' and  a.openid = '{openid}' and approveID = 1 and a.isdelete = 0 order by a.id";
 
-            DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
+            if (admin)
+            {
+                sql = $@"SELECT [id]
+                          ,[pid]
+                          ,[openid]
+                          ,[title]
+                          ,[_desc]
+                          ,[num]
+                          ,[price]
+                          ,[tag]
+                          ,[buytime]
+                          ,[addtime],approveID
+                      FROM wx_goodadd where pid = '{pid}' and isdelete = 0 order by id ";
+
+                sql = $@"
+                SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime,approveID
+	                ,b.uid,b.name,b.admin
+                  FROM wx_goodadd as a
+                  inner join wx_users as b on a.openid = b.openid
+                  where pid = '{pid}' and a.isdelete = 0 order by a.id";
+            }
+           
+             dt = SqlServerSqlHelper.ExecuteDataTable(sql);
             if (dt == null)
             {
                 return Json(new { rowcount = 0 }, JsonRequestBehavior.AllowGet);
             }
-            List<goods> hm = new List<goods>();
+            List<goodsView> hm = new List<goodsView>();
 
             foreach(DataRow w in dt.Rows)
             {
-                hm.Add(new goods
+                hm.Add(new goodsView
                 {
                     openid = openid,
                     pid = pid,
@@ -340,11 +385,15 @@ namespace WebApplicationWZH.Controllers
                     thumb = "/images/tabs/gd.png",
                     buytime = w["buytime"].ToString().Replace(" 0:00:00",""),
                     addtime = w["addtime"].ToString(),
+                    approveID = int.Parse(w["approveID"].ToString()),
+                    uid = int.Parse(w["uid"].ToString()),
+                    name = w["name"].ToString(),
+                    admin = int.Parse(w["admin"].ToString()),isdelete = 0
                 });
             }
             for (int i = 1; i <= 0; i++)
             {
-                hm.Add(new goods
+                hm.Add(new goodsView
                 {
                     openid = "aaa",
                     pid = 1,
@@ -371,7 +420,70 @@ namespace WebApplicationWZH.Controllers
 
             //GridResponseModel res =   new  GridResponseModel<Users>(find);
             var v = data.Skip((nowPage - 1) * pageSize).Take(pageSize).ToList();
-            var obj = new { rowcount = data.Count, data = v };
+            var obj = new { rowcount = data.Count, data = v , admin  = admin };
+            return Json(obj, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult getGoodData(string openid,int id,  string isadmin = "0")
+        {
+             
+            // approveID = 1 代表信息已被审核通过
+            
+           string sql = $@"SELECT [id]
+                          ,[pid]
+                          ,[openid]
+                          ,[title]
+                          ,[_desc]
+                          ,[num]
+                          ,[price]
+                          ,[tag]
+                          ,[buytime]
+                          ,[addtime],approveID
+                      FROM wx_goodadd where id = '{id}' and  openid = '{openid}'  and isdelete = 0 ";
+
+            if(isadmin == "1")
+            {
+                sql = $@"SELECT [id]
+                          ,[pid]
+                          ,[openid]
+                          ,[title]
+                          ,[_desc]
+                          ,[num]
+                          ,[price]
+                          ,[tag]
+                          ,[buytime]
+                          ,[addtime],approveID
+                      FROM wx_goodadd where id = '{id}' and  isdelete = 0 ";
+            }
+            DataTable dt  = SqlServerSqlHelper.ExecuteDataTable(sql);
+            if (dt == null)
+            {
+                return Json(new { rowcount = 0 }, JsonRequestBehavior.AllowGet);
+            }
+            List<goodsView> hm = new List<goodsView>();
+
+            foreach (DataRow w in dt.Rows)
+            {
+                hm.Add(new goodsView
+                {
+                    openid = w["openid"].ToString(),
+                    pid = int.Parse(w["pid"].ToString()),
+                    id = int.Parse(w["id"].ToString()),
+                    num = int.Parse(w["num"].ToString()),
+                    tag = w["tag"].ToString(),
+                    price = Convert.ToDouble(w["price"].ToString()),
+                    desc = w["_desc"].ToString(),
+                    title = w["title"].ToString(),
+                    thumb = "/images/tabs/gd.png",
+                    buytime = w["buytime"].ToString().Replace(" 0:00:00", ""),
+                    addtime = w["addtime"].ToString(),
+                    approveID = int.Parse(w["approveID"].ToString()),isdelete = 0
+                });
+            }
+          
+
+            
+            var obj = new { rowcount = 1, data = hm[0], admin = isadmin == "1" };
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
 
@@ -389,7 +501,63 @@ namespace WebApplicationWZH.Controllers
             return Json(new { success = rs == "" ,message = rs == "" ? "ok":rs },JsonRequestBehavior.AllowGet);
         
         }
+         
+        private void  useradd(string openid,string session_key)
+        {
+            string sql = $@"  
+                if not exists  (select 1 from wx_users where openid = '{openid}')
+                   insert into wx_users(openid,session_key)values('{openid}','{session_key}')
+               else
+                  update wx_users set session_key = '{session_key}',logintime = getdate(),logincount = logincount + 1  where openid ='{openid}'";
+            SqlServerSqlHelper.ExecuteNonQuery2(sql);
 
+           // return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
+
+        }
+
+        public ActionResult getfagui(string openid)
+        {
+
+             string htmlSnip = @"<div class=""div_class"">
+                    <h5>信息发布说明:</h5>
+                    <p class=""div_class_p"">用户所有发布信息必须符合《互联网信息服务管理办法》中所规定的内容</p>
+                    <p class=""div_class_p""> 第十五条互联网信息服务提供者不得制作、复制、发布、传播含有下列内容的信息：</p>
+                    <ul class=""div_class_ul"">
+                    <li>1.反对宪法所确定的基本原则的；</li>
+                    <li>2.危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的；</li>
+                    <li>3.损害国家荣誉和利益的；</li>
+                    <li>4.煽动民族仇恨、民族歧视，破坏民族团结的；</li>
+                    <li>5.破坏国家宗教政策，宣扬邪教和封建迷信的；</li>
+                    <li>6.散布谣言，扰乱社会秩序，破坏社会稳定的；</li>
+                    <li>7.散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的；</li>
+                    <li>8.侮辱或者诽谤他人，侵害他人合法权益的；</li>
+                    <li>9.含有法律、行政法规禁止的其他内容的。</li>
+                    </ul>
+                  </div>`";
+            return Json(new { success = true , message = htmlSnip }, JsonRequestBehavior.AllowGet);
+
+        }
+        [HttpPost]
+        public ActionResult goodapprove(string openid,int id)
+        {
+            string sql = $"  update wx_goodadd set approveID = 1,approvetime = getdate() where id = {id} and openid = '{openid}'";
+
+            string rs = SqlServerSqlHelper.ExecuteNonQuery2(sql);
+
+            return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
+        }
+        [HttpPost]
+        public ActionResult gooddelete(string openid, int id, string isadmin = "0")
+        {
+            string sql = $"  update wx_goodadd set isdelete = 1,deletetime = getdate() where id = {id} and openid = '{openid}'";
+            if(isadmin == "1")
+            {
+                sql = $"     update wx_goodadd set isdelete = 2,deletetime = getdate() where id = {id} ";
+            }
+            string rs = SqlServerSqlHelper.ExecuteNonQuery2(sql);
+
+            return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
+        }
         #endregion
     }
     public class Category
@@ -402,6 +570,8 @@ namespace WebApplicationWZH.Controllers
     {
         public string session_key { get; set; }
         public string openid { get; set; }
+
+        public bool admin { get; set; } = false;
     }
     public class AccessToken
     {
@@ -434,6 +604,28 @@ namespace WebApplicationWZH.Controllers
         public string addtime { get; set; }
         public int isdelete { get; set; }
 
+
+    }
+    public class goodsView
+    {
+        public string openid { get; set; }
+        public int pid { get; set; }
+        public int id { get; set; }
+        public int num { get; set; } //ok
+        public string tag { get; set; } //ok
+        public double price { get; set; }  //ok
+        public string desc { get; set; }  //ok
+        public string title { get; set; } //ok
+        public string thumb { get; set; }
+        public string buytime { get; set; }
+        public string addtime { get; set; }
+        public int isdelete { get; set; }
+
+        public int approveID { get; set; }
+        public int uid { get; set; }
+        public string name { get; set; }
+
+        public int admin { get; set; }
 
     }
     //{"code":1,"Message":"{\"session_key\":\"N5vBx9faQv5NImR8KvmWGQ==\",\"openid\":\"oXrvG6wzNllfWpLGlP_AmZDWCjQM\"}"}
