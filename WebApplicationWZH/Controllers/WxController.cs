@@ -432,10 +432,15 @@ namespace WebApplicationWZH.Controllers
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult getquanzdatalist(string openid, int nowPage = 1, int pageSize = 5,string isadmin = "0")
+        public ActionResult getquanzdatalist(string openid, int nowPage = 1, int pageSize = 5,string isadmin = "0",string searchvalue = "")
         {
-             
 
+           
+
+            if (!string.IsNullOrWhiteSpace(searchvalue))
+            {
+                searchvalue = HttpUtility.UrlDecode(searchvalue);
+            }
             if (string.IsNullOrWhiteSpace(openid))
             {
                 return Json(new { rowcount = 0 , message = "1"}, JsonRequestBehavior.AllowGet);
@@ -459,6 +464,18 @@ namespace WebApplicationWZH.Controllers
                   inner join wx_users as b on a.openid = b.openid
                   where  approveID = 1 and  shared = 1 and a.isdelete = 0 and b.isdelete = 0 order by a.id ";
 
+            //if(admin && searchvalue == "")
+            if (!string.IsNullOrWhiteSpace(searchvalue))
+            {
+                sql = $@"
+                  SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime ,b.uid,b.name,b.admin
+                      FROM wx_goodadd as a
+                      inner join wx_users as b on a.openid = b.openid
+                      where  approveID = 1 and  shared = 1 and a.isdelete = 0 and b.isdelete = 0 
+				      and ( title like '%{searchvalue}%' or _desc like '%{searchvalue}%' or tag like '%{searchvalue}%' or b.name like '{searchvalue}%' )
+				      order by a.id ";
+
+            }
             dt = SqlServerSqlHelper.ExecuteDataTable(sql);
             if (dt == null)
             {
