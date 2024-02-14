@@ -10,6 +10,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data;
 using System.Configuration;
+using System.IO;
+using System.Collections;
+using System.Globalization;
 
 namespace WebApplicationWZH.Controllers
 {
@@ -121,17 +124,34 @@ namespace WebApplicationWZH.Controllers
             //获取数据解析，并发送至前台
             //ViewBag.ResultTyle = JsonConvert.DeserializeObject<ResultType>(task.Result);
             //var obj = new { code = 1, Message = task.Result };
-            bool admin = false;
+            //bool admin = false;
             var obj = JsonConvert.DeserializeObject<session_key_openid>(task.Result);
             if(obj != null && obj.openid != "" && obj.session_key != "")
             {
                 useradd(obj.openid, obj.session_key);
 
                 string sql = $"select 1 from wx_users where admin = 1 and openid = '{obj.openid}'";
+
+                sql = $@"SELECT  [uid]
+                          ,[openid]
+                          ,[session_key]
+                          ,[name]
+                          ,[addtime]
+                          ,[logintime]
+                          ,[logincount]
+                          ,[admin]
+                          ,[flag]
+                          ,[isdelete]
+                      FROM wx_users where openid = '{obj.openid}'";
                 DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
-                admin = dt != null;
+                //admin = dt != null;
+                if(dt != null)
+                {
+                    obj.uid = dt.Rows[0]["uid"].ToString();
+                    obj.admin = dt.Rows[0]["admin"].ToString() == "1";
+                }
             }
-            obj.admin = admin;
+          
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
@@ -462,7 +482,7 @@ namespace WebApplicationWZH.Controllers
                SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime ,b.uid,b.name,b.admin
                   FROM wx_goodadd as a
                   inner join wx_users as b on a.openid = b.openid
-                  where  approveID = 1 and  shared = 1 and a.isdelete = 0 and b.isdelete = 0 order by a.id ";
+                  where  approveID = 1 and  shared = 1 and a.isdelete = 0 and b.isdelete = 0 order by a.id  desc";
 
             //if(admin && searchvalue == "")
             if (!string.IsNullOrWhiteSpace(searchvalue))
@@ -473,7 +493,7 @@ namespace WebApplicationWZH.Controllers
                       inner join wx_users as b on a.openid = b.openid
                       where  approveID = 1 and  shared = 1 and a.isdelete = 0 and b.isdelete = 0 
 				      and ( title like '%{searchvalue}%' or _desc like '%{searchvalue}%' or tag like '%{searchvalue}%' or b.name like '{searchvalue}%' )
-				      order by a.id ";
+				      order by a.id desc";
 
             }
             dt = SqlServerSqlHelper.ExecuteDataTable(sql);
@@ -505,7 +525,7 @@ namespace WebApplicationWZH.Controllers
             }
             //id	pid	openid	title	_desc	num	price	tag	 buytime	 addtime	approveID	uid	name	admin	shared
 
-            var data = (from p in hm where p.isdelete == 0 orderby p.id ascending select p).ToList();
+            var data = (from p in hm where p.isdelete == 0 orderby p.id descending select p).ToList();
 
             int pageCount = data.Count / pageSize;
             if (data.Count % pageSize != 0)
@@ -715,7 +735,210 @@ namespace WebApplicationWZH.Controllers
 
             return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
         }
+
+
+        //定义存储文件夹
+        private string SavePath
+        {
+            get
+            {
+                return "/Uploads/";
+            }
+        }
+        [HttpPost]
+        public ActionResult imgupload(HttpPostedFileBase imageFile)
+        {
+            //return Json(new { success = true, message = "" });
+            if (imageFile != null && imageFile.ContentLength > 0)
+            {
+                // 获取保存路径等配置信息
+                string savePath = Server.MapPath("~/Uploads");
+
+                // 生成新的文件名
+                string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
+                string fileExt = Path.GetExtension(imageFile.FileName).ToLower();
+                string newName = Guid.NewGuid().ToString() + fileExt;
+
+                // 将文件保存到指定位置
+
+                string f = Path.Combine(savePath, newName);
+                imageFile.SaveAs(f);
+
+                // 返回结果或进行后续操作
+                //return RedirectToAction("Index", "Home");
+                return Json(new { success = true, message = f });
+            }
+
+            // 如果有错误发生，可能需要显示错误消息或重试
+            //ModelState.AddModelError("", "无效的文件格式或大小！");
+            //return View();
+            return Json(new { success = false, message = "无效的文件格式或大小" });
+        }
+
+        public ActionResult NewUploadImg()
+        {
+
+            string GoodID = Request.Form["GoodID"];
+            string openid = Request.Form["openid"];
+            string uid = Request.Form["uid"];
+
+
+            //文件保存目录URL
+            var saveUrl = SavePath;
+
+            //定义允许上传的文件扩展名
+            var extTable = new Hashtable
+            {
+            {"image", "gif,jpg,jpeg,png,bmp"}
+            };
+            //最大文件大小
+            const int maxSize = 4194304; // 4M大小
+            var imgFile = Request.Files[0];
+
+            //HttpPostedFile imgFile = context.Request.Files["imgFile"];
+
+            if (imgFile == null)
+            {
+                return NewShowError("请选择文件。", false);
+            }
+
+            var dirPath = Server.MapPath(SavePath);
+            if (!Directory.Exists(dirPath))
+            {
+                //return ShowError("上传目录不存在。" + dirPath);
+                Directory.CreateDirectory(dirPath);
+            }
+           
+            var dirName = Request.QueryString["dir"];
+            if (String.IsNullOrEmpty(dirName))
+            {
+                dirName = "image";
+            }
+
+            if (!extTable.ContainsKey(dirName))
+            {
+                return NewShowError("目录名不正确。", false);
+            }
+
+            var fileName = imgFile.FileName;
+            var extension = Path.GetExtension(fileName);
+            if (extension == null)
+            {
+                return NewShowError("extension == null", false);
+            }
+
+            var fileExt = extension.ToLower();
+
+            if (imgFile.InputStream == null || imgFile.InputStream.Length > maxSize)
+            {
+                return NewShowError("上传文件大小超过限制。", false);
+            }
+
+            if (String.IsNullOrEmpty(fileExt) ||
+            Array.IndexOf(((String)extTable[dirName]).Split(','), fileExt.Substring(1).ToLower()) == -1)
+            {
+                return NewShowError("上传文件扩展名是不允许的扩展名。\n只允许" + ((String)extTable[dirName]) + "格式。", false);
+            }
+
+            string sql = $" select count(sid) as qty from wx_good_img where GoodID = {GoodID} and Isdelete = 0";
+            var obj = SqlServerSqlHelper.ExecuteScalar(sql);
+            int Max = 5;
+            if(Convert.ToInt32(obj) >= Max)
+            {
+                return NewShowError("上传图片已达到最大数" + Max, false);
+            }
+            //创建文件夹
+            dirPath += dirName + "/";
+            saveUrl += dirName + "/";
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+            var ymd = DateTime.Now.ToString("yyyyMMdd", DateTimeFormatInfo.InvariantInfo);
+            dirPath += ymd + "/";
+            saveUrl += ymd + "/";
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+
+            var newFileName = DateTime.Now.ToString("HHmmss_ffff", DateTimeFormatInfo.InvariantInfo) + fileExt;
+            newFileName = $"{uid}_{GoodID}_" + DateTime.Now.ToString("yyyyMMdd@HHmmssffff") + fileExt;
+            var filePath = dirPath + newFileName;
+
+            imgFile.SaveAs(filePath);
+            var fileUrl = saveUrl + newFileName;
+
+            var hash = new Hashtable();
+
+            return NewShowError(fileUrl, true, GoodID);
+
+        }
+
+
+        private JsonResult NewShowError(string message, bool isImg,string GoodID = "")
+        {
+            //{"success":true,"message":"/Uploads/image/20240214/1_7_20240214@2251533273.jpg"}
+
+            //var hash = new Hashtable();
+            //hash["mess"] = message;
+            //hash["success"] = isImg;
+            if (isImg && message.StartsWith("/Uploads"))
+            {
+                string sql = $"insert into wx_good_img(GoodID,ImgUrl)values('{GoodID}','{message}')";
+                 SqlServerSqlHelper.ExecuteNonQuery2(sql);
+                var obj2 = new { success = true, message = message };
+                return Json(obj2);
+            }
+            //return Json(hash, "text/html;charset=UTF-8");
+            var obj = new { success = false, message = "文件保存失败" };
+            return Json(obj);
+        }
+
+        public ActionResult GetGoodImg(string openid,string GoodID)
+        {
+            if(string.IsNullOrWhiteSpace(openid) || string.IsNullOrWhiteSpace(GoodID))
+            {
+                return Json(new { success = false, message = "openid or GoodID IsNullOrWhiteSpace" }, JsonRequestBehavior.AllowGet);
+            }
+            // select sid,GoodID,ImgUrl,addtime from wx_good_img where GoodID = 1004 and Isdelete = 0 order by sid
+            string sql = $"select sid,GoodID,ImgUrl,addtime from wx_good_img where GoodID = '{GoodID}' and Isdelete = 0 order by sid ";
+            DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
+            if(dt == null)
+            {
+                return Json(new { success = false, message = "DataTable IsNullOrWhiteSpace" }, JsonRequestBehavior.AllowGet);
+            }
+            List<GoodImg> ls = new List<GoodImg>();
+
+            foreach (DataRow w in dt.Rows)
+            {
+                ls.Add(new GoodImg
+                {
+                    
+                    sid = int.Parse(w["sid"].ToString()),
+                    GoodID = int.Parse(w["GoodID"].ToString()),
+                    addtime = w["addtime"].ToString(),
+                    ImgUrl = w["ImgUrl"].ToString(),
+                });
+            }
+            return Json(new { success = true, data = ls, message  = "ok"}, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
+
+
+        //删除文件
+        public ActionResult DeleteImg(string fileSrc)
+        {
+            var dirPath = Server.MapPath(fileSrc);
+            if (System.IO.File.Exists(dirPath))
+            {
+                System.IO.File.Delete(dirPath);
+            }
+
+            return Json("");
+        }
+
     }
     public class Category
     {
@@ -729,6 +952,8 @@ namespace WebApplicationWZH.Controllers
         public string openid { get; set; }
 
         public bool admin { get; set; } = false;
+
+        public string uid { get; set; } = "0";
     }
     public class AccessToken
     {
@@ -788,6 +1013,15 @@ namespace WebApplicationWZH.Controllers
         public int admin { get; set; }
         public int shared { set; get; } = 0;
 
+    }
+    //sid,GoodID,ImgUrl,addtime 
+    public class GoodImg
+    {
+        public int sid { get; set; }
+        public int GoodID { get; set; }
+        public string ImgUrl { get; set; }
+       
+        public string addtime { set; get; }  
     }
     //{"code":1,"Message":"{\"session_key\":\"N5vBx9faQv5NImR8KvmWGQ==\",\"openid\":\"oXrvG6wzNllfWpLGlP_AmZDWCjQM\"}"}
 }
