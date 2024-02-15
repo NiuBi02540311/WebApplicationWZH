@@ -538,7 +538,7 @@ namespace WebApplicationWZH.Controllers
             }
 
 
-
+            //
             //GridResponseModel res =   new  GridResponseModel<Users>(find);
             var v = data.Skip((nowPage - 1) * pageSize).Take(pageSize).ToList();
             var obj = new { rowcount = data.Count, data = v, admin = admin , pageCount  = pageCount };
