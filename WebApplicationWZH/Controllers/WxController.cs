@@ -22,6 +22,10 @@ namespace WebApplicationWZH.Controllers
         private static string appid = ConfigurationManager.AppSettings["appid"].ToString();
         private static string secret = ConfigurationManager.AppSettings["secret"].ToString();
         
+        public WxController()
+        {
+            
+        }
         // GET: Wx
         public ActionResult Index()
         {
@@ -537,7 +541,7 @@ namespace WebApplicationWZH.Controllers
 
             //GridResponseModel res =   new  GridResponseModel<Users>(find);
             var v = data.Skip((nowPage - 1) * pageSize).Take(pageSize).ToList();
-            var obj = new { rowcount = data.Count, data = v, admin = admin };
+            var obj = new { rowcount = data.Count, data = v, admin = admin , pageCount  = pageCount };
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
 
@@ -899,14 +903,14 @@ namespace WebApplicationWZH.Controllers
         {
             if(string.IsNullOrWhiteSpace(openid) || string.IsNullOrWhiteSpace(GoodID))
             {
-                return Json(new { success = false, message = "openid or GoodID IsNullOrWhiteSpace" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false,  message = "openid or GoodID IsNullOrWhiteSpace" }, JsonRequestBehavior.AllowGet);
             }
             // select sid,GoodID,ImgUrl,addtime from wx_good_img where GoodID = 1004 and Isdelete = 0 order by sid
             string sql = $"select sid,GoodID,ImgUrl,addtime from wx_good_img where GoodID = '{GoodID}' and Isdelete = 0 order by sid ";
             DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
             if(dt == null)
             {
-                return Json(new { success = false, message = "DataTable IsNullOrWhiteSpace" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "DataTableIsNullOrWhiteSpace" }, JsonRequestBehavior.AllowGet);
             }
             List<GoodImg> ls = new List<GoodImg>();
 
@@ -923,6 +927,30 @@ namespace WebApplicationWZH.Controllers
             }
             return Json(new { success = true, data = ls, message  = "ok"}, JsonRequestBehavior.AllowGet);
         }
+        [HttpPost]
+
+        public ActionResult DeleteGoodImg(string openid, string GoodID,string sid )
+        {
+            if (string.IsNullOrWhiteSpace(openid) || string.IsNullOrWhiteSpace(GoodID))
+            {
+                return Json(new { success = false, message = "openid or GoodID IsNullOrWhiteSpace" }, JsonRequestBehavior.AllowGet);
+            }
+
+            bool admin = IsAdmin("", openid);
+
+            string sql = $@"update wx_good_img  set isdelete = 1 
+                    where sid = {sid} and GoodID = (select id from wx_goodadd where isdelete = 0 and openid = '{openid}' and id = {GoodID})";
+            if (admin)
+            {
+                sql = $" update wx_good_img  set isdelete = 1  where sid = {sid} ";
+            }
+            string rs = SqlServerSqlHelper.ExecuteNonQuery2(sql);
+            if(rs == "")
+            {
+
+            }
+            return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
+        }
 
         #endregion
 
@@ -937,6 +965,31 @@ namespace WebApplicationWZH.Controllers
             }
 
             return Json("");
+        }
+
+        private bool IsAdmin(string uid,string openid)
+        {
+           
+            if (string.IsNullOrWhiteSpace(uid) && string.IsNullOrWhiteSpace(openid))
+            {
+                return false;
+            }
+            string sql = "";
+            if (uid == "" && openid != "")
+            {
+                sql = $"select 1 from wx_users where  openid = '{openid}' and admin = 1";
+            }
+            if (uid != "" && openid == "")
+            {
+                sql = $"select 1 from wx_users where uid = {uid}  and admin = 1";
+            }
+            if (uid != "" && openid != "")
+            {
+                sql = $"select 1 from wx_users where uid = {uid} and openid = '{openid}' and admin = 1";
+            }
+            var obj = SqlServerSqlHelper.ExecuteScalar(sql);
+
+            return obj != null;
         }
 
     }
@@ -1022,6 +1075,8 @@ namespace WebApplicationWZH.Controllers
         public string ImgUrl { get; set; }
        
         public string addtime { set; get; }  
+
+        public int Isdelete { get; set; }
     }
     //{"code":1,"Message":"{\"session_key\":\"N5vBx9faQv5NImR8KvmWGQ==\",\"openid\":\"oXrvG6wzNllfWpLGlP_AmZDWCjQM\"}"}
 }
