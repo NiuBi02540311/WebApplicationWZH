@@ -21,10 +21,10 @@ namespace WebApplicationWZH.Controllers
     {
         private static string appid = ConfigurationManager.AppSettings["appid"].ToString();
         private static string secret = ConfigurationManager.AppSettings["secret"].ToString();
-        
+
         public WxController()
         {
-            
+
         }
         // GET: Wx
         public ActionResult Index()
@@ -130,7 +130,7 @@ namespace WebApplicationWZH.Controllers
             //var obj = new { code = 1, Message = task.Result };
             //bool admin = false;
             var obj = JsonConvert.DeserializeObject<session_key_openid>(task.Result);
-            if(obj != null && obj.openid != "" && obj.session_key != "")
+            if (obj != null && obj.openid != "" && obj.session_key != "")
             {
                 useradd(obj.openid, obj.session_key);
 
@@ -149,13 +149,13 @@ namespace WebApplicationWZH.Controllers
                       FROM wx_users where openid = '{obj.openid}'";
                 DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
                 //admin = dt != null;
-                if(dt != null)
+                if (dt != null)
                 {
                     obj.uid = dt.Rows[0]["uid"].ToString();
                     obj.admin = dt.Rows[0]["admin"].ToString() == "1";
                 }
             }
-          
+
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
@@ -338,7 +338,7 @@ namespace WebApplicationWZH.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult getGoodDatalist(int pid, string openid, int nowPage = 1, int pageSize = 5,string isadmin = "")
+        public ActionResult getGoodDatalist(int pid, string openid, int nowPage = 1, int pageSize = 5, string isadmin = "0", string searchvalue = "")
         {
             //http://localhost:57526/Test/getGoodDatalist?pid=1&openid=aaa&nowPage=5&pageSize=10
             //http://localhost:57526/Test/getGoodDatalist?pid=1&openid=aaa&nowPage=1&pageSize=3
@@ -350,8 +350,10 @@ namespace WebApplicationWZH.Controllers
             }
 
             string sql = $"select 1 from wx_users where admin = 1 and openid = '{openid}'";
-            DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
-            bool admin = dt != null;
+            DataTable dt = null;
+            //DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
+            //bool admin = dt != null;
+            bool admin = isadmin == "1";
             sql = $@"SELECT [id]
                           ,[pid]
                           ,[openid]
@@ -363,16 +365,23 @@ namespace WebApplicationWZH.Controllers
                           ,[buytime]
                           ,[addtime]
                       FROM wx_goodadd where pid = '{pid}' and openid = '{openid}' and approveID = 1 and isdelete = 0 order by id ";
-         
+
+            string canshu = "";
+            if (!string.IsNullOrWhiteSpace(searchvalue))
+            {
+                canshu = $"  and ( title like '%{searchvalue}%' or  _desc like '%{searchvalue}%' or  tag like '%{searchvalue}%' or  b.name like '%{searchvalue}%' )";
+            }
             sql = $@"
                 SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime,approveID
 	                ,b.uid,b.name,b.admin,shared
                   FROM wx_goodadd as a
                   inner join wx_users as b on a.openid = b.openid
-                  where pid = '{pid}' and  a.openid = '{openid}' and approveID = 1 and a.isdelete = 0 order by a.id";
+                  where pid = '{pid}' and  a.openid = '{openid}' and a.isdelete = 0 and approveID = 1  {canshu}   order by a.id";
 
             if (admin)
             {
+
+
                 sql = $@"SELECT [id]
                           ,[pid]
                           ,[openid]
@@ -385,22 +394,47 @@ namespace WebApplicationWZH.Controllers
                           ,[addtime],approveID
                       FROM wx_goodadd where pid = '{pid}' and isdelete = 0 order by id ";
 
-                sql = $@"
-                SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime,approveID
-	                ,b.uid,b.name,b.admin,shared
-                  FROM wx_goodadd as a
-                  inner join wx_users as b on a.openid = b.openid
-                  where pid = '{pid}' and a.isdelete = 0 order by a.id";
+                if (string.IsNullOrWhiteSpace(searchvalue))
+                {
+                    sql = $@"
+                        SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime,approveID
+	                        ,b.uid,b.name,b.admin,shared
+                          FROM wx_goodadd as a
+                          inner join wx_users as b on a.openid = b.openid
+                          where pid = '{pid}' and a.isdelete = 0 order by a.id ";
+                }
+                else
+                {
+                    if (searchvalue == "未审核")
+                    {
+                        sql = $@"
+                            SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime,approveID
+	                            ,b.uid,b.name,b.admin,shared
+                              FROM wx_goodadd as a
+                              inner join wx_users as b on a.openid = b.openid
+                              where pid = '{pid}' and a.isdelete = 0 and approveID = 0 order by a.id";
+                    }
+                    else
+                    {
+                        sql = $@"
+                            SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime,approveID
+	                            ,b.uid,b.name,b.admin,shared
+                              FROM wx_goodadd as a
+                              inner join wx_users as b on a.openid = b.openid
+                              where pid = '{pid}' and a.isdelete = 0  {canshu}   order by a.id";
+                    }
+                }
+
             }
-           
-             dt = SqlServerSqlHelper.ExecuteDataTable(sql);
+
+            dt = SqlServerSqlHelper.ExecuteDataTable(sql);
             if (dt == null)
             {
                 return Json(new { rowcount = 0 }, JsonRequestBehavior.AllowGet);
             }
             List<goodsView> hm = new List<goodsView>();
 
-            foreach(DataRow w in dt.Rows)
+            foreach (DataRow w in dt.Rows)
             {
                 hm.Add(new goodsView
                 {
@@ -413,12 +447,12 @@ namespace WebApplicationWZH.Controllers
                     desc = w["_desc"].ToString(),
                     title = w["title"].ToString(),
                     thumb = "/images/tabs/gd.png",
-                    buytime = w["buytime"].ToString().Replace(" 0:00:00",""),
+                    buytime = w["buytime"].ToString().Replace(" 0:00:00", ""),
                     addtime = w["addtime"].ToString(),
                     approveID = int.Parse(w["approveID"].ToString()),
                     uid = int.Parse(w["uid"].ToString()),
                     name = w["name"].ToString(),
-                    admin = int.Parse(w["admin"].ToString()),isdelete = 0,shared = int.Parse(w["shared"].ToString())
+                    admin = int.Parse(w["admin"].ToString()), isdelete = 0, shared = int.Parse(w["shared"].ToString())
                 });
             }
             for (int i = 1; i <= 0; i++)
@@ -448,18 +482,18 @@ namespace WebApplicationWZH.Controllers
                 pageCount++;
             }
 
-           
+
 
             //GridResponseModel res =   new  GridResponseModel<Users>(find);
             var v = data.Skip((nowPage - 1) * pageSize).Take(pageSize).ToList();
-            var obj = new { rowcount = data.Count, data = v , admin  = admin };
+            var obj = new { rowcount = data.Count, data = v, admin = admin, pageCount = pageCount };
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult getquanzdatalist(string openid, int nowPage = 1, int pageSize = 5,string isadmin = "0",string searchvalue = "")
+        public ActionResult getquanzdatalist(string openid, int nowPage = 1, int pageSize = 5, string isadmin = "0", string searchvalue = "")
         {
 
-           
+
 
             if (!string.IsNullOrWhiteSpace(searchvalue))
             {
@@ -467,20 +501,20 @@ namespace WebApplicationWZH.Controllers
             }
             if (string.IsNullOrWhiteSpace(openid))
             {
-                return Json(new { rowcount = 0 , message = "1"}, JsonRequestBehavior.AllowGet);
+                return Json(new { rowcount = 0, message = "1" }, JsonRequestBehavior.AllowGet);
             }
 
             string sql = $"select 1 from wx_users where openid = '{openid}' and isdelete = 0";
             DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
 
-            if ( dt == null )
+            if (dt == null)
             {
                 return Json(new { rowcount = 0, message = "2" }, JsonRequestBehavior.AllowGet);
             }
 
             bool admin = isadmin == "1";
 
-           
+
 
             sql = $@"
                SELECT id  ,pid   ,a.openid  ,title  ,_desc   ,num  ,price  ,tag  ,buytime ,a.addtime ,b.uid,b.name,b.admin
@@ -541,11 +575,11 @@ namespace WebApplicationWZH.Controllers
             // //
             //GridResponseModel res =   new  GridResponseModel<Users>(find);
             var v = data.Skip((nowPage - 1) * pageSize).Take(pageSize).ToList();
-            var obj = new { rowcount = data.Count, data = v, admin = admin , pageCount  = pageCount };
+            var obj = new { rowcount = data.Count, data = v, admin = admin, pageCount = pageCount };
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult getGoodData(string openid,int id,  string isadmin = "0")
+        public ActionResult getGoodData(string openid, int id, string isadmin = "0")
         {
 
             // approveID = 1 代表信息已被审核通过
@@ -567,7 +601,7 @@ namespace WebApplicationWZH.Controllers
                           ,[addtime],approveID,shared,updatetime
                       FROM wx_goodadd where id = '{id}' and  openid = '{openid}'  and isdelete = 0 ";
 
-            if(isadmin == "1")
+            if (isadmin == "1")
             {
                 sql = $@"SELECT [id]
                           ,[pid]
@@ -581,7 +615,7 @@ namespace WebApplicationWZH.Controllers
                           ,[addtime],approveID,shared,updatetime
                       FROM wx_goodadd where id = '{id}' and  isdelete = 0 ";
             }
-            DataTable dt  = SqlServerSqlHelper.ExecuteDataTable(sql);
+            DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
             if (dt == null)
             {
                 return Json(new { rowcount = 0 }, JsonRequestBehavior.AllowGet);
@@ -603,14 +637,14 @@ namespace WebApplicationWZH.Controllers
                     thumb = "/images/tabs/gd.png",
                     buytime = w["buytime"].ToString().Replace(" 0:00:00", ""),
                     addtime = w["addtime"].ToString(),
-                    approveID = int.Parse(w["approveID"].ToString()),isdelete = 0,
+                    approveID = int.Parse(w["approveID"].ToString()), isdelete = 0,
                     shared = int.Parse(w["shared"].ToString()),
                     updatetime = w["updatetime"].ToString()
                 });
             }
-          
 
-            
+
+
             var obj = new { rowcount = 1, data = hm[0], admin = isadmin == "1" };
             return Json(obj, JsonRequestBehavior.AllowGet);
         }
@@ -627,14 +661,14 @@ namespace WebApplicationWZH.Controllers
             ('{d.pid}','{d.openid}','{d.title}','{d.desc}','{d.num}','{d.price}','{d.tag}','{d.buytime}','{d.shared}')";
             string rs = SqlServerSqlHelper.ExecuteNonQuery2(sql);
 
-            return Json(new { success = rs == "" ,message = rs == "" ? "ok":rs },JsonRequestBehavior.AllowGet);
-        
+            return Json(new { success = rs == "", message = rs == "" ? "ok" : rs }, JsonRequestBehavior.AllowGet);
+
         }
 
         [HttpPost]
-        public ActionResult goodedit(string datalist ,string openid,string isadmin)
+        public ActionResult goodedit(string datalist, string openid, string isadmin)
         {
-            if(string.IsNullOrWhiteSpace(datalist) || string.IsNullOrWhiteSpace(openid))
+            if (string.IsNullOrWhiteSpace(datalist) || string.IsNullOrWhiteSpace(openid))
             {
                 return Json(new { success = false, message = "datalist or openid IsNullOrWhiteSpace" }, JsonRequestBehavior.AllowGet);
             }
@@ -653,33 +687,33 @@ namespace WebApplicationWZH.Controllers
                 //shared
                 //{"openid":"oXrvG6wzNllfWpLGlP_AmZDWCjQM","buytime":"2024/2/22","tag":"2222","pid":"3","title":"2","desc":"2","num":1,"price":0}
                 goods d = JsonConvert.DeserializeObject<goods>(datalist);
-               
-                  sql = $@"update wx_goodadd set updatetime = getdate(), buytime = '{d.buytime}',_desc = '{d.desc}'
+
+                sql = $@"update wx_goodadd set updatetime = getdate(), buytime = '{d.buytime}',_desc = '{d.desc}'
                            ,num = '{d.num}',price = '{d.price}',shared = '{d.shared}',tag = '{d.tag}',title = '{d.title}'
                             where id = '{d.id}' and openid = '{openid}'";
                 if (isadmin == "1")
                 {
-                        sql = $@"update wx_goodadd set updatetime = getdate(), buytime = '{d.buytime}',_desc = '{d.desc}'
+                    sql = $@"update wx_goodadd set updatetime = getdate(), buytime = '{d.buytime}',_desc = '{d.desc}'
                                ,num = '{d.num}',price = '{d.price}',shared = '{d.shared}',tag = '{d.tag}',title = '{d.title}'
                                 where id = '{d.id}'";
                 }
                 //updatetime
                 string rs = SqlServerSqlHelper.ExecuteNonQuery2(sql);
-                 
+
                 return Json(new { success = rs == "", message = rs == "" ? "ok" : rs,
-                    sql = rs == "" ? "" :sql ,updatetime = rs == "" ? DateTime.Now.ToString():""
+                    sql = rs == "" ? "" : sql, updatetime = rs == "" ? DateTime.Now.ToString() : ""
                 }, JsonRequestBehavior.AllowGet);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message,sql = sql }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = ex.Message, sql = sql }, JsonRequestBehavior.AllowGet);
             }
-           
+
 
         }
-         
 
-        private void  useradd(string openid,string session_key)
+
+        private void useradd(string openid, string session_key)
         {
             string sql = $@"  
                 if not exists  (select 1 from wx_users where openid = '{openid}')
@@ -688,14 +722,14 @@ namespace WebApplicationWZH.Controllers
                   update wx_users set session_key = '{session_key}',logintime = getdate(),logincount = logincount + 1  where openid ='{openid}'";
             SqlServerSqlHelper.ExecuteNonQuery2(sql);
 
-           // return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
+            // return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
 
         }
 
         public ActionResult getfagui(string openid)
         {
 
-             string htmlSnip = @"<div class=""div_class"">
+            string htmlSnip = @"<div class=""div_class"">
                     <h5>信息发布说明:</h5>
                     <p class=""div_class_p"">用户所有发布信息必须符合《互联网信息服务管理办法》中所规定的内容</p>
                     <p class=""div_class_p""> 第十五条互联网信息服务提供者不得制作、复制、发布、传播含有下列内容的信息：</p>
@@ -711,27 +745,28 @@ namespace WebApplicationWZH.Controllers
                     <li>9.含有法律、行政法规禁止的其他内容的。</li>
                     </ul>
                   </div>`";
-            return Json(new { success = true , message = htmlSnip }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, message = htmlSnip }, JsonRequestBehavior.AllowGet);
 
         }
         [HttpPost]
-        public ActionResult goodapprove(string openid,int id, string isadmin = "0")
+        public ActionResult goodapprove(string openid, int id, string isadmin = "0")
         {
             string sql = $"  update wx_goodadd set approveID = 1,approvetime = getdate() where id = {id} and openid = '{openid}'";
-            if(isadmin == "1")
+            if(IsAdmin("",openid))
+            //if (isadmin == "1")
             {
                 sql = $"  update wx_goodadd set approveID = 1,approvetime = getdate() where id = {id} ";
                 string rs = SqlServerSqlHelper.ExecuteNonQuery2(sql);
 
                 return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
             }
-            return Json(new { success = false, message = "无权限审批"});
+            return Json(new { success = false, message = "无权限审批" });
         }
         [HttpPost]
         public ActionResult gooddelete(string openid, int id, string isadmin = "0")
         {
             string sql = $"  update wx_goodadd set isdelete = 1,deletetime = getdate() where id = {id} and openid = '{openid}'";
-            if(isadmin == "1")
+            if (isadmin == "1")
             {
                 sql = $"     update wx_goodadd set isdelete = 2,deletetime = getdate() where id = {id} ";
             }
@@ -740,7 +775,70 @@ namespace WebApplicationWZH.Controllers
             return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
         }
 
+        [HttpPost]
+        public ActionResult ChangeNickName(string openid, string uid, string NikcName)
+        {
+            if (string.IsNullOrWhiteSpace(openid) || string.IsNullOrWhiteSpace(uid) || string.IsNullOrWhiteSpace(NikcName))
+            {
+                return Json(new { success = false, message = "IsNullOrWhiteSpace" });
+            }
+            string sql = $"    update wx_users set Name = '{NikcName}' where openid = '{openid}' and uid = '{uid}'";
+             
+            string rs = SqlServerSqlHelper.ExecuteNonQuery2(sql);
 
+            return Json(new { success = rs == "", message = rs == "" ? "ok" : rs });
+        }
+        [HttpPost]
+        public ActionResult GetCustomerInfo(string openid, string uid)
+        {
+            if (string.IsNullOrWhiteSpace(openid) || string.IsNullOrWhiteSpace(uid) )
+            {
+                return Json(new { success = false, message = "IsNullOrWhiteSpace" });
+            }
+            string sql = $@"  SELECT  [uid]
+                  ,[openid]
+                  ,[session_key]
+                  ,[name]
+                  ,[addtime]
+                  ,[logintime]
+                  ,[logincount]
+                  ,[admin]
+                  ,[flag]
+                  ,[isdelete]
+              FROM wx_users where openid = '{openid}' and uid = '{uid}' ";
+
+            DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
+            if(dt == null)
+            {
+                return Json(new { success = false, message = "DataTable IsNullOrWhiteSpace" });
+            }
+            customer c = new customer {
+                 uid =  int.Parse(dt.Rows[0]["uid"].ToString()),
+                openid = dt.Rows[0]["openid"].ToString(),
+                session_key = dt.Rows[0]["session_key"].ToString(),
+                name = dt.Rows[0]["name"].ToString(),
+                addtime = dt.Rows[0]["addtime"].ToString(),
+                logintime = dt.Rows[0]["logintime"].ToString(),
+                logincount = int.Parse(dt.Rows[0]["logincount"].ToString()),
+                admin = int.Parse(dt.Rows[0]["admin"].ToString()),
+                flag = int.Parse(dt.Rows[0]["flag"].ToString()),
+                isdelete = int.Parse(dt.Rows[0]["isdelete"].ToString()),
+                goodCount = GetGoodCount(dt.Rows[0]["openid"].ToString())
+
+            };
+            return Json(new { success = true , message =  "ok" , data = c });
+        }
+        private int GetGoodCount(string openid)
+        {
+            string sql = $"select count(id) as qty from wx_goodadd where isdelete = 0 and openid = '{openid}' ";
+            DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
+            if (dt == null)
+            {
+                return 0;
+            }
+
+            return int.Parse(dt.Rows[0]["qty"].ToString());
+        }
         //定义存储文件夹
         private string SavePath
         {
@@ -1077,6 +1175,23 @@ namespace WebApplicationWZH.Controllers
         public string addtime { set; get; }  
 
         public int Isdelete { get; set; }
+    }
+
+    public class customer
+    {
+
+        public int uid { set; get; }
+        public string  openid { set; get; }
+        public string   session_key{ set; get; }
+        public string  name   { set; get; }
+        public string addtime { set; get; }
+        public string   logintime { set; get; }
+        public int  logincount { set; get; }
+        public int  admin { set; get; }
+        public int  flag { set; get; }
+        public int  isdelete { set; get; }
+
+        public int goodCount { set; get; } = 0;
     }
     //{"code":1,"Message":"{\"session_key\":\"N5vBx9faQv5NImR8KvmWGQ==\",\"openid\":\"oXrvG6wzNllfWpLGlP_AmZDWCjQM\"}"}
 }
