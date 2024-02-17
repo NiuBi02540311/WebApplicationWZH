@@ -21,6 +21,7 @@ namespace WebApplicationWZH.Controllers
     {
         private static string appid = ConfigurationManager.AppSettings["appid"].ToString();
         private static string secret = ConfigurationManager.AppSettings["secret"].ToString();
+        private static string localhost = ConfigurationManager.AppSettings["localhost"].ToString();
 
         public WxController()
         {
@@ -804,7 +805,7 @@ namespace WebApplicationWZH.Controllers
                   ,[logincount]
                   ,[admin]
                   ,[flag]
-                  ,[isdelete]
+                  ,[isdelete],headphoto
               FROM wx_users where openid = '{openid}' and uid = '{uid}' ";
 
             DataTable dt = SqlServerSqlHelper.ExecuteDataTable(sql);
@@ -812,6 +813,7 @@ namespace WebApplicationWZH.Controllers
             {
                 return Json(new { success = false, message = "DataTable IsNullOrWhiteSpace" });
             }
+            ///images/tabs/me.png
             customer c = new customer {
                  uid =  int.Parse(dt.Rows[0]["uid"].ToString()),
                 openid = dt.Rows[0]["openid"].ToString(),
@@ -823,7 +825,8 @@ namespace WebApplicationWZH.Controllers
                 admin = int.Parse(dt.Rows[0]["admin"].ToString()),
                 flag = int.Parse(dt.Rows[0]["flag"].ToString()),
                 isdelete = int.Parse(dt.Rows[0]["isdelete"].ToString()),
-                goodCount = GetGoodCount(dt.Rows[0]["openid"].ToString())
+                goodCount = GetGoodCount(dt.Rows[0]["openid"].ToString()),
+                headphoto = string.IsNullOrWhiteSpace(dt.Rows[0]["headphoto"].ToString()) ? localhost+ "/Uploads/image/customerphoto/me.png" : localhost + dt.Rows[0]["headphoto"].ToString()
 
             };
             return Json(new { success = true , message =  "ok" , data = c });
@@ -876,7 +879,9 @@ namespace WebApplicationWZH.Controllers
             //return View();
             return Json(new { success = false, message = "无效的文件格式或大小" });
         }
+       
 
+        [HttpPost]
         public ActionResult NewUploadImg()
         {
 
@@ -884,6 +889,17 @@ namespace WebApplicationWZH.Controllers
             string openid = Request.Form["openid"];
             string uid = Request.Form["uid"];
 
+            string type = Request.Form["type"]; // goodphoto customerphoto
+            //  formData: { GoodID: '0',openid: openid,uid:uid,type:'customerphoto'},
+
+            if (type == "goodphoto" || type == "customerphoto")
+            {
+                
+            }
+            else
+            {
+                return NewShowError("请求错误", false);
+            }
 
             //文件保存目录URL
             var saveUrl = SavePath;
@@ -917,9 +933,17 @@ namespace WebApplicationWZH.Controllers
                 dirName = "image";
             }
 
+            //if (type == "goodphoto")
+            //{
+            //    dirName = "image/good";
+            //}
+            //if (type == "customer")
+            //{
+            //    dirName = "image/customer";
+            //}
             if (!extTable.ContainsKey(dirName))
             {
-                return NewShowError("目录名不正确。", false);
+                return NewShowError("目录名不正确8", false);
             }
 
             var fileName = imgFile.FileName;
@@ -957,8 +981,8 @@ namespace WebApplicationWZH.Controllers
                 Directory.CreateDirectory(dirPath);
             }
             var ymd = DateTime.Now.ToString("yyyyMMdd", DateTimeFormatInfo.InvariantInfo);
-            dirPath += ymd + "/";
-            saveUrl += ymd + "/";
+            dirPath += type + "/" + ymd + "/";
+            saveUrl += type + "/" + ymd + "/";
             if (!Directory.Exists(dirPath))
             {
                 Directory.CreateDirectory(dirPath);
@@ -973,23 +997,31 @@ namespace WebApplicationWZH.Controllers
 
             var hash = new Hashtable();
 
+            if (type == "customerphoto")
+            {
+                return NewShowError(fileUrl, true, GoodID, openid, uid);
+            }
             return NewShowError(fileUrl, true, GoodID);
 
         }
 
 
-        private JsonResult NewShowError(string message, bool isImg,string GoodID = "")
+        private JsonResult NewShowError(string fileUrl, bool isImg,string GoodID = "",string openid = "",string uid = "")
         {
             //{"success":true,"message":"/Uploads/image/20240214/1_7_20240214@2251533273.jpg"}
 
             //var hash = new Hashtable();
             //hash["mess"] = message;
             //hash["success"] = isImg;
-            if (isImg && message.StartsWith("/Uploads"))
+            if (isImg && fileUrl.StartsWith("/Uploads"))
             {
-                string sql = $"insert into wx_good_img(GoodID,ImgUrl)values('{GoodID}','{message}')";
+                string sql = $"insert into wx_good_img(GoodID,ImgUrl)values('{GoodID}','{fileUrl}')";
+                if(openid != "" && uid  != ""){
+                       sql = $"update wx_users set headphoto = '{fileUrl}' where openid = '{openid}' and uid = '{uid}'";
+                }
+               
                  SqlServerSqlHelper.ExecuteNonQuery2(sql);
-                var obj2 = new { success = true, message = message };
+                var obj2 = new { success = true, message = localhost + fileUrl };
                 return Json(obj2);
             }
             //return Json(hash, "text/html;charset=UTF-8");
@@ -1020,7 +1052,7 @@ namespace WebApplicationWZH.Controllers
                     sid = int.Parse(w["sid"].ToString()),
                     GoodID = int.Parse(w["GoodID"].ToString()),
                     addtime = w["addtime"].ToString(),
-                    ImgUrl = w["ImgUrl"].ToString(),
+                    ImgUrl = localhost + w["ImgUrl"].ToString(),
                 });
             }
             return Json(new { success = true, data = ls, message  = "ok"}, JsonRequestBehavior.AllowGet);
@@ -1192,6 +1224,8 @@ namespace WebApplicationWZH.Controllers
         public int  isdelete { set; get; }
 
         public int goodCount { set; get; } = 0;
+
+        public string headphoto { set; get; } ///images/tabs/me.png
     }
     //{"code":1,"Message":"{\"session_key\":\"N5vBx9faQv5NImR8KvmWGQ==\",\"openid\":\"oXrvG6wzNllfWpLGlP_AmZDWCjQM\"}"}
 }
