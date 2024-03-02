@@ -3049,6 +3049,7 @@
     <Content Include="Views\Test\Demo2.cshtml" />
     <Content Include="Views\Test\Demo3.cshtml" />
     <Content Include="Views\Test\Demo4.cshtml" />
+    <Content Include="Views\Test\Demo5.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

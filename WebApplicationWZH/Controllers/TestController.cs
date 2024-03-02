@@ -35,7 +35,10 @@ namespace WebApplicationWZH.Controllers
         {
             return View();
         }
-       
+        public ActionResult Demo5()
+        {
+            return View();
+        }
 
     }
    
