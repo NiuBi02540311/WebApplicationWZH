@@ -10,12 +10,17 @@
     <meta name="viewport" content="width=device-width" />
     <title>Demo5</title>
     <style>
-       
-       
+
+        .h {
+            border-top: 1px solid red;
+            border-right: 1px solid red;
+            margin-bottom:0vh;
+            background-color: silver;
+        }
         .f {
             display: flex;
             flex-direction: row;
-            height: 97vh;
+            height: 94vh;
             
         }
         .f div {
@@ -23,23 +28,48 @@
         }
 
             .f div:nth-child(1) {
-                flex-grow: 1
+                flex-grow: 2; 
             }
             .f div:nth-child(2) {
-                flex-grow: 2
+                flex-grow: 4;
+                
             }
             .f div:nth-child(3) {
-                flex-grow: 1
+                flex-grow: 2;
+                
             }
+        .ff {
+            display: flex;
+            flex-direction: row;
+            height: 97.3vh;
+        }
+        .left {
+            flex-grow: 2;
+            background-color: mistyrose;
+            border: 1px solid blue;
+        }
+        .right {
+            flex-grow: 8;
+            background-color: darkturquoise;
+            border-top: 0px solid red;
+        }
     </style>
 </head>
 <body>
-    <div class="f">
-        <div style="background-color:antiquewhite">1 </div>
-        <div style="background-color:aquamarine">2 </div>
-        <div style="background-color:yellow">3 </div>
-         
+    <div class="ff">
+        <div class="left">
+            left
+        </div>
+        <div class="right">
+            <div class="h"><button id="bt1">隐藏/打开</button></div>
+            <div class="f">
+                <div style="background-color:antiquewhite">1 </div>
+                <div style="background-color:aquamarine">2 </div>
+                <div style="background-color:yellow">3 </div>
+            </div>
+        </div>
     </div>
+   
 
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
     <script>
@@ -64,11 +94,32 @@
             let h3 = document.body.clientHeight
             setTimeout(function () {
                 //$(".f div").css('height', h3)
-            }, 1000)
+                //$(".left").css('display', 'none')
+            }, 3000)
            
             console.log(h)
             console.log(h2)
             console.log(h3)
+
+            var show = true
+            $("#bt1").click(function () {
+                //if (show) {
+                //    show = !show
+                //}
+                show = !show
+                console.log(show)
+               // $(".left").css('display', show ? 'block' : 'none')
+               
+                if (show) {
+                    console.log('fadeOut')
+                    $(".left").fadeIn();
+                  
+                } else {
+                    console.log('fadeIn')
+                    $(".left").fadeOut();
+                }
+                
+            })
         })
     </script>
 </body>
