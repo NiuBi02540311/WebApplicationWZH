@@ -1,0 +1,126 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Demo5</title>
+    <style>
+
+        .h {
+            border-top: 1px solid red;
+            border-right: 1px solid red;
+            margin-bottom:0vh;
+            background-color: silver;
+        }
+        .f {
+            display: flex;
+            flex-direction: row;
+            height: 94vh;
+            
+        }
+        .f div {
+            border: 1px solid blue;
+        }
+
+            .f div:nth-child(1) {
+                flex-grow: 2; 
+            }
+            .f div:nth-child(2) {
+                flex-grow: 4;
+                
+            }
+            .f div:nth-child(3) {
+                flex-grow: 2;
+                
+            }
+        .ff {
+            display: flex;
+            flex-direction: row;
+            height: 97.3vh;
+        }
+        .left {
+            flex-grow: 2;
+            background-color: mistyrose;
+            border: 1px solid blue;
+        }
+        .right {
+            flex-grow: 8;
+            background-color: darkturquoise;
+            border-top: 0px solid red;
+        }
+    </style>
+</head>
+<body>
+    <div class="ff">
+        <div class="left">
+            left
+        </div>
+        <div class="right">
+            <div class="h"><button id="bt1">隐藏/打开</button></div>
+            <div class="f">
+                <div style="background-color:antiquewhite">1 </div>
+                <div style="background-color:aquamarine">2 </div>
+                <div style="background-color:yellow">3 </div>
+            </div>
+        </div>
+    </div>
+   
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script>
+        $(function () {
+            // （貌似）比 整个浏览器窗口高度 小14px~16px !
+            console.log(window.outerHeight);
+
+            // 浏览器可视区 高度 / 浏览器一屏的高度，(不包含滚动条)
+            console.log(document.documentElement.clientHeight);
+            console.log($(window).height());
+            console.log(window.innerHeight); // 包含window窗口的滚动条宽度!
+
+            // 获取当前document 的实际内容height
+            console.log(document.body.clientHeight);//这个比较奇怪，但事实如此！
+            console.log(document.body.scrollHeight);
+            console.log(document.documentElement.scrollHeight);
+
+            console.log($(document.body).height());  // $(document.documentElement)和 $("html,body") 
+            console.log('---------------------------------------');
+            let h = $(document).height()
+            let h2 = $(document.body).outerHeight(true)
+            let h3 = document.body.clientHeight
+            setTimeout(function () {
+                //$(".f div").css('height', h3)
+                //$(".left").css('display', 'none')
+            }, 3000)
+           
+            console.log(h)
+            console.log(h2)
+            console.log(h3)
+
+            var show = true
+            $("#bt1").click(function () {
+                //if (show) {
+                //    show = !show
+                //}
+                show = !show
+                console.log(show)
+               // $(".left").css('display', show ? 'block' : 'none')
+               
+                if (show) {
+                    console.log('fadeOut')
+                    $(".left").fadeIn();
+                  
+                } else {
+                    console.log('fadeIn')
+                    $(".left").fadeOut();
+                }
+                
+            })
+        })
+    </script>
+</body>
+</html>
