@@ -60,9 +60,9 @@ namespace WebApplicationWZH.Controllers
         /// 事务使用
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<string> TestFreeSqlDbContext1()
-        {
+        //[HttpGet]
+       // public async Task<string> TestFreeSqlDbContext1()
+      //  {
             //工作单元
             //var ctx = _dbContext;
 
@@ -75,8 +75,8 @@ namespace WebApplicationWZH.Controllers
             //var save = await ctx.SaveChangesAsync();
 
 
-            return "123";
-        }
+          //  return "123";
+       // }
         /// <summary>
         /// 读从库、写主库,伪功能（需要自己实现数据库数据同步）
         /// </summary>

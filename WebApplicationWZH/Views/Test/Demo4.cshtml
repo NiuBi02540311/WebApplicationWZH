@@ -10,8 +10,29 @@
     <meta name="viewport" content="width=device-width" />
     <title>Demo4</title>
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap-theme.min.css" 
+          integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" 
+            integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+    <style>
+
+        .body {
+            display: none;
+            border: 1px solid red;
+            background-color: yellow;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
+    <div id="d110"></div>
     <div>
         <button id="bt1">getAccessToken</button><br />
         <input type="text" id="access_token" style="width:1000px;" value="" /><br />
@@ -21,23 +42,78 @@
         <hr />
         <button id="bt3">code2Session</button><br />
         <button id="bt4">bushu</button><br />
+        <button id="bt5">SayToken</button><br />
         <div id="show"></div>
     </div>
     <div>
 
     </div>
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+    <script src="~/Scripts/axios.js?v=@Guid.NewGuid().ToString("N")"></script>
     <script>
+        //httpss://unpkg.com/axios@1.6.7/dist/axios.min.js"
         $(document).ready(function () {
-            $("#bt1").click(function () {
-                    $.get("/test/getAccessToken", function (res) {
-                        console.log(res);
-                        let o = res.Message;
-                        let j = JSON.parse(o);
-                        $("#access_token").val(j.access_token)
+            $("#bt1111").click(function () {
+                $.get("/wx/getAccessToken", function (res) {
+                    console.log(res);
+                    let o = res.Message;
+                    let j = JSON.parse(o);
+                    $("#access_token").val(j.access_token)
 
-                    })
                 })
+            })
+            $("#bt1").click(function () {
 
+
+                geToken();
+                //getUser();
+            })
+            $("#bt5").click(function () {
+
+
+                sayToken();
+                //getUser();
+            })
+            async function geToken() {
+                try {
+                    //const response = await _axios.get('/wx/getAccessToken');
+                    //console.log(response);
+
+                    const { data: res } = await _axios.get('/Test/GetToken');
+                    //const { data: res }= response
+                    console.log(res);
+                    $("#access_token").val(res.token)
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            async function sayToken() {
+                try {
+                    //const response = await _axios.get('/wx/getAccessToken');
+                    //console.log(response);
+                    const token = $("#access_token").val();
+                    const { data: res } = await _axios.get('/Test/SayToken?token=' + token);
+                    //const { data: res }= response
+                    console.log(res);
+                    $("#code").val(JSON.stringify(res.UserInfo))
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            // 还可以使用ECMAScript 2017里的async/await，添加 `async` keyword to your outer function/method.
+            async function getUser() {
+                try {
+                    //const response = await _axios.get('/wx/getAccessToken');
+                    //console.log(response);
+
+                    const { data : res } = await _axios.get('/wx/getAccessToken');
+                    //const { data: res }= response
+                    console.log(res);
+                   
+                } catch (error) {
+                    console.error(error);
+                }
+            }
             $("#bt2").click(function () {
                 let access_token = $("#access_token").val();
                 let code = $("#code").val();
@@ -60,7 +136,7 @@
             $("#bt4").click(function () {
                 let encryptedData = $("#code").val();
                 let iv = "DI6lF3c8ugW7qi5Ms5yG8w==";
-                let sessionKey = "bSOA+aMRaMkb2KNlcsAqBQ=="; 
+                let sessionKey = "bSOA+aMRaMkb2KNlcsAqBQ==";
                 // encryptedData, string iv, string sessionKey
                 $.get("/test/Decrypt?encryptedData=" + encryptedData + "&iv=" + iv + "&sessionKey=" + sessionKey, function (res) {
                     console.log(res);
