@@ -102,6 +102,7 @@ namespace WebApplicationWZH
             var arr = filterContext.ActionDescriptor.GetParameters();
             foreach (var parameter in arr)
             {
+                break;
                 var parameterName = parameter.ParameterName;//获取Action方法中参数的名字
                 var parameterType = parameter.ParameterType;//获取Action方法中参数的类型
 
