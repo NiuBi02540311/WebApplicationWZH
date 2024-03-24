@@ -2882,6 +2882,11 @@ namespace WebApplicationWZH
 
     public class DB
     {
+        //static IFreeSql fsql = new FreeSql.FreeSqlBuilder()
+        //    .UseConnectionString(FreeSql.DataType.MySql, "Data Source=127.0.0.1;Port=3306;User ID=root;Password=root;Initial Catalog=cccddd;Charset=utf8;SslMode=none;Max pool size=10")
+        //    .UseAutoSyncStructure(true) //自动同步实体结构【开发环境必备】
+        //    .Build(); //请务必定义成 Singleton 单例模式
+
 
         // private static string connString = ConfigurationManager.ConnectionStrings["connString"].ToString();
         //https://freesql.net/guide/getting-started.html#%E5%A3%B0%E6%98%8E
