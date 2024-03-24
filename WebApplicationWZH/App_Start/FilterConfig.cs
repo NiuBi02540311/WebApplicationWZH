@@ -79,6 +79,7 @@ namespace WebApplicationWZH
     /// </summary>
     public class CheckLoginAttribute : ActionFilterAttribute
     {
+        //四个方法执行顺序是OnActionExecuting——>OnActionExecuted——>OnResultExecuting——>OnResultExecuted
         // /// OnActionExecuting方法在Controller的Action执行前执行
         //  1.OnActionExecuting  
         //     在Action方法调用前使用，使用场景：如何验证登录等。
@@ -93,9 +94,9 @@ namespace WebApplicationWZH
         //public override void OnActionExecuted(ActionExecutedContext filterContext)
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            string ControllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName.ToLower();
-            string ActionName = filterContext.ActionDescriptor.ActionName.ToLower();
-            string ControllerNameActionName = $"/{ControllerName}/{ActionName}";
+            string ControllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
+            string ActionName     = filterContext.ActionDescriptor.ActionName;
+            string ControllerNameActionName = $"/{ControllerName}/{ActionName}".ToLower();
 
             //循环获取在Controller的Action方法中定义的参数
             var arr = filterContext.ActionDescriptor.GetParameters();
@@ -117,6 +118,13 @@ namespace WebApplicationWZH
 
             //https://www.cnblogs.com/dragon2017/p/11718769.html
 
+            //判断Action方法的Control是否跳过权限验证
+
+            if (filterContext.ActionDescriptor.IsDefined(typeof(SkipVerification), false))
+            {
+                return;
+            }
+           
             if (filterContext.ActionDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true))
             //判断是否Action判断是否跳过授权过滤器
             {
@@ -146,7 +154,13 @@ namespace WebApplicationWZH
             {
                 return;
             }
- 
+
+            //例外情况(不验证权限)
+            var skipVerifications = filterContext.ActionDescriptor.GetCustomAttributes(typeof(SkipVerification), true);
+            if (skipVerifications != null && skipVerifications.Length > 0)
+            {
+                return;
+            }
             if (filterContext.HttpContext.Session["User"] == null || filterContext.HttpContext.Request.IsAuthenticated == false )
             {
                 bool bAjax = filterContext.HttpContext.Request.IsAjaxRequest();
@@ -158,7 +172,7 @@ namespace WebApplicationWZH
                    filterContext.HttpContext.Response.AddHeader("StatusCode", "401");
                    filterContext.HttpContext.Response.StatusCode = 401;//应将状态代码设置为401(未授权)
                    filterContext.HttpContext.Response.End();
-                    return;
+                   return;
                 }
 
                 if (bAjax)
@@ -196,17 +210,17 @@ namespace WebApplicationWZH
 
             //判断Action方法的Control是否跳过权限验证
             
-           if (filterContext.ActionDescriptor.IsDefined(typeof(SkipVerification), false))
-           { 
-              return;
-            }
+           //if (filterContext.ActionDescriptor.IsDefined(typeof(SkipVerification), false))
+           //{ 
+           //   return;
+           // }
 
-            //例外情况(不验证权限)
-            var skipVerifications = filterContext.ActionDescriptor.GetCustomAttributes(typeof(SkipVerification), true);
-            if (skipVerifications != null && skipVerifications.Length > 0)
-            {
-                return;
-            }
+            ////例外情况(不验证权限)
+            //var skipVerifications = filterContext.ActionDescriptor.GetCustomAttributes(typeof(SkipVerification), true);
+            //if (skipVerifications != null && skipVerifications.Length > 0)
+            //{
+            //    return;
+            //}
               
 
 
@@ -290,7 +304,7 @@ namespace WebApplicationWZH
             return ip;
         }
 
- 
+        
     }
 
     public class MyValidateAntiForgeryToken : AuthorizeAttribute

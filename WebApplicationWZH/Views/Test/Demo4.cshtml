@@ -95,7 +95,8 @@
                     const { data: res } = await _axios.get('/Test/SayToken?token=' + token);
                     //const { data: res }= response
                     console.log(res);
-                    $("#code").val(JSON.stringify(res.UserInfo))
+                    const m = res.UserInfo == null ? res.Message : JSON.stringify(res.UserInfo) ;
+                    $("#code").val(JSON.stringify(m))
                 } catch (error) {
                     console.error(error);
                 }
