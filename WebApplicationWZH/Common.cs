@@ -490,98 +490,98 @@ namespace WebApplicationWZH
 
 
     
+    /// <summary>
+    /// Account Helper
+    /// </summary>
+    public static class AccountHelper
+    {
         /// <summary>
-        /// Account Helper
+        /// Get all permission list
         /// </summary>
-        public static class AccountHelper
+        /// <returns>Permission List</returns>
+        public static List<PermissionItem> GetPermissionItems()
         {
-            /// <summary>
-            /// Get all permission list
-            /// </summary>
-            /// <returns>Permission List</returns>
-            public static List<PermissionItem> GetPermissionItems()
+                //  HttpContext.Current.Cache：为当前 HTTP 请求获取Cache对象。
+            if (HttpContext.Current.Cache["PermissionItems"] == null)
             {
-                 //  HttpContext.Current.Cache：为当前 HTTP 请求获取Cache对象。
-                if (HttpContext.Current.Cache["PermissionItems"] == null)
-                {
-                    UrlAuthorizeEntities db = new UrlAuthorizeEntities();
-                    var items = db.PermissionItems.Where(c => c.PermissionID > 0).ToList();
-                    HttpContext.Current.Cache["PermissionItems"] = items;
-                }
+                UrlAuthorizeEntities db = new UrlAuthorizeEntities();
+                var items = db.PermissionItems.Where(c => c.PermissionID > 0).ToList();
+                HttpContext.Current.Cache["PermissionItems"] = items;
+            }
             
-                return (List<PermissionItem>)HttpContext.Current.Cache["PermissionItems"];
-            }
+            return (List<PermissionItem>)HttpContext.Current.Cache["PermissionItems"];
+        }
 
-            /// <summary>
-            /// Get User Permission
-            /// </summary>
-            /// <param name="userID">User ID</param>
-            /// <returns>User Permission Array</returns>
-            public static Int32[] GetUserPermission(int userID)
+        /// <summary>
+        /// Get User Permission
+        /// </summary>
+        /// <param name="userID">User ID</param>
+        /// <returns>User Permission Array</returns>
+        public static Int32[] GetUserPermission(int userID)
+        {
+            if (HttpContext.Current.Session["Permission"] == null)
             {
-                if (HttpContext.Current.Session["Permission"] == null)
-                {
-                    UrlAuthorizeEntities db = new UrlAuthorizeEntities();
-                    var permissions = db.PermissionList.Where(c => c.UserID == userID).Select(c => c.PermissionID).ToArray();
-                    HttpContext.Current.Session["Permission"] = permissions;
-                }
-                return (Int32[])HttpContext.Current.Session["Permission"];
+                UrlAuthorizeEntities db = new UrlAuthorizeEntities();
+                var permissions = db.PermissionList.Where(c => c.UserID == userID).Select(c => c.PermissionID).ToArray();
+                HttpContext.Current.Session["Permission"] = permissions;
             }
+            return (Int32[])HttpContext.Current.Session["Permission"];
         }
+    }
 
-        public class PermissionList
+    public class PermissionList
+    {
+        public int ID { set; get; }
+
+        public int PermissionID { set; get; }
+
+        public int UserID { set; get; }
+    }
+
+    public class PermissionItem
+    {
+        public int ID { set; get; }
+
+        public int PermissionID { set; get; }
+
+        public string Name { set; get; }
+
+        public string Route { set; get; }
+    }
+
+    public class UrlAuthorizeEntities
+    {
+        //https://blog.csdn.net/afandaafandaafanda/article/details/46780439/
+        public IEnumerable<PermissionItem> PermissionItems = new List<PermissionItem>
         {
-            public int ID { set; get; }
+            new PermissionItem{ ID = 1 , PermissionID = 1, Name = "Test Page 1", Route = "/Home/Page1" },
+            new PermissionItem{ ID = 2 , PermissionID = 2, Name = "Test Page 2", Route = "/Home/Page2" },
+            new PermissionItem{ ID = 3 , PermissionID = 3, Name = "Test Page 3", Route = "/Home/Page3" },
+            new PermissionItem{ ID = 4 , PermissionID = 1, Name = "Test Page 4", Route = "/Home/Page4" },
+            new PermissionItem{ ID = 5 , PermissionID = 2, Name = "Test Page 5", Route = "/Login/Index" }
+        };
 
-            public int PermissionID { set; get; }
+        public IEnumerable<PermissionList> PermissionList = new List<PermissionList>
+        {
+            new PermissionList{ ID = 1 , PermissionID = 2, UserID = 1},
+            new PermissionList{ ID = 2 , PermissionID = 3, UserID = 1},
+        };
+    }
 
-            public int UserID { set; get; }
+    public class DescriptionAttribute : Attribute
+    {
+        public string ActionTitle
+    {
+            set;
+            get;
         }
-
-        public class PermissionItem
+        public int ActionOrderNumber
         {
-            public int ID { set; get; }
 
-            public int PermissionID { set; get; }
-
-            public string Name { set; get; }
-
-            public string Route { set; get; }
+            set;
+            get;
         }
-
-        public class UrlAuthorizeEntities
-        {
-            //https://blog.csdn.net/afandaafandaafanda/article/details/46780439/
-            public IEnumerable<PermissionItem> PermissionItems = new List<PermissionItem>
-            {
-                new PermissionItem{ ID = 1 , PermissionID = 1, Name = "Test Page 1", Route = "/Home/Page1" },
-                new PermissionItem{ ID = 2 , PermissionID = 2, Name = "Test Page 2", Route = "/Home/Page2" },
-                new PermissionItem{ ID = 3 , PermissionID = 3, Name = "Test Page 3", Route = "/Home/Page3" },
-                new PermissionItem{ ID = 4 , PermissionID = 1, Name = "Test Page 4", Route = "/Home/Page4" },
-                new PermissionItem{ ID = 5 , PermissionID = 2, Name = "Test Page 5", Route = "/Login/Index" }
-            };
-
-            public IEnumerable<PermissionList> PermissionList = new List<PermissionList>
-            {
-                new PermissionList{ ID = 1 , PermissionID = 2, UserID = 1},
-                new PermissionList{ ID = 2 , PermissionID = 3, UserID = 1},
-            };
-        }
-
-        public class DescriptionAttribute : Attribute
-        {
-            public string ActionTitle
-        {
-                set;
-                get;
-            }
-            public int ActionOrderNumber
-            {
-
-                set;
-                get;
-            }
-        }
+    }
 
 
     /// <summary>  
@@ -2882,6 +2882,11 @@ namespace WebApplicationWZH
 
     public class DB
     {
+        //static IFreeSql fsql = new FreeSql.FreeSqlBuilder()
+        //    .UseConnectionString(FreeSql.DataType.MySql, "Data Source=127.0.0.1;Port=3306;User ID=root;Password=root;Initial Catalog=cccddd;Charset=utf8;SslMode=none;Max pool size=10")
+        //    .UseAutoSyncStructure(true) //自动同步实体结构【开发环境必备】
+        //    .Build(); //请务必定义成 Singleton 单例模式
+
 
         // private static string connString = ConfigurationManager.ConnectionStrings["connString"].ToString();
         //https://freesql.net/guide/getting-started.html#%E5%A3%B0%E6%98%8E

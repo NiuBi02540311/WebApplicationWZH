@@ -73,7 +73,7 @@ namespace WebApplicationWZH.Controllers
                           ,[PassWord]
                           ,[ChineseName]
                           ,[Status]
-                      FROM [WEBAPI].[dbo].[Users] where IsDelete = 0 and UserName = '{logInView.loginName}' and PassWord = '{logInView.loginPassword}'";
+                      FROM [dbo].[Users] where IsDelete = 0 and UserName = '{logInView.loginName}' and PassWord = '{logInView.loginPassword}'";
             //var find =  SqlServerSqlHelper.ExecuteScalar(sql);
             
             var find = DB.SqlServer.Select<Users>().Where(a => a.UserName == logInView.loginName && a.PassWord == logInView.loginPassword).First();

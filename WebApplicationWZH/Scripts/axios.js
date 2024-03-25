@@ -145,7 +145,7 @@ function HideLoading() {
             //document.body.removeChild($div)
             let item = $divList.shift();
             item.remove();
-        }, 5000);
+        }, 1000);
     }
 }
 var Test = {
